@@ -4,128 +4,207 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Work | 11R Print</title>
-  <meta name="description" content="View 11R Print work examples and placeholders for custom screen printed business shirts, event shirts, close-ups, and finished apparel." />
+  <meta name="description" content="View 11R Print custom screen printed work: business shirts, crew uniforms, brand drops, event shirts, and print detail close-ups. Real ink. Real durability." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="work-gallery-page">
-  <header class="site-header">
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-trail" id="cursor-trail"></div>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header" id="site-header">
     <a class="brand" href="index.html" aria-label="11R Print home">
       <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
     </a>
 
-    <button class="menu-toggle" aria-label="Open menu">☰</button>
-
-    <nav class="nav-links">
-      <a href="work.html">Work</a>
-      <a href="index.html#services">Services</a>
-      <a href="index.html#process">Process</a>
-      <a href="index.html#quote">Quote</a>
+    <nav class="nav-links" id="nav-links">
+      <a href="work.html" class="active" data-decrypt>Work</a>
+      <a href="index.html#services" data-decrypt>Services</a>
+      <a href="index.html#process" data-decrypt>Process</a>
+      <a href="index.html#quote" class="nav-cta" data-decrypt>Get a Quote</a>
     </nav>
+
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <main>
-    <section class="work-page-hero">
-      <div>
-        <p class="eyebrow">THE 11R PRINT STANDARD</p>
-        <h1>Our Work</h1>
-        <p>
-          Real screen printing for businesses, brands, crews, events, and custom apparel.
-        </p>
+
+    <!-- ==================== WORK HERO ==================== -->
+    <section class="work-hero">
+      <div class="halftone-overlay" style="opacity:.35" aria-hidden="true"></div>
+      <div class="crop-marks" aria-hidden="true">
+        <div class="crop tl"></div><div class="crop tr"></div>
+        <div class="crop bl"></div><div class="crop br"></div>
       </div>
+
+      <div class="work-hero-inner reveal-up">
+        <p class="eyebrow">THE 11R PRINT STANDARD</p>
+        <h1>Our<br><span class="green-text">Work</span></h1>
+        <p>Real screen printing for businesses, brands, crews, events, and custom apparel. Clean placement. Strong coverage. A durable finish built to last.</p>
+      </div>
+
+      <div class="work-hero-bg-text" aria-hidden="true">PRINT</div>
     </section>
 
-    <section class="work-page-section">
-      <div class="work-page-copy">
-        <p class="eyebrow">BUSINESS & COMPANY SHIRTS</p>
+    <!-- ==================== BUSINESS SHIRTS ==================== -->
+    <section class="work-section">
+      <div class="work-section-copy reveal-up">
+        <p class="eyebrow">BUSINESS &amp; COMPANY SHIRTS</p>
         <h2>Clean apparel for crews, shops, and local brands.</h2>
         <p>
-          11R Print creates custom printed shirts for small businesses, construction companies, crews, shops, and local brands that need to look professional. We focus on durable prints, clean placement, and a sharp finished look that helps employees represent the business with confidence.
+          11R Print creates custom printed shirts for small businesses, construction companies, crews, shops, and local brands that need to look professional. Durable prints, clean placement, and a sharp finished look that helps employees represent the business with confidence.
         </p>
+        <a href="index.html#quote" class="btn primary magnetic" style="margin-top: 8px;">Get a Quote</a>
       </div>
-      <div class="work-placeholder">Add construction company back print here</div>
+      <div class="work-section-visual">
+        <!--
+          Replace placeholder with:
+          <img src="images/your-business-shirt.jpg" alt="Business crew shirt by 11R Print" loading="lazy" />
+        -->
+        <div class="work-section-placeholder">Add construction company back print here</div>
+      </div>
     </section>
 
-    <section class="work-page-section alt">
-      <div class="work-placeholder">Add finished shirt photo here</div>
-      <div class="work-page-copy">
-        <p class="eyebrow">CUSTOM ORDERS & EVENTS</p>
+    <!-- ==================== CUSTOM ORDERS ==================== -->
+    <section class="work-section alt">
+      <div class="work-section-copy reveal-up">
+        <p class="eyebrow">CUSTOM ORDERS &amp; EVENTS</p>
         <h2>Personal designs with a professional finish.</h2>
         <p>
-          From birthdays and family events to teams, fundraisers, church groups, parties, and personal designs, we welcome custom work that needs to feel clean, bold, and well made. Every order gets the same care whether it is for a business, a group, or a special moment.
+          From birthdays and family events to teams, fundraisers, church groups, parties, and personal designs — every order gets the same care and clean print quality, whether it is for a business or a one-time moment.
         </p>
+      </div>
+      <div class="work-section-visual">
+        <!--
+          Replace placeholder with:
+          <img src="images/your-event-shirt.jpg" alt="Custom event shirt by 11R Print" loading="lazy" />
+        -->
+        <div class="work-section-placeholder">Add finished custom shirt photo here</div>
       </div>
     </section>
 
-    <section class="work-page-section">
-      <div class="work-page-copy">
-        <p class="eyebrow">QUALITY SCREEN PRINTING</p>
-        <h2>Screen printed. Not basic heat press transfers.</h2>
-        <p>
-          Our work is screen printed with real ink for durability, sharp detail, strong coverage, and a better feel when done correctly. The goal is a print that looks solid, wears well, and holds up through regular use instead of feeling like a shortcut.
-        </p>
-      </div>
-      <div class="quality-list">
-        <span>Real ink</span>
-        <span>Sharp detail</span>
-        <span>Durable finish</span>
-        <span>Clean placement</span>
+    <!-- ==================== QUALITY SECTION ==================== -->
+    <section class="quality-grid reveal-up">
+      <p class="eyebrow">QUALITY SCREEN PRINTING</p>
+      <h2>Screen printed.<br>Not basic heat press transfers.</h2>
+
+      <div class="quality-items">
+        <div class="quality-item">
+          <div class="quality-item-icon">●</div>
+          <h3>Real Ink</h3>
+          <p>Plastisol ink pressed through mesh directly into the garment — not an adhesive transfer sitting on top.</p>
+        </div>
+        <div class="quality-item">
+          <div class="quality-item-icon">◆</div>
+          <h3>Sharp Detail</h3>
+          <p>Clean edges, precise registration, and bold coverage that holds up and looks solid after wash after wash.</p>
+        </div>
+        <div class="quality-item">
+          <div class="quality-item-icon">▲</div>
+          <h3>Durable Finish</h3>
+          <p>Prints made to survive real workdays, real washes, and repeat wear without cracking, peeling, or fading.</p>
+        </div>
+        <div class="quality-item">
+          <div class="quality-item-icon">✦</div>
+          <h3>Clean Placement</h3>
+          <p>Every location — left chest, full back, sleeve hit — placed with intention and confirmed before production.</p>
+        </div>
       </div>
     </section>
 
-    <section class="work-page-section alt">
-      <div class="work-placeholder">Add close-up print photo here</div>
-      <div class="work-page-copy">
-        <p class="eyebrow">PRINT DETAILS & CLOSE-UPS</p>
+    <!-- ==================== CLOSE-UP DETAILS ==================== -->
+    <section class="work-section">
+      <div class="work-section-copy reveal-up">
+        <p class="eyebrow">PRINT DETAILS &amp; CLOSE-UPS</p>
         <h2>Small details make the whole order feel better.</h2>
         <p>
-          Use this area later for close-up photos of ink texture, shirt details, left chest prints, back prints, sleeves, and specialty placements.
+          Close-up ink texture, left chest prints, back prints, sleeves, and specialty placements. The quality shows in every inch — right down to the edge of the print and the feel of the ink.
         </p>
+      </div>
+      <div class="work-section-visual">
+        <!--
+          Replace with your own close-up ink detail photo:
+          <img src="images/your-closeup-photo.jpg" alt="Close-up print detail by 11R Print" loading="lazy" />
+        -->
+        <img src="images/lkpocket.jpeg" alt="Close-up pocket print detail by 11R Print" loading="lazy" />
       </div>
     </section>
 
-    <section class="work-page-section">
-      <div class="work-page-copy">
-        <p class="eyebrow">LEFT CHEST & SPECIALTY PLACEMENTS</p>
+    <!-- ==================== LEFT CHEST / SPECIALTY ==================== -->
+    <section class="work-section alt">
+      <div class="work-section-copy reveal-up">
+        <p class="eyebrow">LEFT CHEST &amp; SPECIALTY PLACEMENTS</p>
         <h2>Placement that feels intentional.</h2>
         <p>
-          Add close-ups here later for left chest prints, sleeve hits, back prints, specialty placements, and details that show the print quality up close.
+          Left chest prints, sleeve hits, back prints, and specialty placements done right. The detail that separates a real screen print from a shortcut — visible from across the room, built to last.
         </p>
       </div>
-      <div class="work-placeholder">Add left chest or specialty photo here</div>
-    </section>
-
-    <section class="before-after-section">
-      <div class="section-heading center">
-        <p class="eyebrow">BEFORE & FINISHED PRODUCT</p>
-        <h2>From design idea to printed shirt.</h2>
-        <p>Use this section to show the mockup or design on one side and the finished printed apparel on the other.</p>
-      </div>
-      <div class="before-after-grid">
-        <div class="before-after-card">
-          <h3>Before</h3>
-          <div class="work-placeholder">Add mockup or design here</div>
-        </div>
-        <div class="before-after-card">
-          <h3>Finished Product</h3>
-          <div class="work-placeholder">Add finished printed shirt here</div>
-        </div>
+      <div class="work-section-visual">
+        <!--
+          Replace placeholder with:
+          <img src="images/your-left-chest-photo.jpg" alt="Left chest print by 11R Print" loading="lazy" />
+        -->
+        <div class="work-section-placeholder">Add left chest or specialty placement photo here</div>
       </div>
     </section>
 
-    <section class="work-page-cta">
+    <!-- ==================== BEFORE & AFTER ==================== -->
+    <section class="before-after reveal-up">
+      <p class="eyebrow">BEFORE &amp; FINISHED PRODUCT</p>
+      <h2>From design idea to printed shirt.</h2>
+      <div class="ba-grid">
+        <div class="ba-card">
+          <h3>Before — Mockup / Design</h3>
+          <!--
+            Replace with:
+            <img src="images/your-mockup.jpg" alt="Design mockup" loading="lazy" />
+          -->
+          <div class="ba-placeholder">Add mockup or design file here</div>
+        </div>
+        <div class="ba-card">
+          <h3>Finished — Printed Shirt</h3>
+          <!--
+            Replace with:
+            <img src="images/your-finished-shirt.jpg" alt="Finished screen printed shirt" loading="lazy" />
+          -->
+          <div class="ba-placeholder">Add finished printed shirt photo here</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CTA ==================== -->
+    <section class="work-cta">
       <p class="eyebrow">READY TO PRINT</p>
-      <h2>Have a project in mind?</h2>
-      <div class="hero-actions">
-        <a class="btn primary" href="index.html#quote">Request a Quote</a>
-        <a class="btn ghost" href="index.html">Back Home</a>
+      <h2>Have a<br><span class="green-text">project</span><br>in mind?</h2>
+      <p>Send us the details. We'll follow up with pricing, timing, and next steps — fast.</p>
+      <div class="cta-btns">
+        <a class="btn primary magnetic" href="index.html#quote">Request a Quote</a>
+        <a class="btn ghost magnetic" href="index.html">Back Home</a>
       </div>
     </section>
+
   </main>
 
-  <footer class="footer">
-    <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
-    <p>Screen Printed. Not Pressed. Real Ink. Real Durability.</p>
-    <p class="small">© 2026 11R Print. Custom screen printing </p>
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
+        <p class="footer-tagline">Screen Printed. Not Pressed.</p>
+      </div>
+      <nav class="footer-links">
+        <a href="work.html">Work</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#process">Process</a>
+        <a href="index.html#quote">Quote</a>
+      </nav>
+      <div class="footer-copy">
+        <p class="small">&copy; 2026 11R Print. Custom screen printing. Real ink. Real durability.</p>
+      </div>
+    </div>
   </footer>
 
   <script src="script.js"></script>

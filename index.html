@@ -7,190 +7,400 @@
   <meta name="description" content="11R Print is a custom screen printing shop built for businesses, crews, brands, events, and teams. Screen printed, not pressed. Real ink. Real durability." />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="home-page">
-  <header class="site-header">
+<body>
+
+  <!-- Custom cursor (hidden on mobile via CSS) -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-trail" id="cursor-trail"></div>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header" id="site-header">
     <a class="brand" href="#top" aria-label="11R Print home">
       <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
     </a>
 
-    <button class="menu-toggle" aria-label="Open menu">☰</button>
-
-    <nav class="nav-links">
-      <a href="work.html">Work</a>
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
-      <a href="#quote">Quote</a>
+    <nav class="nav-links" id="nav-links">
+      <a href="work.html" data-decrypt>Work</a>
+      <a href="#services" data-decrypt>Services</a>
+      <a href="#process" data-decrypt>Process</a>
+      <a href="#quote" class="nav-cta" data-decrypt>Get a Quote</a>
     </nav>
+
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <main id="top">
-    <section class="hero">
-      <div class="hero-content">
-        <p class="eyebrow">SCREEN PRINTED · NOT PRESSED</p>
-        <h1>Custom screen printing built for crews, companies, brands, and events.</h1>
-        <p class="hero-copy">
-          11R Print creates durable apparel with real ink, sharp detail, and a clean professional finish — made for hard work, repeat wear, and businesses that care how their brand looks.
-        </p>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" id="hero">
+
+      <!-- Decorative overlays -->
+      <div class="halftone-overlay" aria-hidden="true"></div>
+      <div class="crop-marks" aria-hidden="true">
+        <div class="crop tl"></div><div class="crop tr"></div>
+        <div class="crop bl"></div><div class="crop br"></div>
+      </div>
+      <div class="cmyk-marks" aria-hidden="true">
+        <div class="reg-mark cyan"></div>
+        <div class="reg-mark magenta"></div>
+        <div class="reg-mark yellow"></div>
+        <div class="reg-mark key"></div>
+      </div>
+
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot cyan-dot"></span>
+          <span class="eyebrow-text">Screen Printed · Not Pressed</span>
+          <span class="eyebrow-dot magenta-dot"></span>
+        </div>
+
+        <h1 class="hero-headline">
+          <span class="line-wrap"><span class="line reveal-line">CUSTOM</span></span>
+          <span class="line-wrap"><span class="line reveal-line">SCREEN</span></span>
+          <span class="line-wrap"><span class="line reveal-line green-text">PRINTING</span></span>
+        </h1>
+
+        <div class="hero-sub">
+          <p class="hero-descriptor">Built for crews, companies, brands <span class="amp">&amp;</span> events.</p>
+          <p class="hero-note">Real ink pressed through mesh. Not cheap transfers. Not shortcuts.</p>
+        </div>
+
         <div class="hero-actions">
-          <a class="btn primary" href="#quote">Request a Quote</a>
-          <a class="btn ghost" href="work.html">View Work</a>
+          <a class="btn primary magnetic" href="#quote">Request a Quote</a>
+          <a class="btn ghost magnetic" href="work.html">View Work</a>
         </div>
-        <p class="quality-note">
-          At 11R Print, every shirt is screen printed with real ink for a bold, smooth, and long-lasting finish. Our prints are made to hold up through workdays, washes, uniforms, events, and everyday wear — not cheap transfers, not shortcuts. Clean detail, strong coverage, durable ink, and a professional finish built for businesses that want their brand to look solid.
-        </p>
-      </div>
 
-      <div class="hero-card">
-        <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
-        <div class="card-strip">
-          <span>Real ink</span>
-          <span>Real durability</span>
-          <span>Clean prints</span>
+        <div class="hero-stats">
+          <div class="stat">
+            <div><span class="stat-num" data-count="500">0</span><span class="stat-suffix">+</span></div>
+            <span class="stat-label">Orders Printed</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div><span class="stat-num" data-count="100">0</span><span class="stat-suffix">%</span></div>
+            <span class="stat-label">Screen Printed</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div><span class="stat-num" data-count="48">0</span><span class="stat-suffix">hr</span></div>
+            <span class="stat-label">Avg Turnaround</span>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section class="trust-bar" aria-label="11R print specialties">
-      <span>Construction Companies</span>
-      <span>Business Uniforms</span>
-      <span>Custom Orders</span>
-      <span>Events & Teams</span>
-      <span>Brand Drops</span>
-    </section>
-
-    <section id="work" class="section work-section">
-      <div class="section-heading">
-        <p class="eyebrow">THE 11R LOOK</p>
-        <h2>Built to look professional on the job, in the shop, and online.</h2>
-        <p>Add your best shirt photos here: close-up ink shots, left-chest logos, back prints, polos, work shirts, and finished folded orders.</p>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-img-wrap">
+          <!-- Replace with your best shirt photo -->
+          <img src="images/embark no background.png" alt="Custom screen printed shirt by 11R Print" class="hero-shirt" />
+          <div class="ink-label">
+            <span>Plastisol Ink</span>
+            <span>Screen Printed</span>
+          </div>
+        </div>
+        <div class="offset-text">11R</div>
       </div>
 
-      <div class="gallery-grid">
-        <article class="gallery-card large">
-          <img class="work-image transparent-front-image" src="images/embark no background.png" alt="Embark custom screen printed t-shirt by 11R Print" />
-          <h3>Business & Crew Shirts</h3>
-          <p>Clean prints for companies that need uniforms people actually want to wear.</p>
-        </article>
-        <article class="gallery-card">
-          <img class="work-image" src="images/lkpocket.jpeg" alt="Close-up pocket print detail by 11R Print" />
-          <h3>Sharp Ink Detail</h3>
-          <p>Screen printed detail made to last beyond one wash.</p>
-        </article>
-        <article class="gallery-card">
-          <div class="placeholder">Add back print photo</div>
-          <h3>Bold Back Prints</h3>
-          <p>High-impact layouts for crews, brands, and events.</p>
-        </article>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-line"></span>
+        <span class="scroll-label">SCROLL</span>
       </div>
     </section>
 
-    <section class="section pride-section">
-      <div class="pride-image-wrap">
-        <div class="placeholder">Add print pride photo</div>
+    <!-- ==================== MARQUEE ==================== -->
+    <div class="marquee-bar" aria-hidden="true">
+      <div class="marquee-track">
+        <span>SCREEN PRINTED</span><span class="sep">·</span>
+        <span>NOT PRESSED</span><span class="sep">·</span>
+        <span>REAL INK</span><span class="sep">·</span>
+        <span>REAL DURABILITY</span><span class="sep">·</span>
+        <span>CUSTOM ORDERS</span><span class="sep">·</span>
+        <span>BUSINESS UNIFORMS</span><span class="sep">·</span>
+        <span>CREW SHIRTS</span><span class="sep">·</span>
+        <span>BRAND DROPS</span><span class="sep">·</span>
+        <span>CONSTRUCTION COMPANIES</span><span class="sep">·</span>
+        <span>EVENT SHIRTS</span><span class="sep">·</span>
+        <!-- Duplicate for seamless loop -->
+        <span>SCREEN PRINTED</span><span class="sep">·</span>
+        <span>NOT PRESSED</span><span class="sep">·</span>
+        <span>REAL INK</span><span class="sep">·</span>
+        <span>REAL DURABILITY</span><span class="sep">·</span>
+        <span>CUSTOM ORDERS</span><span class="sep">·</span>
+        <span>BUSINESS UNIFORMS</span><span class="sep">·</span>
+        <span>CREW SHIRTS</span><span class="sep">·</span>
+        <span>BRAND DROPS</span><span class="sep">·</span>
+        <span>CONSTRUCTION COMPANIES</span><span class="sep">·</span>
+        <span>EVENT SHIRTS</span><span class="sep">·</span>
       </div>
-      <div class="pride-content">
-        <p class="eyebrow">PRINTED WITH PRIDE</p>
-        <h2>We care about every print that leaves the shop.</h2>
-        <p>
-          At 11R Print, pride shows up in the details: clean edges, strong ink coverage, smooth hand feel, and prints made to last. Every shirt gets the attention it deserves so your business, crew, event, or brand looks professional from the first wear to the next wash.
-        </p>
+    </div>
+
+    <!-- ==================== VIDEO SECTION ==================== -->
+    <section class="video-section" id="video">
+      <!--
+        TO ADD VIDEO:
+        1. Place your MP4 file in the images/ folder (e.g. images/squeegee-video.mp4)
+        2. Set the src attribute below: src="images/squeegee-video.mp4"
+        3. The placeholder div will auto-hide once the video has a src
+      -->
+      <video class="section-video" id="section-video" autoplay muted loop playsinline>
+        <!-- src="images/squeegee-video.mp4" -->
+      </video>
+
+      <!-- Placeholder shown until video is added -->
+      <div class="video-placeholder" id="video-placeholder">
+        <div class="video-placeholder-inner">
+          <div class="play-icon">
+            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="20,12 50,30 20,48" fill="white"/>
+            </svg>
+          </div>
+          <p class="vid-label">INK · MESH · SQUEEGEE · SHIRT</p>
+          <p class="vid-hint">Add video: src="images/squeegee-video.mp4"</p>
+        </div>
+      </div>
+
+      <div class="video-overlay"></div>
+
+      <div class="video-content reveal-up">
+        <p class="eyebrow">THE PROCESS</p>
+        <h2>Real ink.<br>Real mesh.<br>Real prints.</h2>
+        <p>Screen printing lays ink directly into the garment fibers — not on top like a transfer. Stronger color, better hand feel, and prints that last through years of hard wear and real washes.</p>
       </div>
     </section>
 
-    <section id="services" class="section services-section">
-      <div class="section-heading center">
+    <!-- ==================== SERVICES ==================== -->
+    <section id="services" class="services-section">
+      <div class="services-header reveal-up">
         <p class="eyebrow">WHAT WE PRINT</p>
         <h2>Professional apparel for real businesses and real work.</h2>
       </div>
 
-      <div class="service-grid">
-        <div class="service-card">
-          <h3>Construction & Industrial</h3>
-          <p>Work shirts, crew shirts, safety-color apparel, and company gear built for job sites.</p>
+      <div class="services-grid">
+        <div class="service-card reveal-up">
+          <div class="service-num">01</div>
+          <div class="service-line"></div>
+          <h3>Construction &amp; Industrial</h3>
+          <p>Work shirts, crew uniforms, safety-color apparel, and company gear built for job sites and hard work. High-volume orders done right.</p>
+          <div class="service-tag">HIGH VOLUME</div>
         </div>
-        <div class="service-card">
+        <div class="service-card reveal-up" data-delay="100">
+          <div class="service-num">02</div>
+          <div class="service-line"></div>
           <h3>Business Uniforms</h3>
-          <p>Clean left-chest logos, polos, staff shirts, and repeat orders for local companies.</p>
+          <p>Clean left-chest logos, polos, staff shirts, and repeat orders for local companies that care how their brand looks on every employee.</p>
+          <div class="service-tag">REPEAT ORDERS</div>
         </div>
-        <div class="service-card">
-          <h3>Brands & Drops</h3>
-          <p>Streetwear-inspired prints, bold backs, limited runs, and merch that feels premium.</p>
+        <div class="service-card reveal-up" data-delay="200">
+          <div class="service-num">03</div>
+          <div class="service-line"></div>
+          <h3>Brands &amp; Drops</h3>
+          <p>Streetwear-inspired prints, bold backs, limited runs, and premium merch that feels earned and looks solid on every shirt.</p>
+          <div class="service-tag">PREMIUM</div>
         </div>
-        <div class="service-card">
-          <h3>Events & Teams</h3>
-          <p>Event shirts, team shirts, family orders, church groups, clubs, and custom apparel.</p>
+        <div class="service-card reveal-up" data-delay="300">
+          <div class="service-num">04</div>
+          <div class="service-line"></div>
+          <h3>Events &amp; Teams</h3>
+          <p>Event shirts, team uniforms, family orders, church groups, clubs, and custom apparel for every occasion — small or large.</p>
+          <div class="service-tag">CUSTOM</div>
         </div>
       </div>
     </section>
 
-    <section class="statement">
-      <div>
-        <p class="eyebrow">WHY SCREEN PRINTING</p>
-        <h2>This is not a heat press transfer.</h2>
+    <!-- ==================== WORK PREVIEW ==================== -->
+    <section id="work" class="work-preview-section">
+      <div class="work-preview-header reveal-up">
+        <div>
+          <p class="eyebrow">THE 11R LOOK</p>
+          <h2>Built to look professional on the job, in the shop, and online.</h2>
+        </div>
+        <a href="work.html" class="btn ghost magnetic">View All Work</a>
       </div>
-      <p>
-        Screen printing lays real ink into the garment for a professional finish that feels durable, bold, and made for repeat wear. That is the 11R standard.
-      </p>
+
+      <div class="work-cards">
+        <article class="work-card reveal-up">
+          <div class="work-card-img">
+            <!-- Replace with your best business shirt photo -->
+            <img src="images/embark no background.png" alt="Business crew shirt by 11R Print" loading="lazy" />
+          </div>
+          <div class="work-card-info">
+            <span class="work-cat">Business &amp; Crew Shirts</span>
+            <h3>Clean prints for companies that need uniforms people actually want to wear.</h3>
+          </div>
+        </article>
+
+        <article class="work-card reveal-up" data-delay="150">
+          <div class="work-card-img">
+            <!-- Replace with close-up ink detail photo -->
+            <img src="images/lkpocket.jpeg" alt="Close-up pocket print detail by 11R Print" loading="lazy" />
+          </div>
+          <div class="work-card-info">
+            <span class="work-cat">Sharp Ink Detail</span>
+            <h3>Screen printed detail made to last beyond one wash.</h3>
+          </div>
+        </article>
+
+        <article class="work-card reveal-up" data-delay="300">
+          <div class="work-card-img">
+            <!-- Replace with back print photo -->
+            <div class="img-placeholder">Add back print photo</div>
+          </div>
+          <div class="work-card-info">
+            <span class="work-cat">Bold Back Prints</span>
+            <h3>High-impact layouts for crews, brands, and events.</h3>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section id="process" class="section process-section">
-      <div class="section-heading">
+    <!-- ==================== STATEMENT ==================== -->
+    <section class="statement-section">
+      <div class="statement-inner reveal-up">
+        <div class="statement-label">
+          <div class="cmyk-stack" aria-hidden="true">
+            <span class="c">C</span>
+            <span class="m">M</span>
+            <span class="y">Y</span>
+            <span class="k">K</span>
+          </div>
+          <p class="eyebrow">WHY SCREEN PRINTING</p>
+        </div>
+        <blockquote class="statement-quote">
+          "This is not a heat press transfer. Real ink pressed through mesh — for a professional finish that holds up."
+        </blockquote>
+        <p class="statement-body">Screen printing lays real ink into the garment for a professional finish that feels durable, bold, and made for repeat wear. Stronger color. Better hand feel. Prints that survive real work and real washes. That is the 11R standard.</p>
+      </div>
+    </section>
+
+    <!-- ==================== PROCESS ==================== -->
+    <section id="process" class="process-section">
+      <div class="process-header reveal-up">
         <p class="eyebrow">ORDER PROCESS</p>
         <h2>Simple quote. Clean proof. Reliable print.</h2>
       </div>
 
-      <div class="steps">
-        <div class="step">
-          <span>1</span>
-          <h3>Send the details</h3>
-          <p>Tell us the quantity, shirt color, print locations, logo, and deadline.</p>
+      <div class="process-steps">
+        <div class="process-step reveal-up">
+          <div class="step-track">
+            <div class="step-num">01</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <h3>Send the details</h3>
+            <p>Tell us the quantity, shirt color, print locations, logo, and deadline. We keep it straightforward from the first message.</p>
+          </div>
         </div>
-        <div class="step">
-          <span>2</span>
-          <h3>Approve the proof</h3>
-          <p>We confirm placement, size, colors, and the print layout before production.</p>
+        <div class="process-step reveal-up" data-delay="150">
+          <div class="step-track">
+            <div class="step-num">02</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <h3>Approve the proof</h3>
+            <p>We confirm placement, size, colors, and the full print layout before anything goes to production. No surprises.</p>
+          </div>
         </div>
-        <div class="step">
-          <span>3</span>
-          <h3>Get it printed</h3>
-          <p>Your order is printed, packed, and ready to represent your brand.</p>
+        <div class="process-step reveal-up" data-delay="300">
+          <div class="step-track">
+            <div class="step-num">03</div>
+          </div>
+          <div class="step-content">
+            <h3>Get it printed</h3>
+            <p>Your order is screen printed, inspected, packed, and ready to represent your brand on every wear and every wash.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="quote" class="section quote-section">
-      <div class="quote-box">
-        <div>
+    <!-- ==================== QUOTE ==================== -->
+    <section id="quote" class="quote-section">
+      <div class="quote-inner">
+
+        <div class="quote-copy reveal-up">
           <p class="eyebrow">REQUEST A QUOTE</p>
           <h2>Ready to print your shirts?</h2>
-          <p>Send the order details and we will follow up with pricing, timing, and next steps.</p>
+          <p>Send your order details and we'll follow up with pricing, timing, and next steps.</p>
+          <div class="quote-features">
+            <div class="qf"><span class="qf-dot"></span>No minimums on most orders</div>
+            <div class="qf"><span class="qf-dot"></span>Fast turnaround available</div>
+            <div class="qf"><span class="qf-dot"></span>Proof before every production run</div>
+            <div class="qf"><span class="qf-dot"></span>Screen printed — not heat press transfers</div>
+          </div>
         </div>
 
-        <form action="https://formspree.io/f/xykabbqe" method="POST">
+        <form class="quote-form reveal-up" action="https://formspree.io/f/xykabbqe" method="POST">
           <input type="hidden" name="_subject" value="New 11R Print quote request" />
+
           <div class="form-row">
-            <input type="text" name="name" placeholder="Name" autocomplete="name" required />
-            <input type="text" name="business" placeholder="Business name" autocomplete="organization" />
+            <div class="form-field">
+              <label for="q-name">Name *</label>
+              <input id="q-name" type="text" name="name" placeholder="Your name" autocomplete="name" required />
+            </div>
+            <div class="form-field">
+              <label for="q-business">Business</label>
+              <input id="q-business" type="text" name="business" placeholder="Business name" autocomplete="organization" />
+            </div>
           </div>
           <div class="form-row">
-            <input type="email" name="email" placeholder="Email" autocomplete="email" required />
-            <input type="tel" name="phone" placeholder="Phone" autocomplete="tel" />
+            <div class="form-field">
+              <label for="q-email">Email *</label>
+              <input id="q-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required />
+            </div>
+            <div class="form-field">
+              <label for="q-phone">Phone</label>
+              <input id="q-phone" type="tel" name="phone" placeholder="Phone number" autocomplete="tel" />
+            </div>
           </div>
           <div class="form-row">
-            <input type="text" name="quantity" placeholder="Quantity" />
-            <input type="text" name="shirt_color" placeholder="Shirt color" />
+            <div class="form-field">
+              <label for="q-qty">Quantity</label>
+              <input id="q-qty" type="text" name="quantity" placeholder="e.g. 24 shirts" />
+            </div>
+            <div class="form-field">
+              <label for="q-color">Shirt Color</label>
+              <input id="q-color" type="text" name="shirt_color" placeholder="e.g. Black, White" />
+            </div>
           </div>
-          <textarea name="message" placeholder="Tell us what you need printed: front, back, left chest, sleeve, deadline, and any design notes." required></textarea>
-          <button type="submit">Send Quote Request</button>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="q-loc">Print Locations</label>
+              <input id="q-loc" type="text" name="print_locations" placeholder="e.g. Front, left chest, back" />
+            </div>
+            <div class="form-field">
+              <label for="q-deadline">Deadline</label>
+              <input id="q-deadline" type="text" name="deadline" placeholder="e.g. 2 weeks" />
+            </div>
+          </div>
+          <div class="form-field full">
+            <label for="q-message">Project Details *</label>
+            <textarea id="q-message" name="message" placeholder="Describe what you need printed: design details, number of colors, special requests, and any other helpful notes." required></textarea>
+          </div>
+          <button type="submit" class="submit-btn magnetic">Send Quote Request &rarr;</button>
         </form>
+
       </div>
     </section>
+
   </main>
 
-  <footer class="footer">
-    <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
-    <p>Screen Printed. Not Pressed. Real Ink. Real Durability.</p>
-    <p class="small">© 2026 11R Print. Custom screen printing </p>
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print logo" />
+        <p class="footer-tagline">Screen Printed. Not Pressed.</p>
+      </div>
+      <nav class="footer-links">
+        <a href="work.html">Work</a>
+        <a href="#services">Services</a>
+        <a href="#process">Process</a>
+        <a href="#quote">Quote</a>
+      </nav>
+      <div class="footer-copy">
+        <p class="small">&copy; 2026 11R Print. Custom screen printing. Real ink. Real durability.</p>
+      </div>
+    </div>
   </footer>
 
   <script src="script.js"></script>
