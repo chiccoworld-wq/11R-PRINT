@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "rm -rf public && mkdir -p public && cp index.html work.html style.css script.js public/ && cp -R images public/images"
+  }
+}
