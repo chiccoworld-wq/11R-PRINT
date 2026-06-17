@@ -26,8 +26,9 @@
       <a href="#quote" class="nav-cta" data-decrypt>Get a Quote</a>
     </nav>
 
-    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-overlay">
+      <span class="mt-bar"></span>
+      <span class="mt-bar"></span>
     </button>
   </header>
 
@@ -52,7 +53,7 @@
       <div class="hero-inner">
         <div class="hero-eyebrow">
           <span class="eyebrow-dot cyan-dot"></span>
-          <span class="eyebrow-text">Screen Printed · Not Pressed</span>
+          <span class="eyebrow-text">Craft Over Shortcuts</span>
           <span class="eyebrow-dot magenta-dot"></span>
         </div>
 
@@ -72,22 +73,6 @@
           <a class="btn ghost magnetic" href="work.html">View Work</a>
         </div>
 
-        <div class="hero-stats">
-          <div class="stat">
-            <div><span class="stat-num" data-count="500">0</span><span class="stat-suffix">+</span></div>
-            <span class="stat-label">Orders Printed</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <div><span class="stat-num" data-count="100">0</span><span class="stat-suffix">%</span></div>
-            <span class="stat-label">Screen Printed</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <div><span class="stat-num" data-count="48">0</span><span class="stat-suffix">hr</span></div>
-            <span class="stat-label">Avg Turnaround</span>
-          </div>
-        </div>
       </div>
 
       <div class="hero-visual" aria-hidden="true">
@@ -155,7 +140,7 @@
         <div class="video-progress-bar" id="video-progress-bar"></div>
       </div>
 
-      <div class="video-content reveal-up">
+      <div class="video-content video-right reveal-up">
         <p class="eyebrow">THE PROCESS</p>
         <h2>Real ink.<br>Real mesh.<br>Real prints.</h2>
         <p>Screen printing lays ink directly into the garment fibers — not on top like a transfer. Stronger color, better hand feel, and prints that last through years of hard wear and real washes.</p>
@@ -321,10 +306,10 @@
           <h2>Ready to print your shirts?</h2>
           <p>Send your order details and we'll follow up with pricing, timing, and next steps.</p>
           <div class="quote-features">
-            <div class="qf"><span class="qf-dot"></span>No minimums on most orders</div>
-            <div class="qf"><span class="qf-dot"></span>Fast turnaround available</div>
-            <div class="qf"><span class="qf-dot"></span>Proof before every production run</div>
-            <div class="qf"><span class="qf-dot"></span>Screen printed — not heat press transfers</div>
+            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>No minimums on most orders</div>
+            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Fast turnaround available</div>
+            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Proof before every production run</div>
+            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Screen printed — not heat press transfers</div>
           </div>
         </div>
 
@@ -401,6 +386,46 @@
       </div>
     </div>
   </footer>
+
+  <!-- ==================== MOBILE NAV OVERLAY ==================== -->
+  <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="mobile-overlay-inner">
+
+      <div class="mobile-overlay-header">
+        <a class="mo-brand" href="#top" aria-label="11R Print home">
+          <img src="images/11R VECTOR FINAL SVG.png" alt="11R Print" />
+        </a>
+        <button class="overlay-close" id="overlay-close" aria-label="Close menu">
+          <span></span><span></span>
+        </button>
+      </div>
+
+      <nav class="mobile-overlay-nav" aria-label="Mobile navigation">
+        <a href="index.html" class="mobile-link">Home</a>
+        <a href="work.html" class="mobile-link">Work</a>
+        <a href="#services" class="mobile-link">Services</a>
+        <a href="#process" class="mobile-link">Process</a>
+        <a href="#quote" class="mobile-link">Quote</a>
+      </nav>
+
+      <div class="mobile-overlay-footer">
+        <p class="mo-slogan">Real ink. Zero shortcuts.</p>
+        <a href="#quote" class="btn primary mo-cta">Request a Quote</a>
+      </div>
+
+      <div class="mo-deco" aria-hidden="true">
+        <div class="mo-crop mo-tl"></div>
+        <div class="mo-crop mo-br"></div>
+        <div class="mo-regs">
+          <span class="mo-reg mo-cyan"></span>
+          <span class="mo-reg mo-mag"></span>
+          <span class="mo-reg mo-yel"></span>
+        </div>
+        <div class="mo-halftone"></div>
+      </div>
+
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
