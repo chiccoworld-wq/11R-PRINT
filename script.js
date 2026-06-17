@@ -189,13 +189,47 @@
     }, { passive: true });
   }
 
-  /* ==================== VIDEO SECTION ==================== */
-  /* When you set a src on the video element, the placeholder auto-hides */
+  /* ==================== VIDEO SCROLL SCRUB ====================
+     Drives video.currentTime based on scroll progress through the
+     video section — Apple-style scroll-to-play effect.            */
   const vid         = document.getElementById('section-video');
-  const vidHolder   = document.getElementById('video-placeholder');
-  if (vid && vid.src && vid.src !== window.location.href) {
-    vid.style.display    = 'block';
-    if (vidHolder) vidHolder.style.display = 'none';
+  const progressBar = document.getElementById('video-progress-bar');
+  const scrollHint  = document.getElementById('video-scroll-hint');
+  const vidSection  = document.getElementById('video');
+
+  if (vid && vidSection) {
+    vid.addEventListener('loadedmetadata', () => {
+      let ticking = false;
+
+      function scrubVideo() {
+        const rect     = vidSection.getBoundingClientRect();
+        const winH     = window.innerHeight;
+        const secH     = vidSection.offsetHeight;
+
+        /* 0 = section just entered viewport, 1 = section fully scrolled past */
+        const progress = Math.min(Math.max(-rect.top / (secH - winH), 0), 1);
+
+        const target = progress * vid.duration;
+        if (isFinite(target) && Math.abs(vid.currentTime - target) > 0.05) {
+          vid.currentTime = target;
+        }
+
+        if (progressBar) progressBar.style.width = (progress * 100) + '%';
+        if (scrollHint)  scrollHint.classList.toggle('hidden', progress > 0.02);
+
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(scrubVideo); ticking = true; }
+      }, { passive: true });
+
+      scrubVideo();
+    });
+
+    vid.addEventListener('error', () => {
+      console.warn('11R video could not load:', vid.src);
+    });
   }
 
 })();

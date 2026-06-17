@@ -136,36 +136,35 @@
     </div>
 
     <!-- ==================== VIDEO SECTION ==================== -->
+    <!-- scroll-scrub: video currentTime is driven by scroll position through this section -->
     <section class="video-section" id="video">
-      <!--
-        TO ADD VIDEO:
-        1. Place your MP4 file in the images/ folder (e.g. images/squeegee-video.mp4)
-        2. Set the src attribute below: src="images/squeegee-video.mp4"
-        3. The placeholder div will auto-hide once the video has a src
-      -->
-      <video class="section-video" id="section-video" autoplay muted loop playsinline>
-        <!-- src="images/squeegee-video.mp4" -->
-      </video>
 
-      <!-- Placeholder shown until video is added -->
-      <div class="video-placeholder" id="video-placeholder">
-        <div class="video-placeholder-inner">
-          <div class="play-icon">
-            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <polygon points="20,12 50,30 20,48" fill="white"/>
-            </svg>
-          </div>
-          <p class="vid-label">INK · MESH · SQUEEGEE · SHIRT</p>
-          <p class="vid-hint">Add video: src="images/squeegee-video.mp4"</p>
-        </div>
-      </div>
+      <video
+        class="section-video"
+        id="section-video"
+        src="images/lk-video.mov"
+        muted
+        playsinline
+        preload="auto"
+      ></video>
 
       <div class="video-overlay"></div>
+
+      <!-- Scroll progress bar -->
+      <div class="video-progress" id="video-progress">
+        <div class="video-progress-bar" id="video-progress-bar"></div>
+      </div>
 
       <div class="video-content reveal-up">
         <p class="eyebrow">THE PROCESS</p>
         <h2>Real ink.<br>Real mesh.<br>Real prints.</h2>
         <p>Screen printing lays ink directly into the garment fibers — not on top like a transfer. Stronger color, better hand feel, and prints that last through years of hard wear and real washes.</p>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="video-scroll-hint" id="video-scroll-hint" aria-hidden="true">
+        <span class="scroll-line"></span>
+        <span>SCROLL TO PLAY</span>
       </div>
     </section>
 

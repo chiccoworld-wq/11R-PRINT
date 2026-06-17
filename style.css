@@ -378,6 +378,30 @@ img { display: block; max-width: 100%; }
   position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover;
 }
+
+/* Scroll-scrub progress bar */
+.video-progress {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; background: rgba(255,255,255,.1); z-index: 3;
+}
+.video-progress-bar {
+  height: 100%; width: 0%;
+  background: var(--green-bright);
+  box-shadow: 0 0 10px rgba(32,255,123,.6);
+  transition: width 0.05s linear;
+}
+
+/* Scroll-to-play hint */
+.video-scroll-hint {
+  position: absolute; bottom: 28px; right: 5%;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  z-index: 3; opacity: 1; transition: opacity 0.5s ease;
+}
+.video-scroll-hint.hidden { opacity: 0; pointer-events: none; }
+.video-scroll-hint span:last-child {
+  font-size: 9px; font-weight: 900; letter-spacing: .2em;
+  color: var(--muted); writing-mode: vertical-rl;
+}
 .video-overlay {
   position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(to top, rgba(5,7,6,.96) 0%, rgba(5,7,6,.45) 55%, rgba(5,7,6,.15) 100%);
