@@ -1,42 +1,11 @@
 /* ============================================================
    11R Print — Interactive JavaScript
-   Features: custom cursor · decrypt hover · scroll reveal ·
+   Features: decrypt hover · scroll reveal ·
              counter animation · magnetic buttons · active nav
    ============================================================ */
 
 (function () {
   'use strict';
-
-  /* ==================== UTILS ==================== */
-  const isMobile = () => window.innerWidth <= 720;
-
-  /* ==================== CUSTOM CURSOR ==================== */
-  const cursor      = document.getElementById('cursor');
-  const cursorTrail = document.getElementById('cursor-trail');
-
-  if (cursor && cursorTrail && !isMobile()) {
-    let mx = 0, my = 0, tx = 0, ty = 0;
-
-    document.addEventListener('mousemove', (e) => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
-
-    (function animateTrail() {
-      tx += (mx - tx) * 0.13;
-      ty += (my - ty) * 0.13;
-      cursorTrail.style.left = tx + 'px';
-      cursorTrail.style.top  = ty + 'px';
-      requestAnimationFrame(animateTrail);
-    })();
-
-    /* Enlarge cursor on interactive elements */
-    document.querySelectorAll('a, button, .work-card, .service-card, input, textarea, .quality-item').forEach(el => {
-      el.addEventListener('mouseenter', () => { cursor.classList.add('hovered'); cursorTrail.classList.add('hovered'); });
-      el.addEventListener('mouseleave', () => { cursor.classList.remove('hovered'); cursorTrail.classList.remove('hovered'); });
-    });
-  }
 
   /* ==================== HEADER SCROLL ==================== */
   const header = document.getElementById('site-header');
@@ -46,23 +15,42 @@
     }, { passive: true });
   }
 
-  /* ==================== MOBILE MENU ==================== */
-  const menuToggle = document.getElementById('menu-toggle');
-  const navLinks   = document.getElementById('nav-links');
+  /* ==================== MOBILE NAV OVERLAY ==================== */
+  const menuToggle   = document.getElementById('menu-toggle');
+  const overlay      = document.getElementById('mobile-overlay');
+  const overlayClose = document.getElementById('overlay-close');
 
-  if (menuToggle && navLinks) {
+  function openOverlay() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    menuToggle.setAttribute('aria-expanded', 'true');
+    menuToggle.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    overlayClose && overlayClose.focus();
+  }
+
+  function closeOverlay() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.classList.remove('open');
+    document.body.style.overflow = '';
+    menuToggle.focus();
+  }
+
+  if (menuToggle && overlay) {
     menuToggle.addEventListener('click', () => {
-      const open = navLinks.classList.toggle('active');
-      menuToggle.classList.toggle('active', open);
-      document.body.style.overflow = open ? 'hidden' : '';
+      overlay.classList.contains('open') ? closeOverlay() : openOverlay();
     });
 
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        menuToggle.classList.remove('active');
-        document.body.style.overflow = '';
-      });
+    overlayClose && overlayClose.addEventListener('click', closeOverlay);
+
+    overlay.querySelectorAll('.mobile-link, .mo-cta').forEach(link => {
+      link.addEventListener('click', closeOverlay);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
     });
   }
 
@@ -114,29 +102,6 @@
 
   document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
 
-  /* ==================== COUNTER ANIMATION ==================== */
-  function animateCount(el, target, duration) {
-    const start = performance.now();
-    (function tick(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - t, 3);           // ease-out cubic
-      el.textContent = Math.floor(ease * target);
-      if (t < 1) requestAnimationFrame(tick);
-      else el.textContent = target;
-    })(start);
-  }
-
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const target = parseInt(entry.target.getAttribute('data-count'), 10);
-        animateCount(entry.target, target, 1600);
-        counterObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.6 });
-
-  document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
 
   /* ==================== MAGNETIC BUTTONS ==================== */
   if (!isMobile()) {
@@ -190,42 +155,52 @@
   }
 
   /* ==================== VIDEO SCROLL SCRUB ====================
-     Drives video.currentTime based on scroll progress through the
-     video section — Apple-style scroll-to-play effect.            */
+     Desktop: drives video.currentTime by scroll (Apple-style).
+     Mobile: iOS blocks programmatic seeking, so autoplay instead. */
   const vid         = document.getElementById('section-video');
   const progressBar = document.getElementById('video-progress-bar');
   const scrollHint  = document.getElementById('video-scroll-hint');
   const vidSection  = document.getElementById('video');
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+
   if (vid && vidSection) {
-    vid.addEventListener('loadedmetadata', () => {
-      let ticking = false;
+    if (isMobile) {
+      vid.setAttribute('autoplay', '');
+      vid.setAttribute('loop', '');
+      vid.muted = true;
+      vid.play().catch(() => {});
+      if (scrollHint) scrollHint.classList.add('hidden');
+    } else {
+      vid.addEventListener('loadedmetadata', () => {
+        let ticking = false;
 
-      function scrubVideo() {
-        const rect     = vidSection.getBoundingClientRect();
-        const winH     = window.innerHeight;
-        const secH     = vidSection.offsetHeight;
+        function scrubVideo() {
+          const rect     = vidSection.getBoundingClientRect();
+          const winH     = window.innerHeight;
+          const secH     = vidSection.offsetHeight;
 
-        /* 0 = section just entered viewport, 1 = section fully scrolled past */
-        const progress = Math.min(Math.max(-rect.top / (secH - winH), 0), 1);
+          /* 0 = section just entered viewport, 1 = section fully scrolled past */
+          const progress = Math.min(Math.max(-rect.top / (secH - winH), 0), 1);
 
-        const target = progress * vid.duration;
-        if (isFinite(target) && Math.abs(vid.currentTime - target) > 0.05) {
-          vid.currentTime = target;
+          const target = progress * vid.duration;
+          if (isFinite(target) && Math.abs(vid.currentTime - target) > 0.05) {
+            vid.currentTime = target;
+          }
+
+          if (progressBar) progressBar.style.width = (progress * 100) + '%';
+          if (scrollHint)  scrollHint.classList.toggle('hidden', progress > 0.02);
+
+          ticking = false;
         }
 
-        if (progressBar) progressBar.style.width = (progress * 100) + '%';
-        if (scrollHint)  scrollHint.classList.toggle('hidden', progress > 0.02);
+        window.addEventListener('scroll', () => {
+          if (!ticking) { requestAnimationFrame(scrubVideo); ticking = true; }
+        }, { passive: true });
 
-        ticking = false;
-      }
-
-      window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(scrubVideo); ticking = true; }
-      }, { passive: true });
-
-      scrubVideo();
-    });
+        scrubVideo();
+      });
+    }
 
     vid.addEventListener('error', () => {
       console.warn('11R video could not load:', vid.src);

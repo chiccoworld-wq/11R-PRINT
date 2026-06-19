@@ -9,10 +9,6 @@
 </head>
 <body>
 
-  <!-- Custom cursor (hidden on mobile via CSS) -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-trail" id="cursor-trail"></div>
-
   <!-- ==================== HEADER ==================== -->
   <header class="site-header" id="site-header">
     <a class="brand" href="#top" aria-label="11R Print home">
@@ -24,6 +20,7 @@
       <a href="#services" data-decrypt>Services</a>
       <a href="#process" data-decrypt>Process</a>
       <a href="#quote" class="nav-cta" data-decrypt>Get a Quote</a>
+      <a href="custom-order.html" class="nav-order-link" data-decrypt>Start Order</a>
     </nav>
 
     <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-overlay">
@@ -43,21 +40,9 @@
         <div class="crop tl"></div><div class="crop tr"></div>
         <div class="crop bl"></div><div class="crop br"></div>
       </div>
-      <div class="cmyk-marks" aria-hidden="true">
-        <div class="reg-mark cyan"></div>
-        <div class="reg-mark magenta"></div>
-        <div class="reg-mark yellow"></div>
-        <div class="reg-mark key"></div>
-      </div>
 
       <div class="hero-inner">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-dot cyan-dot"></span>
-          <span class="eyebrow-text">Craft Over Shortcuts</span>
-          <span class="eyebrow-dot magenta-dot"></span>
-        </div>
-
-        <h1 class="hero-headline">
+<h1 class="hero-headline">
           <span class="line-wrap"><span class="line reveal-line">CUSTOM</span></span>
           <span class="line-wrap"><span class="line reveal-line">SCREEN</span></span>
           <span class="line-wrap"><span class="line reveal-line green-text">PRINTING</span></span>
@@ -87,10 +72,6 @@
         <div class="offset-text">11R</div>
       </div>
 
-      <div class="scroll-indicator" aria-hidden="true">
-        <span class="scroll-line"></span>
-        <span class="scroll-label">SCROLL</span>
-      </div>
     </section>
 
     <!-- ==================== MARQUEE ==================== -->
@@ -127,7 +108,7 @@
       <video
         class="section-video"
         id="section-video"
-        src="images/lk-video.mov"
+        src="images/lk-video.mp4"
         muted
         playsinline
         preload="auto"
@@ -306,10 +287,26 @@
           <h2>Ready to print your shirts?</h2>
           <p>Send your order details and we'll follow up with pricing, timing, and next steps.</p>
           <div class="quote-features">
-            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>No minimums on most orders</div>
-            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Fast turnaround available</div>
-            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Proof before every production run</div>
-            <div class="qf"><span class="qf-drop" aria-hidden="true"></span>Screen printed — not heat press transfers</div>
+            <div class="qf-card">
+              <div class="qf-ink" aria-hidden="true"></div>
+              <span class="qf-title">No Minimums</span>
+              <span class="qf-sub">on most orders</span>
+            </div>
+            <div class="qf-card">
+              <div class="qf-ink" aria-hidden="true"></div>
+              <span class="qf-title">Fast Turnaround</span>
+              <span class="qf-sub">available on request</span>
+            </div>
+            <div class="qf-card">
+              <div class="qf-ink" aria-hidden="true"></div>
+              <span class="qf-title">Proof Included</span>
+              <span class="qf-sub">before every production run</span>
+            </div>
+            <div class="qf-card">
+              <div class="qf-ink" aria-hidden="true"></div>
+              <span class="qf-title">Screen Printed</span>
+              <span class="qf-sub">not heat press transfers</span>
+            </div>
           </div>
         </div>
 
@@ -380,6 +377,7 @@
         <a href="#services">Services</a>
         <a href="#process">Process</a>
         <a href="#quote">Quote</a>
+        <a href="custom-order.html">Start Order</a>
       </nav>
       <div class="footer-copy">
         <p class="small">&copy; 2026 11R Print. Custom screen printing. Real ink. Real durability.</p>
@@ -406,6 +404,7 @@
         <a href="#services" class="mobile-link">Services</a>
         <a href="#process" class="mobile-link">Process</a>
         <a href="#quote" class="mobile-link">Quote</a>
+        <a href="custom-order.html" class="mobile-link" style="color:var(--green-bright)">Start Order</a>
       </nav>
 
       <div class="mobile-overlay-footer">

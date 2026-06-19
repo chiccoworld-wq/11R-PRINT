@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11R Print — Connect</title>
+<meta name="description" content="Get in touch with 11R Print — custom screen printing, NYC.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --green: #1f8a3a;
+    --green-light: #25a847;
+    --bg: #090909;
+    --surface: #111111;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e8e8;
+    --muted: #555;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ── animated noise/grain texture ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── green glow orb ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -30vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80vw;
+    max-width: 600px;
+    height: 80vw;
+    max-height: 600px;
+    background: radial-gradient(circle, rgba(31,138,58,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  }
+
+  /* ── halftone dots ── */
+  .dots {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── layout ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px 60px;
+    gap: 0;
+  }
+
+  /* ── logo ── */
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .logo-wrap img {
+    height: 72px;
+    width: auto;
+    filter: drop-shadow(0 0 24px rgba(31,138,58,0.4));
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── headline ── */
+  .headline {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .headline h1 {
+    font-size: clamp(28px, 7vw, 40px);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .headline h1 span {
+    color: var(--green-light);
+  }
+
+  .headline p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── cards ── */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text);
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(31,138,58,0.08), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .card:hover, .card:active {
+    transform: translateY(-2px);
+    border-color: rgba(31,138,58,0.5);
+    box-shadow: 0 12px 40px rgba(31,138,58,0.15), 0 0 0 1px rgba(31,138,58,0.2);
+  }
+
+  .card:hover::before, .card:active::before {
+    opacity: 1;
+  }
+
+  /* tap ripple */
+  .card:active {
+    transform: scale(0.98);
+  }
+
+  .card-icon {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: rgba(31,138,58,0.12);
+    border: 1px solid rgba(31,138,58,0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--green-light);
+  }
+
+  .card-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .card-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+  }
+
+  .card-arrow {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .card:hover .card-arrow {
+    color: var(--green-light);
+    transform: translateX(3px);
+  }
+
+  .card:nth-child(1) { animation: fadeUp 0.6s 0.2s ease both; }
+  .card:nth-child(2) { animation: fadeUp 0.6s 0.32s ease both; }
+
+  /* ── divider ── */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 380px;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: fadeUp 0.6s 0.28s ease both;
+  }
+
+  .or-divider::before,
+  .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── footer ── */
+  .footer {
+    margin-top: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: fadeUp 0.6s 0.45s ease both;
+  }
+
+  .footer-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(31,138,58,0.1);
+    border: 1px solid rgba(31,138,58,0.2);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .footer-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-light);
+    animation: blink 1.8s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .footer-url {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── animation ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="dots" aria-hidden="true"></div>
+
+<div class="page">
+
+  <div class="logo-wrap">
+    <img src="images/11r-logo-new.png" alt="11R Print">
+    <span class="logo-sub">Custom Screen Printing · NYC</span>
+  </div>
+
+  <div class="headline">
+    <h1>Let's <span>work</span><br>together.</h1>
+    <p>Pick how you want to reach us.</p>
+  </div>
+
+  <div class="cards">
+
+    <a class="card" href="https://instagram.com/11rprint" target="_blank" rel="noopener">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </div>
+      <div class="card-text">
+        <span class="card-label">Instagram</span>
+        <span class="card-value">@11rprint</span>
+      </div>
+      <div class="card-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+    <div class="or-divider">or</div>
+
+    <a class="card" href="mailto:Orders@11rprint.com">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4H4C2.897 4 2 4.897 2 6v12c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm0 2v.511l-8 6.4-8-6.4V6h16zM4 18V9.489l8 6.4 8-6.4V18H4z"/>
+        </svg>
+      </div>
+      <div class="card-text">
+        <span class="card-label">Email</span>
+        <span class="card-value">Orders@11rprint.com</span>
+      </div>
+      <div class="card-arrow">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-badge">Screen Printed · Not Pressed</div>
+    <span class="footer-url">11rprint.com</span>
+  </div>
+
+</div>
+
+</body>
+</html>

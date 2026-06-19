@@ -13,7 +13,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; cursor: auto; }
 body {
   font-family: Arial, Helvetica, sans-serif;
   color: var(--white);
@@ -23,7 +23,9 @@ body {
     radial-gradient(circle at 70% 80%, rgba(255,47,179,.08), transparent 30%),
     var(--black);
   line-height: 1.6;
+  cursor: auto;
 }
+video { cursor: auto; }
 
 a { color: inherit; }
 
