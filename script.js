@@ -155,42 +155,65 @@
   }
 
   /* ==================== VIDEO SCROLL SCRUB ====================
-     Drives video.currentTime based on scroll progress through the
-     video section — Apple-style scroll-to-play effect.            */
+     Desktop: drives video.currentTime via scroll (Apple-style).
+     Mobile:  iOS ignores preload and blocks scrubbing without gesture,
+              so we fall back to muted autoplay loop instead.          */
   const vid         = document.getElementById('section-video');
   const progressBar = document.getElementById('video-progress-bar');
   const scrollHint  = document.getElementById('video-scroll-hint');
   const vidSection  = document.getElementById('video');
 
   if (vid && vidSection) {
-    vid.addEventListener('loadedmetadata', () => {
-      let ticking = false;
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+                   || ('ontouchstart' in window && window.innerWidth < 1024);
 
-      function scrubVideo() {
-        const rect     = vidSection.getBoundingClientRect();
-        const winH     = window.innerHeight;
-        const secH     = vidSection.offsetHeight;
+    if (isMobile) {
+      /* Mobile: autoplay muted loop — iOS allows this for muted+playsinline */
+      vid.setAttribute('autoplay', '');
+      vid.setAttribute('loop', '');
+      vid.muted = true;
+      vid.load();
+      vid.play().catch(() => {/* silently ignore if still blocked */});
+      if (progressBar) progressBar.style.display = 'none';
+    } else {
+      /* Desktop: scroll-scrub */
+      function initScrub() {
+        let ticking = false;
 
-        /* 0 = section just entered viewport, 1 = section fully scrolled past */
-        const progress = Math.min(Math.max(-rect.top / (secH - winH), 0), 1);
+        function scrubVideo() {
+          const rect     = vidSection.getBoundingClientRect();
+          const winH     = window.innerHeight;
+          const secH     = vidSection.offsetHeight;
 
-        const target = progress * vid.duration;
-        if (isFinite(target) && Math.abs(vid.currentTime - target) > 0.05) {
-          vid.currentTime = target;
+          /* 0 = section just entered viewport, 1 = section fully scrolled past */
+          const progress = Math.min(Math.max(-rect.top / (secH - winH), 0), 1);
+
+          const target = progress * vid.duration;
+          if (isFinite(target) && Math.abs(vid.currentTime - target) > 0.05) {
+            vid.currentTime = target;
+          }
+
+          if (progressBar) progressBar.style.width = (progress * 100) + '%';
+          if (scrollHint)  scrollHint.classList.toggle('hidden', progress > 0.02);
+
+          ticking = false;
         }
 
-        if (progressBar) progressBar.style.width = (progress * 100) + '%';
-        if (scrollHint)  scrollHint.classList.toggle('hidden', progress > 0.02);
+        window.addEventListener('scroll', () => {
+          if (!ticking) { requestAnimationFrame(scrubVideo); ticking = true; }
+        }, { passive: true });
 
-        ticking = false;
+        scrubVideo();
       }
 
-      window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(scrubVideo); ticking = true; }
-      }, { passive: true });
-
-      scrubVideo();
-    });
+      /* If metadata already loaded (cached), init immediately */
+      if (vid.readyState >= 1) {
+        initScrub();
+      } else {
+        vid.addEventListener('loadedmetadata', initScrub);
+        vid.load();
+      }
+    }
 
     vid.addEventListener('error', () => {
       console.warn('11R video could not load:', vid.src);
