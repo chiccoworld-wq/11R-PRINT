@@ -168,15 +168,20 @@
                    || ('ontouchstart' in window && window.innerWidth < 1024);
 
     if (isMobile) {
-      /* Mobile: autoplay muted loop — iOS allows this for muted+playsinline */
-      vid.setAttribute('autoplay', '');
-      vid.setAttribute('loop', '');
+      /* Mobile: autoplay/loop/muted/playsinline are already set as HTML attributes.
+         Force play here too in case the browser deferred it. */
       vid.muted = true;
-      vid.load();
-      vid.play().catch(() => {/* silently ignore if still blocked */});
+      const tryPlay = () => vid.play().catch(() => {});
+      tryPlay();
+      /* Retry once after user interacts, in case the browser initially blocked it */
+      document.addEventListener('touchstart', tryPlay, { once: true });
       if (progressBar) progressBar.style.display = 'none';
+      if (scrollHint)  scrollHint.style.display  = 'none';
     } else {
-      /* Desktop: scroll-scrub */
+      /* Desktop: scroll-scrub — pause autoplay and take over with currentTime */
+      vid.removeAttribute('autoplay');
+      vid.removeAttribute('loop');
+      vid.pause();
       function initScrub() {
         let ticking = false;
 

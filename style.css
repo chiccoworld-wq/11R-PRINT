@@ -695,6 +695,88 @@ textarea { min-height: 130px; resize: vertical; }
   border: 1px dashed rgba(255,255,255,.14);
 }
 
+/* ba-card image */
+.ba-card img { width: 100%; border-radius: 12px; display: block; object-fit: cover; max-height: 52vh; min-height: 240px; }
+
+/* ==================== PRESS PROCESS ==================== */
+.press-process {
+  padding: 100px 5%;
+  background: var(--charcoal-2);
+  border-bottom: 1px solid var(--line);
+}
+.press-process-header { max-width: 680px; margin-bottom: 70px; }
+.press-process-header h2 { font-size: clamp(36px, 5vw, 66px); font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; margin: 10px 0 18px; }
+.press-process-sub { font-size: 17px; color: var(--muted); line-height: 1.65; }
+
+.press-steps { display: flex; flex-direction: column; gap: 0; }
+
+.press-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.press-step:last-child { border-bottom: 1px solid var(--line); }
+
+.press-step.reverse { direction: rtl; }
+.press-step.reverse > * { direction: ltr; }
+
+.press-step-img {
+  position: relative;
+  overflow: hidden;
+}
+.press-step-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  min-height: 380px;
+  filter: brightness(.88) contrast(1.08);
+  transition: filter 0.4s ease, transform 0.6s cubic-bezier(.16,1,.3,1);
+}
+.press-step:hover .press-step-img img {
+  filter: brightness(1) contrast(1.05);
+  transform: scale(1.03);
+}
+
+.press-step-num {
+  position: absolute;
+  top: 18px; left: 20px;
+  font-size: 11px; font-weight: 900; letter-spacing: .2em;
+  color: var(--green-bright);
+  background: rgba(0,0,0,.6);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.press-step-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 60px;
+  background: var(--charcoal);
+}
+.press-step-info h3 {
+  font-size: clamp(22px, 2.6vw, 36px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  line-height: 1;
+}
+.press-step-info p {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+@media (max-width: 900px) {
+  .press-step,
+  .press-step.reverse { grid-template-columns: 1fr; direction: ltr; }
+  .press-step-img img { min-height: 260px; }
+  .press-step-info { padding: 36px 5%; }
+}
+
 /* Work CTA */
 .work-cta {
   padding: 110px 5%; text-align: center;
