@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Proof System</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{
+  --black:#050706;--charcoal:#0d0f0e;--charcoal-2:#141918;
+  --green:#058f45;--gb:#20ff7b;--white:#f5f7f4;--off:#dce7df;
+  --muted:#7a8a7e;--line:rgba(255,255,255,.1);
+  --cyan:#00d5ff;--mag:#ff2fb3;--yel:#fff03a;
+  --danger:#ff4d4d;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;}
+
+/* ── LOGIN ── */
+#login-screen{
+  position:fixed;inset:0;background:var(--black);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.login-box{
+  width:100%;max-width:420px;
+  border:1px solid var(--line);border-radius:24px;
+  background:var(--charcoal);padding:48px 40px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.login-box::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(32,255,123,.06) 1px,transparent 1px);
+  background-size:20px 20px;pointer-events:none;
+}
+.login-logo{height:64px;width:auto;margin:0 auto 24px;filter:drop-shadow(0 0 18px rgba(32,255,123,.3));}
+.login-eyebrow{font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--gb);margin-bottom:8px;}
+.login-title{font-size:28px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;margin-bottom:32px;}
+.login-field{display:flex;flex-direction:column;gap:6px;text-align:left;margin-bottom:16px;}
+.login-field label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.login-field input{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+  color:var(--white);padding:13px 15px;font-size:15px;outline:none;font-family:inherit;width:100%;
+  transition:border-color .2s,background .2s;
+}
+.login-field input:focus{border-color:var(--gb);background:rgba(32,255,123,.035);}
+.btn-login{
+  width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;
+  padding:15px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;
+  cursor:pointer;transition:all .25s;margin-top:8px;
+}
+.btn-login:hover{background:#00eb6e;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2);}
+.login-error{
+  margin-top:12px;padding:10px 14px;
+  background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.25);
+  border-radius:8px;font-size:13px;color:#ff8080;display:none;
+}
+.login-corner{position:absolute;width:16px;height:16px;opacity:.3;}
+.lc-tl{top:16px;left:16px;border-top:1px solid var(--gb);border-left:1px solid var(--gb);}
+.lc-tr{top:16px;right:16px;border-top:1px solid var(--gb);border-right:1px solid var(--gb);}
+.lc-bl{bottom:16px;left:16px;border-bottom:1px solid var(--gb);border-left:1px solid var(--gb);}
+.lc-br{bottom:16px;right:16px;border-bottom:1px solid var(--gb);border-right:1px solid var(--gb);}
+
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;flex-direction:column;}
+#app.visible{display:flex;}
+
+.admin-header{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:64px;
+  background:rgba(5,7,6,.92);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--line);
+}
+.admin-header .brand{display:flex;align-items:center;gap:12px;}
+.admin-header img{height:36px;filter:drop-shadow(0 0 8px rgba(32,255,123,.22));}
+.admin-header .sys-tag{
+  font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gb);border:1px solid rgba(32,255,123,.28);border-radius:999px;
+  padding:3px 10px;
+}
+.btn-logout{
+  background:transparent;border:1px solid var(--line);border-radius:999px;
+  color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 16px;cursor:pointer;transition:all .2s;
+}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--line);
+  background:var(--charcoal);padding:0 28px;
+}
+.tab-btn{
+  background:none;border:none;padding:16px 24px;
+  font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;position:relative;
+  transition:color .2s;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--white);}
+.tab-btn.active{color:var(--gb);border-bottom-color:var(--gb);}
+
+/* ── MAIN AREA ── */
+.main{flex:1;padding:32px 28px;max-width:1100px;width:100%;margin:0 auto;}
+
+/* ── STATS BAR ── */
+.stats-bar{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+.stat-card{
+  flex:1;min-width:140px;
+  background:var(--charcoal);border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;
+}
+.stat-num{font-size:32px;font-weight:900;letter-spacing:-.04em;color:var(--white);}
+.stat-num.green{color:var(--gb);}
+.stat-num.yellow{color:var(--yel);}
+.stat-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+/* ── PROOF LIST ── */
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;flex-wrap:wrap;gap:12px;
+}
+.section-title{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.proof-list{display:flex;flex-direction:column;gap:10px;}
+.proof-card{
+  background:var(--charcoal);border:1px solid var(--line);border-radius:16px;
+  padding:20px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
+  transition:border-color .2s;
+}
+.proof-card:hover{border-color:rgba(32,255,123,.2);}
+.proof-customer{font-size:16px;font-weight:900;letter-spacing:-.01em;margin-bottom:4px;}
+.proof-meta{font-size:12px;color:var(--muted);}
+.proof-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.status-pill{
+  display:inline-block;padding:3px 11px;border-radius:999px;
+  font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.status-pill.pending{background:rgba(255,240,58,.12);color:var(--yel);border:1px solid rgba(255,240,58,.3);}
+.status-pill.approved{background:rgba(32,255,123,.12);color:var(--gb);border:1px solid rgba(32,255,123,.3);}
+
+.btn-sm{
+  padding:7px 14px;border-radius:8px;font-size:11px;font-weight:900;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+}
+.btn-sm:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+.btn-sm.green{border-color:rgba(32,255,123,.3);color:var(--gb);}
+.btn-sm.green:hover{background:rgba(32,255,123,.1);border-color:var(--gb);}
+.btn-sm.red{border-color:rgba(255,77,77,.3);color:var(--danger);}
+.btn-sm.red:hover{background:rgba(255,77,77,.1);border-color:var(--danger);}
+
+.empty-state{
+  text-align:center;padding:64px 24px;color:var(--muted);
+  border:1px dashed var(--line);border-radius:16px;
+}
+.empty-state h3{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;color:var(--white);margin-bottom:8px;}
+
+/* ── NEW PROOF FORM ── */
+.form-section{margin-bottom:32px;}
+.form-section-title{
+  font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gb);margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.form-section-title::after{content:'';flex:1;height:1px;background:var(--line);}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.field-row.three{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field input,.field textarea,.field select{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+  color:var(--white);padding:12px 14px;font-size:14px;outline:none;font-family:inherit;width:100%;
+  transition:border-color .2s,background .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gb);background:rgba(32,255,123,.03);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.22);}
+.field textarea{min-height:100px;resize:vertical;}
+
+/* Upload zone */
+.upload-zone{
+  border:2px dashed rgba(32,255,123,.3);border-radius:18px;
+  background:linear-gradient(135deg,rgba(32,255,123,.04),rgba(0,213,255,.02));
+  padding:40px 24px;text-align:center;cursor:pointer;
+  transition:border-color .2s,background .2s;min-height:160px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gb);background:rgba(32,255,123,.08);}
+.upload-zone-icon{font-size:32px;opacity:.6;}
+.upload-zone-text{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;}
+.upload-zone-sub{font-size:12px;color:var(--muted);}
+.upload-link{color:var(--gb);text-decoration:underline;}
+
+.upload-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.upload-thumb{
+  position:relative;width:90px;height:90px;border-radius:10px;overflow:hidden;
+  border:1px solid rgba(32,255,123,.25);background:var(--charcoal-2);flex-shrink:0;
+}
+.upload-thumb img{width:100%;height:100%;object-fit:cover;}
+.upload-thumb .del-img{
+  position:absolute;top:4px;right:4px;
+  background:rgba(0,0,0,.7);border:none;border-radius:50%;
+  width:22px;height:22px;color:var(--white);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.upload-thumb .del-img:hover{background:var(--danger);}
+.upload-thumb.pdf-thumb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:var(--muted);}
+
+/* Pricing table */
+.pricing-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+.pricing-table th{
+  font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);
+}
+.pricing-table td{padding:6px 6px;}
+.pricing-table td input{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;
+  color:var(--white);padding:9px 10px;font-size:13px;outline:none;font-family:inherit;width:100%;
+  transition:border-color .2s;
+}
+.pricing-table td input:focus{border-color:var(--gb);}
+.pricing-table td input.amount-input{color:var(--gb);font-weight:900;}
+.pricing-table .del-row{
+  background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font-size:16px;padding:4px 6px;transition:color .2s;
+}
+.pricing-table .del-row:hover{color:var(--danger);}
+.btn-add-row{
+  background:rgba(32,255,123,.08);border:1px solid rgba(32,255,123,.22);
+  color:var(--gb);border-radius:8px;padding:9px 18px;
+  font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.btn-add-row:hover{background:rgba(32,255,123,.16);border-color:var(--gb);}
+.pricing-totals{
+  background:var(--charcoal-2);border-radius:10px;padding:14px 16px;margin-top:10px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.total-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;}
+.total-row.main{font-size:16px;font-weight:900;border-top:1px solid var(--line);padding-top:8px;margin-top:2px;}
+.total-row .label{color:var(--muted);}
+.total-row .value{font-weight:900;color:var(--white);}
+.total-row.deposit .value{color:var(--gb);}
+
+/* Generate button */
+.btn-generate{
+  width:100%;background:var(--gb);color:#001708;border:none;border-radius:12px;
+  padding:18px;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;
+  cursor:pointer;transition:all .25s;margin-top:8px;
+}
+.btn-generate:hover{background:#00eb6e;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2);}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* Result box */
+.result-box{
+  background:var(--charcoal-2);border:1px solid rgba(32,255,123,.3);border-radius:16px;
+  padding:28px;margin-top:24px;display:none;
+}
+.result-box.show{display:block;}
+.result-label{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--gb);margin-bottom:10px;}
+.result-url{
+  background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;font-size:13px;color:var(--white);word-break:break-all;
+  font-family:monospace;margin-bottom:14px;
+}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-copy-link{
+  background:var(--gb);color:#001708;border:none;border-radius:8px;
+  padding:10px 20px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;
+  cursor:pointer;transition:all .2s;
+}
+.btn-copy-link:hover{background:#00eb6e;}
+.btn-email{
+  background:transparent;border:1px solid var(--line);border-radius:8px;
+  color:var(--muted);padding:10px 20px;font-size:12px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.1em;cursor:pointer;transition:all .2s;
+}
+.btn-email:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+
+/* Copied toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;
+  font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .3s;opacity:0;z-index:999;
+  pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* Loading */
+.loading{opacity:.5;pointer-events:none;}
+.spinner{
+  width:18px;height:18px;border:2px solid rgba(255,255,255,.2);
+  border-top-color:var(--gb);border-radius:50%;animation:spin .7s linear infinite;
+  display:inline-block;vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Error message */
+.err-msg{
+  margin-top:12px;padding:12px 16px;
+  background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.22);
+  border-radius:10px;font-size:13px;color:#ff8080;display:none;
+}
+.err-msg.show{display:block;}
+
+@media(max-width:720px){
+  .main{padding:20px 16px;}
+  .admin-header{padding:0 16px;}
+  .tabs{padding:0 16px;}
+  .field-row,.field-row.three{grid-template-columns:1fr;}
+  .proof-card{grid-template-columns:1fr;}
+  .stats-bar{gap:10px;}
+  .stat-card{min-width:100px;}
+  .pricing-table th:nth-child(3),.pricing-table td:nth-child(3){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-corner lc-tl"></div>
+    <div class="login-corner lc-tr"></div>
+    <div class="login-corner lc-bl"></div>
+    <div class="login-corner lc-br"></div>
+    <img src="../images/11r-logo-new.png" class="login-logo" alt="11R Print"/>
+    <p class="login-eyebrow">Admin Access</p>
+    <h1 class="login-title">Proof System</h1>
+    <div class="login-field">
+      <label for="pw">Password</label>
+      <input type="password" id="pw" placeholder="Enter password" autocomplete="current-password"/>
+    </div>
+    <button class="btn-login" id="login-btn">Unlock →</button>
+    <div class="login-error" id="login-error">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
+  <header class="admin-header">
+    <div class="brand">
+      <img src="../images/11r-logo-new.png" alt="11R Print"/>
+      <span class="sys-tag">Proof System</span>
+    </div>
+    <button class="btn-logout" id="logout-btn">Log Out</button>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="new-proof">New Proof</button>
+  </div>
+
+  <main class="main">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div id="tab-dashboard">
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Proofs</div></div>
+        <div class="stat-card"><div class="stat-num yellow" id="stat-pending">—</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-num green" id="stat-approved">—</div><div class="stat-label">Approved</div></div>
+      </div>
+      <div class="section-head">
+        <span class="section-title">All Proofs</span>
+        <button class="btn-sm green" id="refresh-btn">↻ Refresh</button>
+      </div>
+      <div class="proof-list" id="proof-list">
+        <div class="empty-state"><h3>Loading...</h3></div>
+      </div>
+    </div>
+
+    <!-- ── NEW PROOF TAB ── -->
+    <div id="tab-new-proof" style="display:none">
+      <form id="proof-form">
+
+        <!-- STEP 1: Customer -->
+        <div class="form-section">
+          <div class="form-section-title">01 — Customer Info</div>
+          <div class="field-row">
+            <div class="field"><label>Full Name *</label><input type="text" id="f-name" placeholder="Customer name" required/></div>
+            <div class="field"><label>Email *</label><input type="email" id="f-email" placeholder="customer@email.com" required/></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Phone</label><input type="tel" id="f-phone" placeholder="(407) 000-0000"/></div>
+            <div class="field"><label>Company / Order Label</label><input type="text" id="f-company" placeholder="EAS LLC — June Order"/></div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Mockup Upload -->
+        <div class="form-section">
+          <div class="form-section-title">02 — Mockup Images</div>
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-zone-icon">🖼️</div>
+            <div class="upload-zone-text">Drop mockup images here</div>
+            <div class="upload-zone-sub">or <span class="upload-link">click to browse</span> · PNG, JPG, PDF</div>
+          </div>
+          <input type="file" id="file-input" multiple accept="image/*,.pdf" style="display:none"/>
+          <div class="upload-previews" id="upload-previews"></div>
+        </div>
+
+        <!-- STEP 3: Pricing -->
+        <div class="form-section">
+          <div class="form-section-title">03 — Pricing Breakdown</div>
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th style="width:48%">Description</th>
+                <th style="width:12%">Qty</th>
+                <th style="width:14%">Rate</th>
+                <th style="width:16%">Amount</th>
+                <th style="width:10%"></th>
+              </tr>
+            </thead>
+            <tbody id="pricing-rows"></tbody>
+          </table>
+          <button type="button" class="btn-add-row" id="add-row-btn">+ Add Line Item</button>
+          <div class="pricing-totals">
+            <div class="total-row"><span class="label">Subtotal</span><span class="value" id="subtotal">$0.00</span></div>
+            <div class="total-row deposit">
+              <span class="label">Deposit Due</span>
+              <span class="value" id="deposit-display">$0.00</span>
+            </div>
+            <div class="total-row" style="margin-top:4px;align-items:center;gap:10px;">
+              <span class="label" style="font-size:11px;">Set Deposit Amount:</span>
+              <input type="number" id="f-deposit" placeholder="0.00" min="0" step="0.01"
+                style="width:100px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;color:var(--gb);padding:6px 8px;font-size:13px;font-family:inherit;outline:none;font-weight:900;"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Notes -->
+        <div class="form-section">
+          <div class="form-section-title">04 — Order Notes</div>
+          <div class="field"><textarea id="f-notes" placeholder="Any notes for the customer — e.g. color confirmations, size breakdown, special instructions..."></textarea></div>
+        </div>
+
+        <!-- STEP 5: Policy -->
+        <div class="form-section">
+          <div class="form-section-title">05 — Print Policy</div>
+          <div class="field"><textarea id="f-policy" style="min-height:140px;font-size:13px;line-height:1.6;">All art proofs are for layout purposes. A full-size proof will be printed. Exact size may vary slightly from mockup dimensions. 11R Print is not responsible for any spelling errors, color discrepancies, or placement errors after the proof has been approved by the customer. Changes requested after approval may result in additional charges and production delays. No refunds will be issued after the proof has been approved and production has begun. Proofing time is based on graphic complexity. Additional charges may apply for artwork revisions. By approving this proof, the customer authorizes 11R Print to proceed with production.</textarea></div>
+        </div>
+
+        <div class="err-msg" id="form-error"></div>
+        <button type="submit" class="btn-generate" id="gen-btn">Generate Proof Link →</button>
+      </form>
+
+      <!-- Result -->
+      <div class="result-box" id="result-box">
+        <div class="result-label">✓ Proof Created — Send This Link to Your Customer</div>
+        <div class="result-url" id="result-url"></div>
+        <div class="result-actions">
+          <button class="btn-copy-link" id="copy-link-btn">Copy Link</button>
+          <button class="btn-email" id="email-link-btn">Open in Email</button>
+          <button class="btn-sm" id="view-proof-btn">Preview Proof →</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api';
+let adminKey = sessionStorage.getItem('11r_ak') || '';
+let mockupUrls = [];
+let pricingRows = [];
+let proofs = [];
+let currentProofUrl = '';
+
+// ── AUTH ──
+async function doLogin() {
+  const pw = document.getElementById('pw').value;
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  btn.textContent = 'Checking…';
+  btn.disabled = true;
+  err.style.display = 'none';
+
+  const r = await fetch(`${API}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pw })
+  }).catch(() => null);
+
+  if (r && r.ok) {
+    adminKey = pw;
+    sessionStorage.setItem('11r_ak', pw);
+    showApp();
+  } else {
+    err.style.display = 'block';
+    btn.textContent = 'Unlock →';
+    btn.disabled = false;
+  }
+}
+
+async function tryAutoLogin() {
+  if (!adminKey) { showLogin(); return; }
+  const r = await fetch(`${API}/proofs`, { headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    const d = await r.json();
+    proofs = d.proofs || [];
+    showApp();
+  } else {
+    adminKey = '';
+    sessionStorage.removeItem('11r_ak');
+    showLogin();
+  }
+}
+
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  renderProofList();
+  initPricingRow();
+}
+
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('logout-btn').addEventListener('click', () => {
+  adminKey = '';
+  sessionStorage.removeItem('11r_ak');
+  showLogin();
+});
+
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
+    document.getElementById('tab-new-proof').style.display = tab === 'new-proof' ? 'block' : 'none';
+    if (tab === 'dashboard') loadProofs();
+  });
+});
+
+// ── PROOF LIST ──
+async function loadProofs() {
+  const r = await fetch(`${API}/proofs`, { headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    const d = await r.json();
+    proofs = d.proofs || [];
+    renderProofList();
+  }
+}
+
+function renderProofList() {
+  const el = document.getElementById('proof-list');
+  const pending = proofs.filter(p => p.status === 'pending').length;
+  const approved = proofs.filter(p => p.status === 'approved').length;
+  document.getElementById('stat-total').textContent = proofs.length;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-approved').textContent = approved;
+
+  if (!proofs.length) {
+    el.innerHTML = '<div class="empty-state"><h3>No Proofs Yet</h3><p>Create your first proof in the New Proof tab.</p></div>';
+    return;
+  }
+
+  el.innerHTML = proofs.map(p => {
+    const date = new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const approvedTxt = p.approved_at ? `· Approved ${new Date(p.approved_at).toLocaleDateString()}` : '';
+    const url = `${location.origin}/proof/?id=${p.token}`;
+    return `<div class="proof-card">
+      <div>
+        <span class="status-pill ${p.status}">${p.status === 'approved' ? '✓ Approved' : '⏳ Pending'}</span>
+        <div class="proof-customer">${esc(p.customer_name)}</div>
+        <div class="proof-meta">${esc(p.customer_email)} · ${date}${approvedTxt}</div>
+      </div>
+      <div class="proof-actions">
+        <button class="btn-sm green" onclick="copyLink('${url}')">Copy Link</button>
+        <button class="btn-sm" onclick="window.open('${url}','_blank')">View</button>
+        <button class="btn-sm" onclick="emailProof('${esc(p.customer_name)}','${esc(p.customer_email)}','${url}')">Email</button>
+        <button class="btn-sm red" onclick="deleteProof('${p.token}', this)">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('refresh-btn').addEventListener('click', loadProofs);
+
+async function deleteProof(token, btn) {
+  if (!confirm('Delete this proof? This cannot be undone.')) return;
+  btn.disabled = true;
+  const r = await fetch(`${API}/proofs/${token}`, { method: 'DELETE', headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    proofs = proofs.filter(p => p.token !== token);
+    renderProofList();
+    showToast('Proof deleted');
+  }
+}
+
+// ── FILE UPLOAD ──
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+async function handleFiles(files) {
+  for (const file of files) {
+    uploadZone.innerHTML = `<div class="spinner"></div><div class="upload-zone-text">Uploading ${file.name}…</div>`;
+
+    // Get signed URL
+    const r = await fetch(`${API}/upload-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ filename: file.name })
+    }).catch(() => null);
+
+    if (!r || !r.ok) {
+      showToast('Upload failed — check Supabase settings');
+      resetUploadZone();
+      continue;
+    }
+    const { signedUrl, publicUrl } = await r.json();
+
+    // Upload file directly to Supabase Storage
+    const up = await fetch(signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      body: file
+    }).catch(() => null);
+
+    if (!up || !up.ok) {
+      showToast('Upload failed');
+      resetUploadZone();
+      continue;
+    }
+
+    mockupUrls.push(publicUrl);
+    addThumb(publicUrl, file.type, file.name);
+    resetUploadZone();
+  }
+}
+
+function addThumb(url, type, name) {
+  const preview = document.getElementById('upload-previews');
+  const div = document.createElement('div');
+  div.className = 'upload-thumb' + (type.includes('pdf') ? ' pdf-thumb' : '');
+  if (type.includes('image')) {
+    div.innerHTML = `<img src="${url}" alt="mockup"/><button type="button" class="del-img" onclick="removeImg('${url}',this)">×</button>`;
+  } else {
+    div.innerHTML = `<div style="font-size:22px">📄</div><span>${name.split('.').pop().toUpperCase()}</span><button type="button" class="del-img" onclick="removeImg('${url}',this)">×</button>`;
+  }
+  preview.appendChild(div);
+}
+
+function removeImg(url, btn) {
+  mockupUrls = mockupUrls.filter(u => u !== url);
+  btn.closest('.upload-thumb').remove();
+}
+
+function resetUploadZone() {
+  uploadZone.innerHTML = `<div class="upload-zone-icon">🖼️</div><div class="upload-zone-text">Drop mockup images here</div><div class="upload-zone-sub">or <span class="upload-link">click to browse</span> · PNG, JPG, PDF</div>`;
+}
+
+// ── PRICING ──
+function initPricingRow() {
+  pricingRows = [];
+  document.getElementById('pricing-rows').innerHTML = '';
+  addPricingRow();
+}
+
+function addPricingRow() {
+  const id = Date.now();
+  pricingRows.push({ id, description: '', qty: '', rate: '', amount: 0 });
+  renderPricingRows();
+}
+
+function renderPricingRows() {
+  const tbody = document.getElementById('pricing-rows');
+  tbody.innerHTML = pricingRows.map((row, i) => `
+    <tr data-id="${row.id}">
+      <td><input type="text" placeholder="e.g. Front Logo 2-Color Screen Print" value="${esc(row.description)}" oninput="updateRow(${i},'description',this.value)"/></td>
+      <td><input type="number" placeholder="0" value="${row.qty}" min="0" step="1" oninput="updateRow(${i},'qty',this.value)" style="width:70px"/></td>
+      <td><input type="number" placeholder="0.00" value="${row.rate}" min="0" step="0.01" oninput="updateRow(${i},'rate',this.value)" style="width:80px"/></td>
+      <td><input type="number" class="amount-input" value="${row.amount.toFixed(2)}" readonly style="width:90px;cursor:default;"/></td>
+      <td><button type="button" class="del-row" onclick="removeRow(${i})">×</button></td>
+    </tr>
+  `).join('');
+  calcTotals();
+}
+
+function updateRow(i, field, val) {
+  pricingRows[i][field] = val;
+  const qty = parseFloat(pricingRows[i].qty) || 0;
+  const rate = parseFloat(pricingRows[i].rate) || 0;
+  pricingRows[i].amount = qty * rate;
+  // Update amount cell without full re-render
+  const tbody = document.getElementById('pricing-rows');
+  const rows = tbody.querySelectorAll('tr');
+  if (rows[i]) {
+    const amtInput = rows[i].querySelector('.amount-input');
+    if (amtInput) amtInput.value = pricingRows[i].amount.toFixed(2);
+  }
+  calcTotals();
+}
+
+function removeRow(i) {
+  pricingRows.splice(i, 1);
+  if (!pricingRows.length) addPricingRow();
+  else renderPricingRows();
+}
+
+function calcTotals() {
+  const sub = pricingRows.reduce((s, r) => s + r.amount, 0);
+  document.getElementById('subtotal').textContent = `$${sub.toFixed(2)}`;
+  const dep = parseFloat(document.getElementById('f-deposit').value) || 0;
+  document.getElementById('deposit-display').textContent = `$${dep.toFixed(2)}`;
+}
+
+document.getElementById('add-row-btn').addEventListener('click', addPricingRow);
+document.getElementById('f-deposit').addEventListener('input', calcTotals);
+
+// ── SUBMIT FORM ──
+document.getElementById('proof-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('gen-btn');
+  const errEl = document.getElementById('form-error');
+  errEl.classList.remove('show');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Creating…';
+
+  const payload = {
+    customer_name: document.getElementById('f-name').value.trim(),
+    customer_email: document.getElementById('f-email').value.trim(),
+    customer_phone: document.getElementById('f-phone').value.trim(),
+    mockup_urls: [...mockupUrls],
+    pricing_items: pricingRows.filter(r => r.description || r.qty || r.rate).map(r => ({
+      description: r.description,
+      qty: parseFloat(r.qty) || 0,
+      rate: parseFloat(r.rate) || 0,
+      amount: r.amount
+    })),
+    deposit_amount: parseFloat(document.getElementById('f-deposit').value) || null,
+    order_notes: document.getElementById('f-notes').value.trim(),
+    policy_text: document.getElementById('f-policy').value.trim()
+  };
+
+  const r = await fetch(`${API}/proofs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify(payload)
+  }).catch(() => null);
+
+  btn.disabled = false;
+  btn.textContent = 'Generate Proof Link →';
+
+  if (!r || !r.ok) {
+    errEl.textContent = 'Failed to create proof. Check connection and try again.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const data = await r.json();
+  const proofUrl = `${location.origin}/proof/?id=${data.proof.token}`;
+  currentProofUrl = proofUrl;
+
+  document.getElementById('result-url').textContent = proofUrl;
+  document.getElementById('result-box').classList.add('show');
+  document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Reset form
+  document.getElementById('proof-form').reset();
+  mockupUrls = [];
+  document.getElementById('upload-previews').innerHTML = '';
+  resetUploadZone();
+  initPricingRow();
+  loadProofs();
+});
+
+document.getElementById('copy-link-btn').addEventListener('click', () => copyLink(currentProofUrl));
+document.getElementById('view-proof-btn').addEventListener('click', () => window.open(currentProofUrl, '_blank'));
+document.getElementById('email-link-btn').addEventListener('click', () => {
+  const name = document.getElementById('f-name').value || 'there';
+  const email = document.getElementById('f-email').value;
+  const subject = encodeURIComponent('Your Art Proof is Ready for Review — 11R Print');
+  const body = encodeURIComponent(`Hi,\n\nYour art proof is ready for review and approval.\n\nPlease click the link below to view your mockup, pricing breakdown, and approve the proof:\n\n${currentProofUrl}\n\nPlease review carefully and approve at your earliest convenience so we can move into production.\n\nIf you have any questions, reply to this email or text us at (407) 720-8518.\n\n— 11R Print\norders@11rprint.com`);
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+});
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Link copied!');
+  });
+}
+
+function emailProof(name, email, url) {
+  const subject = encodeURIComponent('Your Art Proof is Ready for Review — 11R Print');
+  const body = encodeURIComponent(`Hi ${name},\n\nYour art proof is ready for review.\n\nApprove here: ${url}\n\n— 11R Print`);
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+// ── UTILS ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──
+tryAutoLogin();
+</script>
+</body>
+</html>
