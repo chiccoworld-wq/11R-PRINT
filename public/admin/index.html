@@ -52,10 +52,41 @@ button{font-family:inherit;cursor:pointer;}
   cursor:pointer;transition:all .25s;margin-top:8px;
 }
 .btn-login:hover{background:#00eb6e;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2);}
+.btn-phone-login{
+  width:100%;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:10px;
+  padding:13px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;
+  cursor:pointer;transition:all .25s;margin-top:10px;
+}
+.btn-phone-login:hover{border-color:rgba(255,255,255,.25);color:var(--white);}
+.btn-forgot{
+  background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;
+  margin-top:14px;opacity:.45;letter-spacing:.04em;transition:opacity .2s;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.btn-forgot:hover{opacity:.8;}
+.login-divider{
+  display:flex;align-items:center;gap:10px;margin:18px 0 4px;
+  font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--line);}
+#otp-view{display:none;}
+#pw-view{}
+.otp-sent-note{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.otp-sent-note strong{color:var(--white);}
+.btn-back{
+  background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;
+  margin-top:10px;letter-spacing:.08em;text-transform:uppercase;
+}
+.btn-back:hover{color:var(--white);}
 .login-error{
   margin-top:12px;padding:10px 14px;
   background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.25);
   border-radius:8px;font-size:13px;color:#ff8080;display:none;
+}
+.login-success{
+  margin-top:12px;padding:10px 14px;
+  background:rgba(32,255,123,.08);border:1px solid rgba(32,255,123,.25);
+  border-radius:8px;font-size:13px;color:var(--gb);display:none;
 }
 .login-corner{position:absolute;width:16px;height:16px;opacity:.3;}
 .lc-tl{top:16px;left:16px;border-top:1px solid var(--gb);border-left:1px solid var(--gb);}
@@ -316,6 +347,9 @@ button{font-family:inherit;cursor:pointer;}
   .stats-bar{gap:10px;}
   .stat-card{min-width:100px;}
   .pricing-table th:nth-child(3),.pricing-table td:nth-child(3){display:none;}
+  .login-box{padding:36px 24px;}
+  .login-title{font-size:22px;}
+  #login-screen{padding:16px;}
 }
 </style>
 </head>
@@ -331,12 +365,34 @@ button{font-family:inherit;cursor:pointer;}
     <img src="../images/11r-logo-new.png" class="login-logo" alt="11R Print"/>
     <p class="login-eyebrow">Admin Access</p>
     <h1 class="login-title">Proof System</h1>
-    <div class="login-field">
-      <label for="pw">Password</label>
-      <input type="password" id="pw" placeholder="Enter password" autocomplete="current-password"/>
+
+    <!-- Password view -->
+    <div id="pw-view">
+      <div class="login-field">
+        <label for="pw">Password</label>
+        <input type="password" id="pw" placeholder="Enter password" autocomplete="current-password"/>
+      </div>
+      <button class="btn-login" id="login-btn">Sign In</button>
+      <div class="login-divider">or</div>
+      <button class="btn-phone-login" id="phone-login-btn">📧 Sign In with Email Code</button>
+      <br/>
+      <button class="btn-forgot" id="forgot-btn">Forgot Password</button>
     </div>
-    <button class="btn-login" id="login-btn">Unlock →</button>
-    <div class="login-error" id="login-error">Wrong password. Try again.</div>
+
+    <!-- OTP view -->
+    <div id="otp-view">
+      <p class="otp-sent-note" id="otp-note">Enter the code sent to your phone.</p>
+      <div class="login-field">
+        <label for="otp-code">Verification Code</label>
+        <input type="text" id="otp-code" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code"/>
+      </div>
+      <button class="btn-login" id="otp-verify-btn">Verify Code</button>
+      <br/>
+      <button class="btn-back" id="otp-back-btn">← Back</button>
+    </div>
+
+    <div class="login-error" id="login-error"></div>
+    <div class="login-success" id="login-success"></div>
   </div>
 </div>
 
@@ -475,13 +531,27 @@ let proofs = [];
 let currentProofUrl = '';
 
 // ── AUTH ──
+function showAuthError(msg) {
+  const e = document.getElementById('login-error');
+  const s = document.getElementById('login-success');
+  e.textContent = msg; e.style.display = 'block';
+  s.style.display = 'none';
+}
+function showAuthSuccess(msg) {
+  const e = document.getElementById('login-error');
+  const s = document.getElementById('login-success');
+  s.textContent = msg; s.style.display = 'block';
+  e.style.display = 'none';
+}
+function clearAuthMsg() {
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-success').style.display = 'none';
+}
+
 async function doLogin() {
   const pw = document.getElementById('pw').value;
-  const err = document.getElementById('login-error');
   const btn = document.getElementById('login-btn');
-  btn.textContent = 'Checking…';
-  btn.disabled = true;
-  err.style.display = 'none';
+  btn.textContent = 'Checking…'; btn.disabled = true; clearAuthMsg();
 
   const r = await fetch(`${API}/login`, {
     method: 'POST',
@@ -494,9 +564,75 @@ async function doLogin() {
     sessionStorage.setItem('11r_ak', pw);
     showApp();
   } else {
-    err.style.display = 'block';
-    btn.textContent = 'Unlock →';
-    btn.disabled = false;
+    showAuthError('Wrong password. Try again.');
+    btn.textContent = 'Sign In'; btn.disabled = false;
+  }
+}
+
+async function doSendOtp() {
+  const btn = document.getElementById('phone-login-btn');
+  btn.textContent = 'Sending…'; btn.disabled = true; clearAuthMsg();
+
+  const r = await fetch(`${API}/send-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({})
+  }).catch(() => null);
+
+  btn.textContent = '📱 Sign In with Phone'; btn.disabled = false;
+
+  if (r && r.ok) {
+    document.getElementById('pw-view').style.display = 'none';
+    document.getElementById('otp-view').style.display = 'block';
+    document.getElementById('otp-note').innerHTML = 'Code sent to <strong>orders@11rprint.com</strong>. Enter it below.';
+    document.getElementById('otp-code').value = '';
+    document.getElementById('otp-code').focus();
+    clearAuthMsg();
+  } else {
+    const d = r ? await r.json().catch(() => ({})) : {};
+    showAuthError(d.error || 'Failed to send code. Check SMS setup.');
+  }
+}
+
+async function doVerifyOtp() {
+  const otp = document.getElementById('otp-code').value.trim();
+  const btn = document.getElementById('otp-verify-btn');
+  btn.textContent = 'Verifying…'; btn.disabled = true; clearAuthMsg();
+
+  const r = await fetch(`${API}/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ otp })
+  }).catch(() => null);
+
+  btn.textContent = 'Verify Code'; btn.disabled = false;
+
+  if (r && r.ok) {
+    const d = await r.json();
+    adminKey = d.key || '';
+    sessionStorage.setItem('11r_ak', adminKey);
+    showApp();
+  } else {
+    showAuthError('Invalid or expired code. Try again.');
+  }
+}
+
+async function doForgotPassword() {
+  clearAuthMsg();
+  const btn = document.getElementById('forgot-btn');
+  btn.disabled = true;
+
+  const r = await fetch(`${API}/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  }).catch(() => null);
+
+  btn.disabled = false;
+  if (r && r.ok) {
+    showAuthSuccess('Password sent to orders@11rprint.com');
+  } else {
+    const d = r ? await r.json().catch(() => ({})) : {};
+    showAuthError(d.error || 'Failed to send email.');
   }
 }
 
@@ -517,6 +653,9 @@ async function tryAutoLogin() {
 function showLogin() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').classList.remove('visible');
+  document.getElementById('pw-view').style.display = 'block';
+  document.getElementById('otp-view').style.display = 'none';
+  clearAuthMsg();
 }
 
 function showApp() {
@@ -528,6 +667,15 @@ function showApp() {
 
 document.getElementById('login-btn').addEventListener('click', doLogin);
 document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('phone-login-btn').addEventListener('click', doSendOtp);
+document.getElementById('otp-verify-btn').addEventListener('click', doVerifyOtp);
+document.getElementById('otp-code').addEventListener('keydown', e => { if (e.key === 'Enter') doVerifyOtp(); });
+document.getElementById('otp-back-btn').addEventListener('click', () => {
+  document.getElementById('otp-view').style.display = 'none';
+  document.getElementById('pw-view').style.display = 'block';
+  clearAuthMsg();
+});
+document.getElementById('forgot-btn').addEventListener('click', doForgotPassword);
 document.getElementById('logout-btn').addEventListener('click', () => {
   adminKey = '';
   sessionStorage.removeItem('11r_ak');

@@ -44,6 +44,67 @@ exports.handler = async (event) => {
     return res(401, { error: 'Wrong password' });
   }
 
+  // POST /send-otp — email verification code to admin
+  if (path === '/send-otp' && method === 'POST') {
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (!RESEND_KEY) return res(500, { error: 'Email not configured' });
+
+    const seed = 'admin';
+    const window = Math.floor(Date.now() / 300000);
+    const hash = crypto.createHmac('sha256', PW()).update(`${seed}:${window}`).digest('hex');
+    const code = String(parseInt(hash.slice(0, 8), 16) % 1000000).padStart(6, '0');
+
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'noreply@11rprint.com',
+        to: 'orders@11rprint.com',
+        subject: '11R Print Admin — Sign In Code',
+        text: `Your sign-in code is: ${code}\n\nThis code expires in 5 minutes.`
+      })
+    }).catch(() => null);
+
+    if (!emailRes || !emailRes.ok) return res(500, { error: 'Failed to send email' });
+    return res(200, { ok: true });
+  }
+
+  // POST /verify-otp — verify email code and return session key
+  if (path === '/verify-otp' && method === 'POST') {
+    const otp = String(body.otp || '').trim();
+    const seed = 'admin';
+    const now = Math.floor(Date.now() / 300000);
+    const expected = (w) => {
+      const hash = crypto.createHmac('sha256', PW()).update(`${seed}:${w}`).digest('hex');
+      return String(parseInt(hash.slice(0, 8), 16) % 1000000).padStart(6, '0');
+    };
+
+    if (otp !== expected(now) && otp !== expected(now - 1)) {
+      return res(401, { error: 'Invalid or expired code' });
+    }
+    return res(200, { ok: true, key: PW() });
+  }
+
+  // POST /forgot-password — email password to admin
+  if (path === '/forgot-password' && method === 'POST') {
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (!RESEND_KEY) return res(500, { error: 'Email not configured. Add RESEND_API_KEY to env.' });
+
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'noreply@11rprint.com',
+        to: 'orders@11rprint.com',
+        subject: '11R Print Admin — Password Recovery',
+        text: `Your 11R Print admin password is:\n\n${PW()}\n\nKeep this secure.`
+      })
+    }).catch(() => null);
+
+    if (!emailRes || !emailRes.ok) return res(500, { error: 'Failed to send email' });
+    return res(200, { ok: true });
+  }
+
   // GET /proofs — list (admin)
   if (path === '/proofs' && method === 'GET') {
     if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
