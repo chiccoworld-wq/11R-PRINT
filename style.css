@@ -299,6 +299,144 @@ img { display: block; max-width: 100%; }
 }
 @keyframes scrollPulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 
+/* ==================== SHOWCASE ==================== */
+.showcase-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+  gap: 28px;
+  padding: 100px 24px 80px;
+  border-bottom: 1px solid rgba(32,255,123,.12);
+}
+
+/* Radial spotlight */
+.showcase-spotlight {
+  position: absolute;
+  width: 120vw;
+  height: 120vw;
+  max-width: 1100px;
+  max-height: 1100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(32,255,123,.09) 0%, rgba(5,143,69,.05) 38%, transparent 68%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: showcaseSpotlight 7s ease-in-out infinite;
+}
+@keyframes showcaseSpotlight {
+  0%, 100% { opacity: .75; transform: translate(-50%,-50%) scale(1); }
+  50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.1); }
+}
+
+/* Film-grain noise */
+.showcase-noise {
+  position: absolute;
+  inset: 0;
+  opacity: .35;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Subtle horizontal scanlines */
+.showcase-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,0,0,.08) 3px,
+    rgba(0,0,0,.08) 4px
+  );
+  pointer-events: none;
+  opacity: .5;
+}
+
+.showcase-eyebrow { position: relative; z-index: 2; text-align: center; }
+
+/* Shirt wrapper — receives 3D tilt from JS */
+.showcase-shirt-wrap {
+  position: relative;
+  z-index: 2;
+  width: min(540px, 76vw);
+  will-change: transform;
+  transform-style: preserve-3d;
+  transition: transform .12s ease-out;
+}
+
+/* The shirt itself */
+.showcase-shirt {
+  width: 100%;
+  display: block;
+  filter:
+    drop-shadow(0 90px 130px rgba(0,0,0,.95))
+    drop-shadow(0 0 70px rgba(32,255,123,.18))
+    drop-shadow(0 0 160px rgba(32,255,123,.07));
+  animation: showcaseFloat 9s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+@keyframes showcaseFloat {
+  0%,100% { transform: translateY(0)    rotate(0deg); }
+  30%      { transform: translateY(-24px) rotate(.5deg); }
+  70%      { transform: translateY(-11px) rotate(-.3deg); }
+}
+
+/* Green bloom under the shirt */
+.showcase-glow {
+  position: absolute;
+  left: 10%; right: 10%;
+  bottom: -6%; height: 60%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(32,255,123,.22) 0%, transparent 70%);
+  filter: blur(48px);
+  pointer-events: none;
+  animation: showcaseFloat 9s ease-in-out infinite;
+  animation-delay: .25s;
+}
+
+/* Caption */
+.showcase-caption { position: relative; z-index: 2; text-align: center; }
+.showcase-client {
+  font-size: clamp(30px, 5.5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: #fff;
+  margin: 0 0 10px;
+  line-height: 1;
+}
+.showcase-detail {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--green-bright);
+  margin: 0;
+}
+
+/* Registration-mark corners */
+.showcase-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  opacity: .28;
+}
+.showcase-corner.tl { top: 28px; left: 28px; border-top: 1px solid var(--green-bright); border-left: 1px solid var(--green-bright); }
+.showcase-corner.tr { top: 28px; right: 28px; border-top: 1px solid var(--green-bright); border-right: 1px solid var(--green-bright); }
+.showcase-corner.bl { bottom: 28px; left: 28px; border-bottom: 1px solid var(--green-bright); border-left: 1px solid var(--green-bright); }
+.showcase-corner.br { bottom: 28px; right: 28px; border-bottom: 1px solid var(--green-bright); border-right: 1px solid var(--green-bright); }
+
+@media (max-width: 767px) {
+  .showcase-shirt-wrap { width: min(360px, 90vw); }
+  .showcase-section { gap: 20px; }
+}
+
 /* ==================== MARQUEE ==================== */
 .marquee-bar {
   overflow: hidden;

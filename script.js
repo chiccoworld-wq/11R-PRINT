@@ -225,6 +225,38 @@
     });
   }
 
+  /* ---- SHOWCASE 3D TILT ---- */
+  const tiltEl = document.getElementById('showcase-tilt');
+  if (tiltEl) {
+    const section = tiltEl.closest('.showcase-section');
+    let rafId = null;
+    let targetX = 0, targetY = 0, curX = 0, curY = 0;
+
+    section.addEventListener('mousemove', (e) => {
+      const rect = section.getBoundingClientRect();
+      const dx = (e.clientX - rect.left - rect.width  / 2) / (rect.width  / 2);
+      const dy = (e.clientY - rect.top  - rect.height / 2) / (rect.height / 2);
+      targetX = dy * -7;
+      targetY = dx *  9;
+      if (!rafId) rafId = requestAnimationFrame(smoothTilt);
+    }, { passive: true });
+
+    section.addEventListener('mouseleave', () => {
+      targetX = 0; targetY = 0;
+    });
+
+    function smoothTilt() {
+      curX += (targetX - curX) * 0.1;
+      curY += (targetY - curY) * 0.1;
+      tiltEl.style.transform = `perspective(900px) rotateX(${curX}deg) rotateY(${curY}deg)`;
+      if (Math.abs(targetX - curX) > 0.05 || Math.abs(targetY - curY) > 0.05) {
+        rafId = requestAnimationFrame(smoothTilt);
+      } else {
+        rafId = null;
+      }
+    }
+  }
+
 })();
 
 /* ================================================================

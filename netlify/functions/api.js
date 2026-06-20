@@ -1,0 +1,130 @@
+const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
+
+let _sb;
+function sb() {
+  if (!_sb) _sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return _sb;
+}
+
+const PW = () => process.env.ADMIN_PASSWORD;
+
+function res(status, body, extra = {}) {
+  return {
+    statusCode: status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, x-admin-key',
+      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+      ...extra
+    },
+    body: JSON.stringify(body)
+  };
+}
+
+function auth(headers) {
+  const key = headers['x-admin-key'] || headers['X-Admin-Key'] || '';
+  return key === PW() && !!PW();
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return res(204, {});
+
+  const path = event.path
+    .replace(/^\/.netlify\/functions\/api/, '')
+    .replace(/^\/api/, '') || '/';
+  const method = event.httpMethod;
+  let body = {};
+  try { body = JSON.parse(event.body || '{}'); } catch {}
+
+  // POST /login
+  if (path === '/login' && method === 'POST') {
+    if (body.password === PW() && PW()) return res(200, { ok: true });
+    return res(401, { error: 'Wrong password' });
+  }
+
+  // GET /proofs — list (admin)
+  if (path === '/proofs' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb()
+      .from('proofs')
+      .select('id,token,customer_name,customer_email,customer_phone,status,created_at,approved_at,approved_by_name')
+      .order('created_at', { ascending: false });
+    if (error) return res(500, { error: error.message });
+    return res(200, { proofs: data });
+  }
+
+  // POST /proofs — create (admin)
+  if (path === '/proofs' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { customer_name, customer_email, customer_phone, mockup_urls, pricing_items, deposit_amount, order_notes, policy_text } = body;
+    if (!customer_name || !customer_email) return res(400, { error: 'Name and email required' });
+
+    const token = crypto.randomBytes(22).toString('hex');
+    const { data, error } = await sb()
+      .from('proofs')
+      .insert([{ token, customer_name, customer_email, customer_phone: customer_phone || null, mockup_urls: mockup_urls || [], pricing_items: pricing_items || [], deposit_amount: deposit_amount || null, order_notes: order_notes || null, policy_text: policy_text || '', status: 'pending' }])
+      .select()
+      .single();
+    if (error) return res(500, { error: error.message });
+    return res(200, { proof: data });
+  }
+
+  // GET /proofs/:token — fetch single (public)
+  const tokGet = path.match(/^\/proofs\/([a-f0-9]+)$/);
+  if (tokGet && method === 'GET') {
+    const { data, error } = await sb()
+      .from('proofs')
+      .select('token,customer_name,customer_phone,mockup_urls,pricing_items,deposit_amount,order_notes,policy_text,status,created_at,approved_at,approved_by_name')
+      .eq('token', tokGet[1])
+      .single();
+    if (error || !data) return res(404, { error: 'Proof not found' });
+    return res(200, { proof: data });
+  }
+
+  // DELETE /proofs/:token (admin)
+  const tokDel = path.match(/^\/proofs\/([a-f0-9]+)$/);
+  if (tokDel && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('proofs').delete().eq('token', tokDel[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
+  // POST /proofs/:token/approve (public)
+  const tokApprove = path.match(/^\/proofs\/([a-f0-9]+)\/approve$/);
+  if (tokApprove && method === 'POST') {
+    const { name } = body;
+    if (!name || name.trim().length < 2) return res(400, { error: 'Full name required' });
+    const ip = (event.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+
+    const { data, error } = await sb()
+      .from('proofs')
+      .update({ status: 'approved', approved_at: new Date().toISOString(), approved_by_name: name.trim(), approved_ip: ip })
+      .eq('token', tokApprove[1])
+      .eq('status', 'pending')
+      .select()
+      .single();
+    if (error || !data) return res(409, { error: 'Not found or already processed' });
+    return res(200, { ok: true, proof: data });
+  }
+
+  // POST /upload-url — signed upload URL (admin)
+  if (path === '/upload-url' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { filename } = body;
+    if (!filename) return res(400, { error: 'filename required' });
+    const ext = filename.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'].includes(ext)) return res(400, { error: 'File type not allowed' });
+
+    const key = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}.${ext}`;
+    const { data, error } = await sb().storage.from('proof-mockups').createSignedUploadUrl(key);
+    if (error) return res(500, { error: error.message });
+
+    const { data: { publicUrl } } = sb().storage.from('proof-mockups').getPublicUrl(key);
+    return res(200, { signedUrl: data.signedUrl, token: data.token, publicUrl });
+  }
+
+  return res(404, { error: 'Not found' });
+};
