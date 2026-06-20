@@ -815,8 +815,8 @@ textarea { min-height: 130px; resize: vertical; }
   .work-section { grid-template-columns: 1fr; min-height: auto; }
   .work-section.alt { direction: ltr; }
   .work-section-copy { padding: 44px 5%; }
-  .work-section-visual { min-height: 56vw; }
-  .work-section-visual .work-video { width: 100%; height: auto; min-height: 56vw; max-height: 80vw; }
+  .work-section-visual { min-height: unset; }
+  .work-section-visual .work-video { width: 100%; height: auto; min-height: unset; max-height: unset; object-fit: contain; }
   .ba-grid { grid-template-columns: 1fr; }
 }
 
@@ -972,8 +972,8 @@ textarea { min-height: 130px; resize: vertical; }
   .work-section-copy { padding: 36px 5%; gap: 12px; }
   .work-section-copy h2 { font-size: clamp(24px, 7vw, 36px); }
   .work-section-placeholder { min-height: 52vw; }
-  .work-section-visual { min-height: 52vw; }
-  .work-section-visual .work-video { min-height: 52vw; max-height: 70vw; }
+  .work-section-visual { min-height: unset; }
+  .work-section-visual .work-video { width: 100%; height: auto; min-height: unset; max-height: unset; object-fit: contain; }
   .quality-grid { padding: 44px 5%; }
   .quality-grid h2 { margin-bottom: 20px; }
   .quality-items { grid-template-columns: 1fr; }
