@@ -943,7 +943,7 @@ document.getElementById('email-link-btn').addEventListener('click', () => {
   const name = document.getElementById('f-name').value || 'there';
   const email = document.getElementById('f-email').value;
   const subject = encodeURIComponent('Your Art Proof is Ready for Review — 11R Print');
-  const body = encodeURIComponent(`Hi,\n\nYour art proof is ready for review and approval.\n\nPlease click the link below to view your mockup, pricing breakdown, and approve the proof:\n\n${currentProofUrl}\n\nPlease review carefully and approve at your earliest convenience so we can move into production.\n\nIf you have any questions, reply to this email or text us at (407) 720-8518.\n\n— 11R Print\norders@11rprint.com`);
+  const body = encodeURIComponent(`Hi,\n\nYour art proof is ready for review and approval.\n\nPlease click the link below to view your mockup, pricing breakdown, and approve the proof:\n\n${currentProofUrl}\n\nPlease review carefully and approve at your earliest convenience so we can move into production.\n\nIf you have any questions, reply to this email.\n\n— 11R Print\norders@11rprint.com`);
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
 });
 

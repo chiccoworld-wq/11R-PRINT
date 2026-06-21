@@ -417,7 +417,6 @@ img{display:block;max-width:100%;}
       <div class="ph-company">11R Print</div>
       <div class="ph-tagline">Screen Printed. Not Pressed.</div>
       <div class="ph-contact">Florida, U.S.A.</div>
-      <div class="ph-contact">+1 (407) 720-8518</div>
       <div class="ph-contact">orders@11rprint.com</div>
     </div>
     <div class="ph-right">
@@ -525,7 +524,6 @@ img{display:block;max-width:100%;}
   <footer class="proof-footer">
     <span class="proof-footer-brand">11R Print · Screen Printed. Not Pressed.</span>
     <span class="proof-footer-contact">
-      <a href="tel:+14077208518">(407) 720-8518</a> ·
       <a href="mailto:orders@11rprint.com">orders@11rprint.com</a>
     </span>
   </footer>
@@ -692,7 +690,7 @@ function renderApprovedState(proof) {
         on <strong>${formatDate(proof.approved_at)}</strong><br/>
         <br/>
         11R Print has been notified and production will begin shortly.
-        Contact us at <a href="tel:+14077208518" style="color:var(--gb);">(407) 720-8518</a> with any questions.
+        Contact us at <a href="mailto:orders@11rprint.com" style="color:var(--gb);">orders@11rprint.com</a> with any questions.
       </div>
     </div>
   `;
@@ -787,7 +785,7 @@ function showSuccessState(name, timestamp) {
     <div class="success-meta">
       <span>Signed by</span> <strong>${esc(name)}</strong><br/>
       <span>Date</span> <strong>${formatDate(timestamp)}</strong><br/>
-      <span>Contact</span> <strong>(407) 720-8518 · orders@11rprint.com</strong>
+      <span>Contact</span> <strong>orders@11rprint.com</strong>
     </div>
     <button class="btn-download" onclick="printPage()">🖨️ Save / Print Confirmation</button>
   `;
