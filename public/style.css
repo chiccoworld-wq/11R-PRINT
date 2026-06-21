@@ -946,9 +946,8 @@ textarea { min-height: 130px; resize: vertical; }
 }
 
 @media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr 130px; gap: 16px; }
-  .hero-visual { display: flex; }
-  .hero-img-wrap { width: 130px; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
   .process-steps { grid-template-columns: 1fr; gap: 28px; }
   .quote-inner { grid-template-columns: 1fr; gap: 40px; }
   .work-section { grid-template-columns: 1fr; min-height: auto; }
@@ -1082,8 +1081,7 @@ textarea { min-height: 130px; resize: vertical; }
   .nav-links { display: none; }
   .menu-toggle { display: flex; }
 
-  .hero { padding: 90px 5% 60px; gap: 12px; grid-template-columns: 1fr 100px; }
-  .hero-img-wrap { width: 100px; }
+  .hero { padding: 90px 5% 60px; gap: 0; }
 
   .services-grid { grid-template-columns: 1fr; border-radius: 14px; }
   .service-card { border-right: 0; }

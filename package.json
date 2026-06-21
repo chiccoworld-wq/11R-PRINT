@@ -3,6 +3,6 @@
     "@supabase/supabase-js": "^2.49.0"
   },
   "scripts": {
-    "build": "mkdir -p public/images && cp index.html work.html style.css script.js public/ && cp -R images/. public/images/"
+    "build": "mkdir -p public/images && cp src/index.html src/work.html src/custom-order.html src/style.css src/script.js public/ && cp -R src/images/. public/images/"
   }
 }
