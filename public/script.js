@@ -308,7 +308,7 @@ const orderState = {
   product: null,
   shirtColor: '#111111', shirtColorName: 'Black',
   mockupSide: 'front', printLocation: 'left-chest',
-  artworkFileName: null, artworkType: null,
+  artworkFileName: null, artworkType: null, artworkFile: null,
   quantity: 24,
   sizes: { S:0, M:0, L:0, XL:0, '2XL':0, '3XL':0 },
   inkColors: 3,
@@ -598,7 +598,7 @@ function initUploadTool() {
     thumbEl.innerHTML = ''; nameEl.textContent = '';
     defEl.hidden = false; doneEl.hidden = true;
     if (pdfNote) pdfNote.hidden = true;
-    orderState.artworkFileName = null; orderState.artworkType = null;
+    orderState.artworkFileName = null; orderState.artworkType = null; orderState.artworkFile = null;
   });
 
   function handleFile(file) {
@@ -606,6 +606,7 @@ function initUploadTool() {
     const isImg  = ['image/png','image/jpeg','image/svg+xml'].includes(file.type);
     orderState.artworkFileName = file.name;
     orderState.artworkType = isPDF ? 'pdf' : file.type;
+    orderState.artworkFile = file;
     nameEl.textContent = file.name;
     defEl.hidden = true; doneEl.hidden = false;
     if (pdfNote) pdfNote.hidden = !isPDF;
@@ -930,58 +931,93 @@ async function submitQuote() {
   const fmt = (n) => '$' + n.toFixed(2);
   const loc = LOCATIONS[orderState.printLocation]?.label || '—';
 
-  const quoteObj = {
-    customer:  { name, email:email||'', phone:phone||'', company: document.getElementById('inp-company')?.value?.trim()||'' },
-    order: {
-      product: orderState.product.name,
-      shirtColor: orderState.shirtColorName,
-      printLocation: loc,
-      inkColors: orderState.inkColors,
-      quantity: orderState.quantity,
-      sizes: orderState.sizes,
-      deadline: document.getElementById('inp-deadline')?.value||'',
-      notes: document.getElementById('inp-notes')?.value?.trim()||'',
-      artworkFileName: orderState.artworkFileName||'None',
-      artworkType: orderState.artworkType||'None',
-      placement: orderState.placement,
-    },
-    estimate: { total:fmt(est.total), perShirt:fmt(est.perShirt), setup:fmt(est.setup) },
-    submittedAt: new Date().toISOString(),
-  };
-
-  console.log('11R Print Quote Request:', quoteObj);
-
-  const fd = new FormData();
-  fd.append('name', name);
-  fd.append('email', email||'');
-  fd.append('phone', phone||'');
-  fd.append('company', quoteObj.customer.company);
-  fd.append('product', quoteObj.order.product);
-  fd.append('shirt_color', quoteObj.order.shirtColor);
-  fd.append('print_location', quoteObj.order.printLocation);
-  fd.append('ink_colors', quoteObj.order.inkColors);
-  fd.append('quantity', quoteObj.order.quantity);
-  fd.append('sizes', JSON.stringify(quoteObj.order.sizes));
-  fd.append('deadline', quoteObj.order.deadline);
-  fd.append('notes', quoteObj.order.notes);
-  fd.append('artwork_filename', quoteObj.order.artworkFileName);
-  fd.append('estimated_total', quoteObj.estimate.total);
-  fd.append('estimated_per_shirt', quoteObj.estimate.perShirt);
-  fd.append('_subject', `New Custom Order — 11R Print — ${name}`);
-
   const submitBtn = document.getElementById('bpn-submit');
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
 
   try {
-    const resp = await fetch('https://formspree.io/f/xykabbqe', {
-      method: 'POST', body: fd, headers: { Accept: 'application/json' },
+    // 1. Upload the customer's original artwork file (if any)
+    let artworkUrl = null;
+    if (orderState.artworkFile) {
+      artworkUrl = await uploadOrderFile(orderState.artworkFile, orderState.artworkFile.name);
+    }
+
+    // 2. Render the canvas mockup and upload it so the shop sees exact placement
+    let mockupUrl = null;
+    if (fCanvas) {
+      try {
+        const dataUrl = fCanvas.toDataURL({ format: 'png', multiplier: 2 });
+        const blob = dataUrlToBlob(dataUrl);
+        if (blob) mockupUrl = await uploadOrderFile(blob, 'mockup.png');
+      } catch (_) {}
+    }
+
+    const payload = {
+      customer_name: name,
+      customer_email: email || '',
+      customer_phone: phone || '',
+      customer_company: document.getElementById('inp-company')?.value?.trim() || '',
+      product: orderState.product.name,
+      shirt_color: orderState.shirtColorName,
+      print_location: loc,
+      ink_colors: orderState.inkColors,
+      quantity: orderState.quantity,
+      sizes: orderState.sizes,
+      deadline: document.getElementById('inp-deadline')?.value || '',
+      notes: document.getElementById('inp-notes')?.value?.trim() || '',
+      artwork_filename: orderState.artworkFileName || '',
+      artwork_url: artworkUrl,
+      mockup_url: mockupUrl,
+      placement: orderState.placement,
+      estimate: { total: fmt(est.total), perShirt: fmt(est.perShirt), setup: fmt(est.setup) },
+    };
+
+    const resp = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
+
     if (resp.ok) showSuccess();
-    else { alert('There was a problem sending your request. Please try again or email us directly.'); }
-  } catch {
-    showSuccess(); // Show success — data is logged to console
+    else alert('There was a problem sending your request. Please try again or email us at orders@11rprint.com.');
+  } catch (_) {
+    alert('There was a problem sending your request. Please check your connection and try again.');
   } finally {
     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Quote Request →'; }
+  }
+}
+
+/* Upload a File or Blob to Supabase storage via the public order-upload endpoint.
+   Returns the public URL, or null if it fails (order still submits without the image). */
+async function uploadOrderFile(fileOrBlob, filename) {
+  try {
+    const r = await fetch('/api/order-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename }),
+    });
+    if (!r.ok) return null;
+    const { signedUrl, publicUrl } = await r.json();
+    const up = await fetch(signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': fileOrBlob.type || 'application/octet-stream' },
+      body: fileOrBlob,
+    });
+    return up.ok ? publicUrl : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function dataUrlToBlob(dataUrl) {
+  try {
+    const [meta, b64] = dataUrl.split(',');
+    const mime = (meta.match(/:(.*?);/) || [])[1] || 'image/png';
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
+  } catch (_) {
+    return null;
   }
 }
 

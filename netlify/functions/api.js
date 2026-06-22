@@ -187,5 +187,90 @@ exports.handler = async (event) => {
     return res(200, { signedUrl: data.signedUrl, token: data.token, publicUrl });
   }
 
+  // POST /order-upload-url — signed upload for customer order files (PUBLIC)
+  if (path === '/order-upload-url' && method === 'POST') {
+    const { filename } = body;
+    if (!filename) return res(400, { error: 'filename required' });
+    const ext = filename.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'pdf'].includes(ext)) return res(400, { error: 'File type not allowed' });
+
+    const key = `orders/${Date.now()}-${crypto.randomBytes(8).toString('hex')}.${ext}`;
+    const { data, error } = await sb().storage.from('proof-mockups').createSignedUploadUrl(key);
+    if (error) return res(500, { error: error.message });
+
+    const { data: { publicUrl } } = sb().storage.from('proof-mockups').getPublicUrl(key);
+    return res(200, { signedUrl: data.signedUrl, token: data.token, publicUrl });
+  }
+
+  // POST /orders — create customer order from the mockup builder (PUBLIC)
+  if (path === '/orders' && method === 'POST') {
+    const o = body;
+    if (!o.customer_name) return res(400, { error: 'Name required' });
+    if (!o.customer_email && !o.customer_phone) return res(400, { error: 'Email or phone required' });
+
+    const { data, error } = await sb()
+      .from('orders')
+      .insert([{
+        customer_name: o.customer_name,
+        customer_email: o.customer_email || null,
+        customer_phone: o.customer_phone || null,
+        customer_company: o.customer_company || null,
+        product: o.product || null,
+        shirt_color: o.shirt_color || null,
+        print_location: o.print_location || null,
+        ink_colors: o.ink_colors || null,
+        quantity: o.quantity || null,
+        sizes: o.sizes || {},
+        deadline: o.deadline || null,
+        notes: o.notes || null,
+        artwork_filename: o.artwork_filename || null,
+        artwork_url: o.artwork_url || null,
+        mockup_url: o.mockup_url || null,
+        placement: o.placement || {},
+        estimate: o.estimate || {},
+        status: 'new'
+      }])
+      .select()
+      .single();
+    if (error) return res(500, { error: error.message });
+
+    // Fire-and-forget email notification (if Resend configured)
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_KEY) {
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'noreply@11rprint.com',
+          to: 'orders@11rprint.com',
+          subject: `New Custom Order — ${o.customer_name}`,
+          text: `New mockup order from ${o.customer_name}\n\nProduct: ${o.product || '—'}\nColor: ${o.shirt_color || '—'}\nLocation: ${o.print_location || '—'}\nQuantity: ${o.quantity || '—'}\nContact: ${o.customer_email || ''} ${o.customer_phone || ''}\nEst. Total: ${(o.estimate && o.estimate.total) || '—'}\n\nView full details + images in your admin dashboard:\nhttps://11rprint.com/admin/`
+        })
+      }).catch(() => {});
+    }
+
+    return res(200, { order: data });
+  }
+
+  // GET /orders — list customer orders (admin)
+  if (path === '/orders' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb()
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res(500, { error: error.message });
+    return res(200, { orders: data });
+  }
+
+  // DELETE /orders/:id (admin)
+  const ordDel = path.match(/^\/orders\/([a-f0-9-]+)$/);
+  if (ordDel && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('orders').delete().eq('id', ordDel[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
   return res(404, { error: 'Not found' });
 };

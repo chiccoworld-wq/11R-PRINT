@@ -338,6 +338,20 @@ button{font-family:inherit;cursor:pointer;}
 }
 .err-msg.show{display:block;}
 
+/* ── CUSTOMER ORDER CARDS ── */
+.order-card{display:block;}
+.ord-imgs{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
+.ord-thumb{position:relative;display:block;width:130px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--charcoal-2);transition:border-color .2s;}
+.ord-thumb:hover{border-color:var(--gb);}
+.ord-thumb img{width:100%;height:130px;object-fit:contain;background:#16191800;display:block;}
+.ord-thumb span{display:block;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px;text-align:center;border-top:1px solid var(--line);}
+.ord-thumb.file-thumb{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90px;gap:6px;padding:14px;}
+.ord-detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin:6px 0 14px;}
+.ord-detail .d{font-size:14px;color:var(--white);font-weight:700;}
+.ord-detail .d b{display:block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.ord-notes{font-size:13px;color:var(--off);background:var(--charcoal-2);padding:11px 15px;border-radius:8px;margin-bottom:14px;line-height:1.5;}
+.ord-notes b{color:var(--gb);font-size:10px;letter-spacing:.1em;text-transform:uppercase;}
+
 @media(max-width:720px){
   .main{padding:20px 16px;}
   .admin-header{padding:0 16px;}
@@ -409,6 +423,7 @@ button{font-family:inherit;cursor:pointer;}
   <div class="tabs">
     <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
     <button class="tab-btn" data-tab="new-proof">New Proof</button>
+    <button class="tab-btn" data-tab="orders">Customer Orders</button>
   </div>
 
   <main class="main">
@@ -516,6 +531,21 @@ button{font-family:inherit;cursor:pointer;}
       </div>
     </div>
 
+    <!-- ── CUSTOMER ORDERS TAB ── -->
+    <div id="tab-orders" style="display:none">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num green" id="ord-stat-total">—</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-num yellow" id="ord-stat-new">—</div><div class="stat-label">New</div></div>
+      </div>
+      <div class="section-head">
+        <span class="section-title">Mockup Builder Orders</span>
+        <button class="btn-sm green" id="ord-refresh-btn">↻ Refresh</button>
+      </div>
+      <div class="proof-list" id="orders-list">
+        <div class="empty-state"><h3>Loading...</h3></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -528,6 +558,7 @@ let adminKey = sessionStorage.getItem('11r_ak') || '';
 let mockupUrls = [];
 let pricingRows = [];
 let proofs = [];
+let orders = [];
 let currentProofUrl = '';
 
 // ── AUTH ──
@@ -690,9 +721,94 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     const tab = btn.dataset.tab;
     document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
     document.getElementById('tab-new-proof').style.display = tab === 'new-proof' ? 'block' : 'none';
+    document.getElementById('tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
     if (tab === 'dashboard') loadProofs();
+    if (tab === 'orders') loadOrders();
   });
 });
+
+// ── CUSTOMER ORDERS ──
+async function loadOrders() {
+  const el = document.getElementById('orders-list');
+  const r = await fetch(`${API}/orders`, { headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    const d = await r.json();
+    orders = d.orders || [];
+    renderOrders();
+  } else {
+    el.innerHTML = '<div class="empty-state"><h3>Couldn\'t load orders</h3><p>Check your connection and refresh.</p></div>';
+  }
+}
+
+function renderOrders() {
+  const el = document.getElementById('orders-list');
+  document.getElementById('ord-stat-total').textContent = orders.length;
+  document.getElementById('ord-stat-new').textContent = orders.filter(o => o.status === 'new').length;
+
+  if (!orders.length) {
+    el.innerHTML = '<div class="empty-state"><h3>No Orders Yet</h3><p>Orders from the customer mockup builder will appear here.</p></div>';
+    return;
+  }
+
+  el.innerHTML = orders.map(o => {
+    const date = new Date(o.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const sizes = (o.sizes && typeof o.sizes === 'object')
+      ? Object.entries(o.sizes).filter(([k, v]) => v > 0).map(([k, v]) => `${k}:${v}`).join('  ')
+      : '';
+    const est = o.estimate || {};
+
+    const imgs = [];
+    if (o.mockup_url) imgs.push(`<a href="${esc(o.mockup_url)}" target="_blank" class="ord-thumb"><img src="${esc(o.mockup_url)}" alt="Mockup"/><span>Mockup Preview</span></a>`);
+    if (o.artwork_url) imgs.push(`<a href="${esc(o.artwork_url)}" target="_blank" class="ord-thumb"><img src="${esc(o.artwork_url)}" alt="Artwork"/><span>Uploaded Artwork</span></a>`);
+    if (!o.artwork_url && o.artwork_filename) imgs.push(`<div class="ord-thumb file-thumb"><div style="font-size:26px">📄</div><span>${esc(o.artwork_filename)}</span></div>`);
+
+    return `<div class="proof-card order-card">
+      <div>
+        <span class="status-pill ${o.status === 'new' ? 'pending' : 'approved'}">${o.status === 'new' ? '🆕 New' : '✓ ' + esc(o.status)}</span>
+        <div class="proof-customer">${esc(o.customer_name)} — ${esc(o.product || 'Custom Order')}</div>
+        <div class="proof-meta">${esc(o.customer_email || '')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}${o.customer_company ? ' · ' + esc(o.customer_company) : ''} · ${date}</div>
+      </div>
+      <div class="ord-imgs">${imgs.join('') || '<span class="proof-meta">No image attached</span>'}</div>
+      <div class="ord-detail">
+        <div class="d"><b>Color</b>${esc(o.shirt_color || '—')}</div>
+        <div class="d"><b>Print Location</b>${esc(o.print_location || '—')}</div>
+        <div class="d"><b>Ink Colors</b>${esc(String(o.ink_colors || '—'))}</div>
+        <div class="d"><b>Quantity</b>${esc(String(o.quantity || '—'))}</div>
+        <div class="d"><b>Sizes</b>${esc(sizes || '—')}</div>
+        <div class="d"><b>Need By</b>${esc(o.deadline || '—')}</div>
+        <div class="d"><b>Est. Total</b>${esc(est.total || '—')}</div>
+        <div class="d"><b>Per Shirt</b>${esc(est.perShirt || '—')}</div>
+      </div>
+      ${o.notes ? `<div class="ord-notes"><b>Customer Notes</b><br/>${esc(o.notes)}</div>` : ''}
+      <div class="proof-actions">
+        ${o.customer_email ? `<button class="btn-sm green" onclick="emailOrderCustomer('${esc(o.customer_name)}','${esc(o.customer_email)}')">Email Customer</button>` : ''}
+        <button class="btn-sm red" onclick="deleteOrder('${o.id}', this)">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteOrder(id, btn) {
+  if (!confirm('Delete this order? This cannot be undone.')) return;
+  btn.disabled = true;
+  const r = await fetch(`${API}/orders/${id}`, { method: 'DELETE', headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    orders = orders.filter(o => o.id !== id);
+    renderOrders();
+    showToast('Order deleted');
+  } else {
+    btn.disabled = false;
+    showToast('Delete failed');
+  }
+}
+
+function emailOrderCustomer(name, email) {
+  const subject = encodeURIComponent('Your Custom Order — 11R Print');
+  const body = encodeURIComponent(`Hi ${name},\n\nThanks for your custom order request! We've reviewed your design and...\n\n— 11R Print\norders@11rprint.com`);
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+document.getElementById('ord-refresh-btn').addEventListener('click', loadOrders);
 
 // ── PROOF LIST ──
 async function loadProofs() {
