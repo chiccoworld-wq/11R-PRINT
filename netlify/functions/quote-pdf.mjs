@@ -1,6 +1,5 @@
 import { generate } from '@pdfme/generator';
 import { text, image, table, line, rectangle } from '@pdfme/schemas';
-import { BLANK_PDF } from '@pdfme/common';
 
 // Module-level cache — reused across warm Lambda invocations
 let _font = null;
@@ -8,8 +7,9 @@ let _logo = null;
 
 async function getFont() {
   if (_font) return _font;
+  // Use TTF — WOFF2 triggers a subsetting bug in pdfme's fontkit
   const r = await fetch(
-    'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans@5/files/noto-sans-latin-400-normal.woff2'
+    'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans@5/files/noto-sans-latin-400-normal.ttf'
   );
   if (!r.ok) throw new Error('Font fetch failed');
   _font = new Uint8Array(await r.arrayBuffer());
@@ -93,12 +93,12 @@ export const handler = async (event) => {
   try {
     const [fontData, logoData] = await Promise.all([getFont(), getLogo()]);
 
-    const font = { NotoSans: { data: fontData, fallback: true } };
+    const font = { NotoSans: { data: fontData, fallback: true, subset: false } };
 
     // ── TEMPLATE ──────────────────────────────────────────────────────────
     // A4: 210 × 297 mm
     const template = {
-      basePdf: BLANK_PDF,
+      basePdf: { width: 210, height: 297, padding: [0, 0, 0, 0] },
       schemas: [[
         // ── LOGO (top-left) ──────────────────────────────────────────────
         ...(logoData ? [{
