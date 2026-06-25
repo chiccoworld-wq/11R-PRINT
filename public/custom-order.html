@@ -64,7 +64,8 @@
       <div class="bld-step-tabs" id="bld-step-tabs">
         <button class="bst active" data-bpanel="left">Design</button>
         <button class="bst" data-bpanel="canvas">Canvas</button>
-        <button class="bst" data-bpanel="right">Artwork</button>
+        <button class="bst" data-bpanel="artwork">Artwork</button>
+        <button class="bst" data-bpanel="order">Order</button>
         <button class="bst" data-bpanel="quote">Quote</button>
       </div>
 
@@ -105,19 +106,6 @@
             </div>
           </div>
 
-          <div class="bpn-section">
-            <p class="bpn-label">Artwork Controls</p>
-            <div class="bpn-art-ctrl">
-              <button class="bpn-ctrl-btn" id="btn-center">⊙ Center</button>
-              <button class="bpn-ctrl-btn" id="btn-bigger">+ Bigger</button>
-              <button class="bpn-ctrl-btn" id="btn-smaller">− Smaller</button>
-              <button class="bpn-ctrl-btn" id="btn-rot-l">↺ −15°</button>
-              <button class="bpn-ctrl-btn" id="btn-rot-r">↻ +15°</button>
-              <button class="bpn-ctrl-btn" id="btn-reset">↺ Reset</button>
-              <button class="bpn-ctrl-btn danger" id="btn-del-art">✕ Delete</button>
-            </div>
-          </div>
-
         </div><!-- /bld-left -->
 
         <!-- CENTER: Fabric.js Canvas -->
@@ -128,92 +116,105 @@
           <p class="canvas-note">⚠ Visual reference only — final placement confirmed with a digital proof before production.</p>
         </div>
 
-        <!-- RIGHT PANEL: upload, text, details, quote -->
+        <!-- RIGHT PANEL: tabbed — artwork | order | quote -->
         <div class="bld-panel bld-right" id="bld-right">
 
-          <!-- Upload -->
-          <div class="bpn-section">
-            <p class="bpn-label">Upload Artwork</p>
-            <div class="bpn-upload" id="bpn-upload">
-              <input type="file" id="bpn-file" accept=".png,.jpg,.jpeg,.svg,.pdf" hidden />
-              <div class="bpu-default" id="bpu-default">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                  <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
-                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+          <!-- Tab bar -->
+          <div class="rp-tabs">
+            <button class="rp-tab active" data-rptab="artwork">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+              </svg>
+              Artwork
+            </button>
+            <button class="rp-tab" data-rptab="order">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <circle cx="3" cy="6" r="0.5" fill="currentColor"/><circle cx="3" cy="12" r="0.5" fill="currentColor"/><circle cx="3" cy="18" r="0.5" fill="currentColor"/>
+              </svg>
+              Order
+            </button>
+            <button class="rp-tab" data-rptab="quote">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              Quote
+            </button>
+          </div>
+
+          <!-- ── ARTWORK TAB ── -->
+          <div class="rp-panel" id="rpp-artwork">
+
+            <div class="bpn-section">
+              <p class="bpn-label">Upload Artwork</p>
+              <div class="bpn-upload" id="bpn-upload">
+                <input type="file" id="bpn-file" accept=".png,.jpg,.jpeg,.svg,.pdf" hidden />
+                <div class="bpu-default" id="bpu-default">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                  </svg>
+                  <p>Drop file or click to browse</p>
+                  <span>PNG · JPG · SVG · PDF</span>
+                </div>
+                <div class="bpu-done" id="bpu-done" hidden>
+                  <div class="bpu-thumb" id="bpu-thumb"></div>
+                  <p class="bpu-name" id="bpu-name"></p>
+                  <button class="bpu-remove" id="bpu-remove">Remove</button>
+                </div>
+              </div>
+              <p class="bpu-pdf-note" id="bpu-pdf-note" hidden>PDF uploaded — preview reviewed manually before production.</p>
+            </div>
+
+            <div class="bpn-section">
+              <p class="bpn-label">Names &amp; Numbers</p>
+              <p class="bpn-sublabel">Add a name or number to the canvas for placement reference.</p>
+              <div class="bpn-nn-row">
+                <input type="text" class="bpn-text-inp bpn-nn-name" id="bpn-nn-name" placeholder="Name" />
+                <input type="text" class="bpn-text-inp bpn-nn-num" id="bpn-nn-num" placeholder="#" maxlength="3" />
+                <button class="bpn-add-btn" id="btn-add-nn">Add</button>
+              </div>
+            </div>
+
+            <div class="bpn-section">
+              <div class="bpn-tip-card">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p>Drop file or click to browse</p>
-                <span>PNG · JPG · SVG · PDF</span>
-              </div>
-              <div class="bpu-done" id="bpu-done" hidden>
-                <div class="bpu-thumb" id="bpu-thumb"></div>
-                <p class="bpu-name" id="bpu-name"></p>
-                <button class="bpu-remove" id="bpu-remove">Remove</button>
+                <p>Upload your file above, then switch to <strong>Canvas</strong> to position and scale it on the shirt. Use <strong>Design</strong> to adjust color and print location.</p>
               </div>
             </div>
-            <p class="bpu-pdf-note" id="bpu-pdf-note" hidden>PDF uploaded — preview reviewed manually before production.</p>
-          </div>
 
-          <!-- Add Text -->
-          <div class="bpn-section">
-            <p class="bpn-label">Add Text</p>
-            <input type="text" class="bpn-text-inp" id="bpn-text-inp" placeholder="Your Text Here" />
-            <div class="bpn-text-row">
-              <select class="bpn-select" id="bpn-font-size">
-                <option value="20">Small</option>
-                <option value="32" selected>Medium</option>
-                <option value="48">Large</option>
-                <option value="64">XL</option>
-              </select>
-              <input type="color" class="bpn-color-inp" id="bpn-text-color" value="#ffffff" title="Text color" />
-              <label class="bpn-bold-check"><input type="checkbox" id="bpn-bold" checked /> Bold</label>
-              <button class="bpn-add-btn" id="btn-add-text">Add</button>
-            </div>
-          </div>
+          </div><!-- /rpp-artwork -->
 
-          <!-- Names / Numbers -->
-          <div class="bpn-section">
-            <p class="bpn-label">Names / Numbers</p>
-            <div class="bpn-nn-row">
-              <input type="text" class="bpn-text-inp bpn-nn-name" id="bpn-nn-name" placeholder="Name" />
-              <input type="text" class="bpn-text-inp bpn-nn-num" id="bpn-nn-num" placeholder="#" maxlength="3" />
-              <button class="bpn-add-btn" id="btn-add-nn">Add</button>
-            </div>
-          </div>
+          <!-- ── ORDER TAB ── -->
+          <div class="rp-panel rp-panel-hidden" id="rpp-order">
 
-          <!-- Shapes -->
-          <div class="bpn-section">
-            <p class="bpn-label">Add Shape</p>
-            <div class="bpn-shapes">
-              <button class="bpn-shape" data-shape="star" title="Star">★</button>
-              <button class="bpn-shape" data-shape="circle" title="Circle">●</button>
-              <button class="bpn-shape" data-shape="badge" title="Badge">◈</button>
-              <button class="bpn-shape" data-shape="11r" title="11R Mark">11R</button>
-            </div>
-          </div>
+            <div class="bpn-section">
+              <p class="bpn-label">Print Specifications</p>
 
-          <div class="bpn-divider"></div>
+              <div class="bpn-field">
+                <label>Ink Colors</label>
+                <select id="inp-ink-colors">
+                  <option value="1">1 Color</option>
+                  <option value="2">2 Colors</option>
+                  <option value="3" selected>3 Colors</option>
+                  <option value="4">4+ Colors</option>
+                </select>
+              </div>
 
-          <!-- Order Details -->
-          <div class="bpn-section">
-            <p class="bpn-label">Order Details</p>
-
-            <div class="bpn-field">
-              <label>Ink Colors</label>
-              <select id="inp-ink-colors">
-                <option value="1">1 Color</option>
-                <option value="2">2 Colors</option>
-                <option value="3" selected>3 Colors</option>
-                <option value="4">4+ Colors</option>
-              </select>
+              <div class="bpn-field">
+                <label>Need By Date</label>
+                <input type="date" id="inp-deadline" />
+              </div>
             </div>
 
-            <div class="bpn-field">
-              <label>Need By Date</label>
-              <input type="date" id="inp-deadline" />
-            </div>
-
-            <div class="bpn-field">
-              <label>Size Quantities <span class="bpn-hint">(leave 0 to skip)</span></label>
+            <div class="bpn-section">
+              <p class="bpn-label">Size Breakdown</p>
               <div class="bpn-sizes">
                 <div class="bpn-sz"><span>S</span><input type="number" class="sz-qty" data-size="S" min="0" value="0" /></div>
                 <div class="bpn-sz"><span>M</span><input type="number" class="sz-qty" data-size="M" min="0" value="0" /></div>
@@ -222,58 +223,63 @@
                 <div class="bpn-sz"><span>2XL</span><input type="number" class="sz-qty" data-size="2XL" min="0" value="0" /></div>
                 <div class="bpn-sz"><span>3XL</span><input type="number" class="sz-qty" data-size="3XL" min="0" value="0" /></div>
               </div>
-            </div>
-
-            <div class="bpn-field">
-              <label>Total Quantity</label>
-              <input type="number" id="inp-quantity" min="1" value="24" />
-              <span class="bpn-hint" id="qty-auto-note">Auto-calculated from sizes above if entered</span>
-            </div>
-
-            <div class="bpn-field">
-              <label>Notes</label>
-              <textarea id="inp-notes" rows="3" placeholder="Rush timelines, special requests, anything we should know..."></textarea>
-            </div>
-          </div>
-
-          <div class="bpn-divider"></div>
-
-          <!-- Contact + Quote -->
-          <div class="bpn-section" id="quote-section">
-            <p class="bpn-label">Your Information</p>
-            <div class="bpn-field"><label>Name <span class="req">*</span></label><input type="text" id="inp-name" placeholder="Full name" /></div>
-            <div class="bpn-field"><label>Email <span class="req">*</span></label><input type="email" id="inp-email" placeholder="your@email.com" /></div>
-            <div class="bpn-field"><label>Phone</label><input type="tel" id="inp-phone" placeholder="(555) 000-0000" /></div>
-            <div class="bpn-field"><label>Company</label><input type="text" id="inp-company" placeholder="Business name (optional)" /></div>
-
-            <!-- Live estimate -->
-            <div class="bpn-estimate" id="bpn-estimate">
-              <p class="est-title">Estimate</p>
-              <div class="est-rows" id="est-rows"></div>
-              <div class="est-total-row">
-                <span>Estimated Total</span>
-                <span id="est-total">—</span>
+              <div class="bpn-field" style="margin-top:12px">
+                <label>Total Quantity</label>
+                <input type="number" id="inp-quantity" min="1" value="24" />
+                <span class="bpn-hint" id="qty-auto-note">Auto-calculated from sizes above if entered</span>
               </div>
-              <div class="est-total-row est-per">
-                <span>Per Shirt</span>
-                <span id="est-per">—</span>
-              </div>
-              <p class="est-disclaimer">Estimate only. Final quote confirmed after artwork review.</p>
             </div>
 
-            <button class="bpn-submit" id="bpn-submit">Send Quote Request →</button>
-            <p class="bpn-submit-note">No payment required. Final quote within 1 business day.</p>
-          </div>
+            <div class="bpn-section">
+              <p class="bpn-label">Notes</p>
+              <div class="bpn-field">
+                <textarea id="inp-notes" rows="4" placeholder="Rush timelines, special requests, size breakdown details, anything we should know..."></textarea>
+              </div>
+            </div>
 
-          <!-- Success state -->
-          <div class="bpn-success" id="bpn-success" hidden>
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green-bright)" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>
-            </svg>
-            <h3>Quote Request Sent!</h3>
-            <p>We'll review your design and send a final quote within 1 business day.</p>
-            <button class="bpn-ctrl-btn" style="margin-top:8px" onclick="location.reload()">Start New Order</button>
-          </div>
+          </div><!-- /rpp-order -->
+
+          <!-- ── QUOTE TAB ── -->
+          <div class="rp-panel rp-panel-hidden" id="rpp-quote">
+
+            <div class="bpn-section" id="quote-section">
+              <p class="bpn-label">Your Information</p>
+              <div class="bpn-field"><label>Name <span class="req">*</span></label><input type="text" id="inp-name" placeholder="Full name" /></div>
+              <div class="bpn-field"><label>Email <span class="req">*</span></label><input type="email" id="inp-email" placeholder="your@email.com" /></div>
+              <div class="bpn-field"><label>Phone</label><input type="tel" id="inp-phone" placeholder="(555) 000-0000" /></div>
+              <div class="bpn-field"><label>Company</label><input type="text" id="inp-company" placeholder="Business name (optional)" /></div>
+            </div>
+
+            <div class="bpn-section">
+              <div class="bpn-estimate" id="bpn-estimate">
+                <p class="est-title">Live Estimate</p>
+                <div class="est-rows" id="est-rows"></div>
+                <div class="est-total-row">
+                  <span>Estimated Total</span>
+                  <span id="est-total">—</span>
+                </div>
+                <div class="est-total-row est-per">
+                  <span>Per Shirt</span>
+                  <span id="est-per">—</span>
+                </div>
+                <p class="est-disclaimer">Estimate only. Final quote confirmed after artwork review.</p>
+              </div>
+
+              <button class="bpn-submit" id="bpn-submit">Send Quote Request →</button>
+              <p class="bpn-submit-note">No payment required. Final quote within 1 business day.</p>
+            </div>
+
+            <!-- Success state -->
+            <div class="bpn-success" id="bpn-success" hidden>
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green-bright)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>
+              </svg>
+              <h3>Quote Request Sent!</h3>
+              <p>We'll review your design and send a final quote within 1 business day.</p>
+              <button class="bpn-ctrl-btn" style="margin-top:8px" onclick="location.reload()">Start New Order</button>
+            </div>
+
+          </div><!-- /rpp-quote -->
 
         </div><!-- /bld-right -->
       </div><!-- /bld-layout -->
@@ -281,19 +287,23 @@
       <!-- MOBILE BOTTOM TOOLBAR -->
       <div class="bld-mobile-toolbar" id="bld-mobile-toolbar">
         <button class="bmt-btn active" data-bpanel="left">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
           Design
         </button>
         <button class="bmt-btn" data-bpanel="canvas">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
           Canvas
         </button>
-        <button class="bmt-btn" data-bpanel="right">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-          Upload
+        <button class="bmt-btn" data-bpanel="artwork">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          Artwork
+        </button>
+        <button class="bmt-btn" data-bpanel="order">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Order
         </button>
         <button class="bmt-btn" data-bpanel="quote">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
           Quote
         </button>
       </div>

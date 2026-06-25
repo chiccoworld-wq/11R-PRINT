@@ -407,6 +407,7 @@ function onProductSelect(e) {
       initNameNumTool();
       initShapes();
       initOrderInputs();
+      initRightPanelTabs();
       initMobilePanel();
       initBuilderActions();
       initFormSubmit();
@@ -444,7 +445,11 @@ function drawShirt(hex) {
   if (shirtShape) { fCanvas.remove(shirtShape); shirtShape = null; }
 
   const isWhite = hex === '#f0f0ee';
-  fCanvas.backgroundColor = isWhite ? '#d8d8d8' : '#181a18';
+  // Pick background that contrasts against the shirt color
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const luminance = (0.299*r + 0.587*g + 0.114*b) / 255;
+  const isDark = luminance < 0.35;
+  fCanvas.backgroundColor = isWhite ? '#d0d0d0' : isDark ? '#2e3230' : '#181a18';
 
   const path = new fabric.Path(SHIRT_PATH, {
     name: 'shirt', fill: hex,
@@ -834,10 +839,29 @@ function updateEstimate() {
 }
 
 /* ================================================================
+   RIGHT PANEL TABS
+================================================================ */
+function switchRightTab(key) {
+  document.querySelectorAll('.rp-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.rptab === key);
+  });
+  document.querySelectorAll('.rp-panel').forEach(p => {
+    p.classList.toggle('rp-panel-hidden', p.id !== `rpp-${key}`);
+  });
+}
+
+function initRightPanelTabs() {
+  document.querySelectorAll('.rp-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchRightTab(btn.dataset.rptab));
+  });
+}
+
+/* ================================================================
    MOBILE PANEL SWITCHER
 ================================================================ */
 function initMobilePanel() {
-  const panels = { left: 'bld-left', canvas: 'bld-center', right: 'bld-right', quote: 'bld-right' };
+  const RIGHT_TABS = ['artwork', 'order', 'quote'];
+  const panels = { left: 'bld-left', canvas: 'bld-center', artwork: 'bld-right', order: 'bld-right', quote: 'bld-right' };
 
   function switchPanel(key) {
     if (window.innerWidth > 900) return;
@@ -847,8 +871,8 @@ function initMobilePanel() {
     });
     const target = document.getElementById(panels[key] || 'bld-left');
     if (target) target.classList.remove('mobile-hidden');
-    if (key === 'quote') {
-      document.getElementById('quote-section')?.scrollIntoView({ behavior:'smooth' });
+    if (RIGHT_TABS.includes(key)) {
+      switchRightTab(key);
     }
     responsiveCanvas();
   }
@@ -857,9 +881,8 @@ function initMobilePanel() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.bmt-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.bst').forEach((b,i) => {
-        if (b.dataset.bpanel === btn.dataset.bpanel) b.classList.add('active');
-        else b.classList.remove('active');
+      document.querySelectorAll('.bst').forEach(b => {
+        b.classList.toggle('active', b.dataset.bpanel === btn.dataset.bpanel);
       });
       switchPanel(btn.dataset.bpanel);
     });
@@ -870,14 +893,12 @@ function initMobilePanel() {
       document.querySelectorAll('.bst').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.querySelectorAll('.bmt-btn').forEach(b => {
-        if (b.dataset.bpanel === btn.dataset.bpanel) b.classList.add('active');
-        else b.classList.remove('active');
+        b.classList.toggle('active', b.dataset.bpanel === btn.dataset.bpanel);
       });
       switchPanel(btn.dataset.bpanel);
     });
   });
 
-  // On resize: restore desktop layout
   window.addEventListener('resize', () => {
     if (window.innerWidth > 900) {
       ['bld-left','bld-center','bld-right'].forEach(id => {
@@ -893,12 +914,14 @@ function initMobilePanel() {
 function initBuilderActions() {
   document.getElementById('btb-export')?.addEventListener('click', exportPreview);
   document.getElementById('btb-quote')?.addEventListener('click', () => {
-    document.getElementById('quote-section')?.scrollIntoView({ behavior:'smooth' });
+    switchRightTab('quote');
     if (window.innerWidth <= 900) {
       document.querySelectorAll('.bmt-btn').forEach(b => b.classList.toggle('active', b.dataset.bpanel === 'quote'));
       document.querySelectorAll('.bst').forEach(b => b.classList.toggle('active', b.dataset.bpanel === 'quote'));
       ['bld-left','bld-center'].forEach(id => document.getElementById(id)?.classList.add('mobile-hidden'));
       document.getElementById('bld-right')?.classList.remove('mobile-hidden');
+    } else {
+      document.getElementById('bld-right')?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
 }

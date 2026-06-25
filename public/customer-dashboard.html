@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account - 11R Print</title>
+  <style>
+    :root {
+      --black: #050706;
+      --charcoal: #0d0f0e;
+      --charcoal-2: #141918;
+      --green: #058f45;
+      --gb: #20ff7b;
+      --white: #f5f7f4;
+      --off: #dce7df;
+      --muted: #7a8a7e;
+      --line: rgba(255,255,255,.1);
+      --danger: #ff4d4d;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    #login-screen.hidden {
+      display: none;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--charcoal);
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(32, 255, 123, .06) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    .login-logo {
+      height: 64px;
+      width: auto;
+      margin: 0 auto 24px;
+      filter: drop-shadow(0 0 18px rgba(32, 255, 123, .3));
+    }
+
+    .login-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .login-field label {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .login-field input {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--white);
+      padding: 13px 15px;
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+      width: 100%;
+      transition: border-color .2s, background .2s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--gb);
+      background: rgba(32, 255, 123, .035);
+    }
+
+    .btn-login {
+      width: 100%;
+      background: var(--gb);
+      color: #001708;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      cursor: pointer;
+      transition: all .25s;
+      margin-top: 8px;
+    }
+
+    .btn-login:hover {
+      background: #00eb6e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+    }
+
+    .btn-login:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .login-error {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(255, 77, 77, .08);
+      border: 1px solid rgba(255, 77, 77, .25);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #ff8080;
+      display: none;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .login-corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      opacity: .3;
+    }
+
+    .lc-tl {
+      top: 16px;
+      left: 16px;
+      border-top: 1px solid var(--gb);
+      border-left: 1px solid var(--gb);
+    }
+
+    .lc-tr {
+      top: 16px;
+      right: 16px;
+      border-top: 1px solid var(--gb);
+      border-right: 1px solid var(--gb);
+    }
+
+    .lc-bl {
+      bottom: 16px;
+      left: 16px;
+      border-bottom: 1px solid var(--gb);
+      border-left: 1px solid var(--gb);
+    }
+
+    .lc-br {
+      bottom: 16px;
+      right: 16px;
+      border-bottom: 1px solid var(--gb);
+      border-right: 1px solid var(--gb);
+    }
+
+    /* ── DASHBOARD ── */
+    #dashboard {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    #dashboard.visible {
+      display: flex;
+    }
+
+    .dashboard-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: 64px;
+      background: rgba(5, 7, 6, .92);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dashboard-header .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-header img {
+      height: 36px;
+      filter: drop-shadow(0 0 8px rgba(32, 255, 123, .22));
+    }
+
+    .dashboard-header .user-info {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-logout:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 32px 28px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .dashboard-title {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    /* ── ORDERS LIST ── */
+    .orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .order-card {
+      background: var(--charcoal);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color .2s;
+    }
+
+    .order-card:hover {
+      border-color: rgba(32, 255, 123, .2);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .order-title {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -.01em;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: rgba(32, 255, 123, .12);
+      color: var(--gb);
+      border: 1px solid rgba(32, 255, 123, .3);
+    }
+
+    .order-status.pending {
+      background: rgba(255, 240, 58, .12);
+      color: #fff03a;
+      border-color: rgba(255, 240, 58, .3);
+    }
+
+    .order-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .order-details {
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .order-details div {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .order-details span:first-child {
+      color: var(--muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -.02em;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, .1);
+      border-top-color: var(--gb);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .dashboard-main {
+        padding: 20px 16px;
+      }
+
+      .dashboard-header {
+        padding: 0 16px;
+      }
+
+      .orders-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .login-box {
+        padding: 36px 24px;
+      }
+
+      .login-title {
+        font-size: 22px;
+      }
+
+      #login-screen {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN SCREEN ── -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-corner lc-tl"></div>
+      <div class="login-corner lc-tr"></div>
+      <div class="login-corner lc-bl"></div>
+      <div class="login-corner lc-br"></div>
+      <img src="images/11r-logo-new.png" class="login-logo" alt="11R Print">
+      <h1 class="login-title">My Account</h1>
+
+      <div class="login-field">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+      </div>
+
+      <div class="login-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+      </div>
+
+      <button class="btn-login" id="login-btn">Sign In</button>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="dashboard">
+    <header class="dashboard-header">
+      <a class="brand" href="index.html">
+        <img src="images/11r-logo-new.png" alt="11R Print logo">
+      </a>
+      <div class="user-info">
+        <span id="user-email"></span>
+      </div>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </header>
+
+    <main class="dashboard-main">
+      <h1 class="dashboard-title">My Orders</h1>
+      <p class="dashboard-subtitle">Track your custom screen print orders</p>
+
+      <div id="orders-container">
+        <div class="spinner"></div>
+        <p style="text-align: center; color: var(--muted);">Loading your orders...</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Initialize Supabase
+    // Get these from your Netlify environment variables
+    const supabaseUrl = window.SUPABASE_URL || localStorage.getItem('supabase_url');
+    const supabaseAnonKey = window.SUPABASE_ANON_KEY || localStorage.getItem('supabase_key');
+
+    let supabase = null;
+    let currentUser = null;
+
+    // Initialize Supabase if credentials available
+    if (supabaseUrl && supabaseAnonKey) {
+      const { createClient } = window.supabase;
+      supabase = createClient(supabaseUrl, supabaseAnonKey);
+    }
+
+    // Try to load saved session
+    async function initAuth() {
+      if (!supabase) {
+        console.warn('Supabase not configured. Using demo mode.');
+        showLogin();
+        return;
+      }
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          currentUser = user;
+          showDashboard();
+        } else {
+          showLogin();
+        }
+      } catch (err) {
+        console.warn('Auth check failed:', err);
+        showLogin();
+      }
+    }
+
+    function showLogin() {
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('dashboard').classList.remove('visible');
+    }
+
+    function showDashboard() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('visible');
+      document.getElementById('user-email').textContent = currentUser?.email || 'Customer';
+      loadOrders();
+    }
+
+    // Login handler
+    document.getElementById('login-btn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('login-error');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Please enter email and password';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      errorEl.classList.remove('show');
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        if (!supabase) {
+          throw new Error('System not configured. Please contact support.');
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        currentUser = data.user;
+        showDashboard();
+      } catch (err) {
+        errorEl.textContent = err.message || 'Login failed';
+        errorEl.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+
+    // Logout handler
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      currentUser = null;
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+      showLogin();
+    });
+
+    // Load orders from Supabase
+    async function loadOrders() {
+      const container = document.getElementById('orders-container');
+
+      if (!supabase) {
+        // Demo mode - show sample data
+        showSampleOrders(container);
+        return;
+      }
+
+      try {
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('customer_id', currentUser.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>No Orders Yet</h3>
+              <p>You haven't placed any orders yet. <a href="custom-order.html" style="color: var(--gb); text-decoration: underline;">Start an order</a></p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `<div class="orders-grid">${orders.map(order => `
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-title">Order #${order.id}</div>
+              <div class="order-status ${order.status || 'pending'}">${order.status || 'pending'}</div>
+            </div>
+            <div class="order-meta">${new Date(order.created_at).toLocaleDateString()}</div>
+            <div class="order-details">
+              <div><span>Order:</span> <strong>${order.title || 'Order'}</strong></div>
+              <div><span>Quantity:</span> <strong>${order.quantity} units</strong></div>
+              <div><span>Color:</span> <strong>${order.shirt_color || 'N/A'}</strong></div>
+              <div><span>Details:</span> <strong>${order.description || 'N/A'}</strong></div>
+            </div>
+          </div>
+        `).join('')}</div>`;
+      } catch (err) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Error Loading Orders</h3>
+            <p>${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function showSampleOrders(container) {
+      const orders = [
+        {
+          id: '001',
+          title: 'Company T-Shirt Batch',
+          status: 'approved',
+          date: '2026-06-20',
+          quantity: 24,
+          color: 'Black',
+          details: 'Crew neck t-shirts with front logo'
+        },
+        {
+          id: '002',
+          title: 'Event Merchandise',
+          status: 'pending',
+          date: '2026-06-22',
+          quantity: 50,
+          color: 'Navy',
+          details: 'Back print design for event shirts'
+        }
+      ];
+
+      container.innerHTML = `<div class="orders-grid">${orders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-title">Order #${order.id}</div>
+            <div class="order-status ${order.status}">${order.status}</div>
+          </div>
+          <div class="order-meta">${order.date}</div>
+          <div class="order-details">
+            <div><span>Order:</span> <strong>${order.title}</strong></div>
+            <div><span>Quantity:</span> <strong>${order.quantity} units</strong></div>
+            <div><span>Color:</span> <strong>${order.color}</strong></div>
+            <div><span>Details:</span> <strong>${order.details}</strong></div>
+          </div>
+        </div>
+      `).join('')}</div>`;
+    }
+
+    // Initialize on load
+    window.addEventListener('load', initAuth);
+  </script>
+</body>
+</html>

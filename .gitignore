@@ -14,3 +14,10 @@ node_modules/
 
 # Local Netlify folder
 .netlify
+
+# Agent communication — not source code
+HANDOFF.md
+claude-memory
+MEMORY.md
+CLAUDE.md
+logs/automations/automation-log.jsonl
