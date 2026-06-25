@@ -991,7 +991,12 @@ async function submitQuote() {
       artwork_url: artworkUrl,
       mockup_url: mockupUrl,
       placement: orderState.placement,
-      estimate: { total: fmt(est.total), perShirt: fmt(est.perShirt), setup: fmt(est.setup) },
+      estimate: {
+        total: est.total, perShirt: est.perShirt,
+        setup: est.setup, garment: est.garment,
+        print: est.print, discount: est.discount,
+        discLabel: est.discLabel,
+      },
     };
 
     const resp = await fetch('/api/orders', {
@@ -1000,8 +1005,11 @@ async function submitQuote() {
       body: JSON.stringify(payload),
     });
 
-    if (resp.ok) showSuccess();
-    else alert('There was a problem sending your request. Please try again or email us at orders@11rprint.com.');
+    if (resp.ok) {
+      // Store payload so the PDF download button can use it
+      window._lastQuotePayload = payload;
+      showSuccess();
+    } else alert('There was a problem sending your request. Please try again or email us at orders@11rprint.com.');
   } catch (_) {
     alert('There was a problem sending your request. Please check your connection and try again.');
   } finally {
@@ -1048,6 +1056,32 @@ function showSuccess() {
   document.getElementById('quote-section').hidden = true;
   document.getElementById('bpn-success').hidden = false;
   document.getElementById('bpn-success').scrollIntoView({ behavior:'smooth' });
+}
+
+async function downloadQuotePdf() {
+  const payload = window._lastQuotePayload;
+  if (!payload) return;
+  const btn = document.getElementById('btn-download-pdf');
+  if (btn) { btn.disabled = true; btn.textContent = 'Generating PDF…'; }
+  try {
+    const resp = await fetch('/api/quote-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) throw new Error('PDF generation failed');
+    const blob = await resp.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = '11rprint-quote.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (_) {
+    alert('Could not generate PDF. Please email orders@11rprint.com for your quote.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Download Quote PDF'; }
+  }
 }
 
 /* ---- LEGACY STUBS (keep so old HTML refs don't throw) ---- */
