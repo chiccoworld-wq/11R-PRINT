@@ -267,9 +267,9 @@ exports.handler = async (event) => {
 
         <!-- Header -->
         <tr>
-          <td style="background:#ffffff;padding:32px 36px 20px;text-align:center;">
+          <td style="padding:36px 36px 16px;text-align:center;">
             <a href="https://11rprint.com" style="text-decoration:none;">
-              <img src="https://11rprint.com/images/11R%20VECTOR%20FINAL%20SVG.png" alt="11R Print" width="120" height="120" style="display:inline-block;border:none;" />
+              <img src="https://11rprint.com/images/11R%20VECTOR%20FINAL%20SVG.png" alt="11R Print" width="140" height="140" style="display:inline-block;border:none;" />
             </a>
           </td>
         </tr>
