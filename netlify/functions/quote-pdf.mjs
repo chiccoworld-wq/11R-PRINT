@@ -9,7 +9,7 @@ async function getFont() {
   if (_font) return _font;
   // Use TTF — WOFF2 triggers a subsetting bug in pdfme's fontkit
   const r = await fetch(
-    'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans@5/files/noto-sans-latin-400-normal.ttf'
+    'https://fonts.gstatic.com/s/notosans/v42/o-0mIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A99d.ttf'
   );
   if (!r.ok) throw new Error('Font fetch failed');
   _font = new Uint8Array(await r.arrayBuffer());
