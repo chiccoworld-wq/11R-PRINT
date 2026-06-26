@@ -12,6 +12,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/proof-pdf"
+  to = "/.netlify/functions/proof-pdf"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"
   status = 200

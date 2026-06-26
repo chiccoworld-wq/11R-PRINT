@@ -417,6 +417,7 @@ img{display:block;max-width:100%;}
       <div class="ph-company">11R Print</div>
       <div class="ph-tagline">Screen Printed. Not Pressed.</div>
       <div class="ph-contact">Florida, U.S.A.</div>
+      <div class="ph-contact">+1 (407) 720-8518</div>
       <div class="ph-contact">orders@11rprint.com</div>
     </div>
     <div class="ph-right">
@@ -537,6 +538,7 @@ img{display:block;max-width:100%;}
 
 <script>
 const API = '/api';
+let _proof = null; // stored after load so success state can access it
 
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -561,6 +563,7 @@ async function loadProof() {
   const { proof } = await r.json();
   if (!proof) { showError(); return; }
 
+  _proof = proof;
   renderProof(proof);
 }
 
@@ -787,13 +790,36 @@ function showSuccessState(name, timestamp) {
       <span>Date</span> <strong>${formatDate(timestamp)}</strong><br/>
       <span>Contact</span> <strong>orders@11rprint.com</strong>
     </div>
-    <button class="btn-download" onclick="printPage()">🖨️ Save / Print Confirmation</button>
+    <button class="btn-download" id="download-proof-btn" onclick="downloadProofPdf('${esc(name)}', '${timestamp}')">⬇ Download Approval PDF</button>
   `;
 
   successEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function printPage() { window.print(); }
+async function downloadProofPdf(approvedBy, approvedAt) {
+  const btn = document.getElementById('download-proof-btn');
+  if (btn) { btn.textContent = 'Generating PDF…'; btn.disabled = true; }
+
+  try {
+    const r = await fetch(`${API}/proof-pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ proof: _proof, approved_by: approvedBy, approved_at: approvedAt }),
+    });
+    if (!r.ok) throw new Error('PDF generation failed');
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `11rprint-proof-confirmation.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Could not generate PDF. Please try again.');
+  } finally {
+    if (btn) { btn.textContent = '⬇ Download Approval PDF'; btn.disabled = false; }
+  }
+}
 
 // ── LIGHTBOX ──
 function openLightbox(src) {
