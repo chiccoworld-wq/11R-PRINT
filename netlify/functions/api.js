@@ -238,16 +238,126 @@ exports.handler = async (event) => {
     const RESEND_KEY = process.env.RESEND_API_KEY;
     const estTotal = o.estimate?.total != null ? '$' + parseFloat(o.estimate.total).toFixed(2) : '—';
     if (RESEND_KEY) {
+      const resendHeaders = { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' };
+
+      // Admin notification
       fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        headers: resendHeaders,
         body: JSON.stringify({
-          from: 'noreply@11rprint.com',
+          from: 'Orders <orders@11rprint.com>',
           to: 'orders@11rprint.com',
           subject: `New Custom Order — ${o.customer_name}`,
           text: `New mockup order from ${o.customer_name}\n\nProduct: ${o.product || '—'}\nColor: ${o.shirt_color || '—'}\nLocation: ${o.print_location || '—'}\nQuantity: ${o.quantity || '—'}\nContact: ${o.customer_email || ''} ${o.customer_phone || ''}\nEst. Total: ${estTotal}\n\nView full details + images in your admin dashboard:\nhttps://11rprint.com/admin/`
         })
       }).catch(() => {});
+
+      // Customer confirmation email
+      if (o.customer_email) {
+        const sizesText = o.sizes && typeof o.sizes === 'object'
+          ? Object.entries(o.sizes).filter(([,v]) => v > 0).map(([k,v]) => `${k.toUpperCase()}: ${v}`).join(', ') || '—'
+          : '—';
+        const customerHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:4px;overflow:hidden;max-width:600px;">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#000000;padding:28px 36px;">
+            <a href="https://11rprint.com" style="text-decoration:none;">
+              <img src="https://11rprint.com/images/11R%20VECTOR%20FINAL%20SVG.png" alt="11R Print" width="64" height="64" style="display:block;border:none;" />
+            </a>
+          </td>
+        </tr>
+
+        <!-- Green accent bar -->
+        <tr>
+          <td style="height:4px;background:linear-gradient(to right,#000 40%,#1a7a1a 60%);font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 36px 24px;">
+            <h1 style="margin:0 0 8px;font-size:22px;color:#000000;">Quote Received</h1>
+            <p style="margin:0 0 24px;font-size:15px;color:#444444;line-height:1.6;">
+              Hey ${o.customer_name}, thanks for reaching out! We've received your quote request and will follow up within <strong>1 business day</strong>.
+            </p>
+
+            <!-- Quote summary -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e0e0e0;border-radius:4px;margin-bottom:24px;">
+              <tr>
+                <td colspan="2" style="background:#f9f9f9;padding:12px 16px;font-size:11px;font-weight:bold;color:#666;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid #e0e0e0;">
+                  Your Quote Summary
+                </td>
+              </tr>
+              ${o.product ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;width:40%;">Product</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${o.product}</td></tr>` : ''}
+              ${o.shirt_color ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;">Color</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${o.shirt_color}</td></tr>` : ''}
+              ${o.print_location ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;">Print Location</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${o.print_location}</td></tr>` : ''}
+              ${o.quantity ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;">Quantity</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${o.quantity}</td></tr>` : ''}
+              ${sizesText !== '—' ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;">Sizes</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${sizesText}</td></tr>` : ''}
+              ${o.deadline ? `<tr><td style="padding:10px 16px;font-size:13px;color:#666;border-bottom:1px solid #f0f0f0;">Deadline</td><td style="padding:10px 16px;font-size:13px;color:#000;border-bottom:1px solid #f0f0f0;font-weight:500;">${o.deadline}</td></tr>` : ''}
+              <tr>
+                <td style="padding:12px 16px;font-size:14px;color:#000;font-weight:bold;">Estimate</td>
+                <td style="padding:12px 16px;font-size:16px;color:#1a7a1a;font-weight:bold;">${estTotal}</td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 8px;font-size:13px;color:#666;line-height:1.6;">
+              This is an <strong>estimate only</strong>. Final pricing is confirmed after we review your artwork.
+            </p>
+            <p style="margin:0 0 32px;font-size:13px;color:#666;line-height:1.6;">
+              Questions? Just reply to this email — we're happy to help.
+            </p>
+
+            <!-- CTA -->
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:#1a7a1a;border-radius:3px;">
+                  <a href="https://11rprint.com" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:bold;color:#ffffff;text-decoration:none;letter-spacing:0.5px;">
+                    Visit 11rprint.com
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:20px 36px;border-top:1px solid #eeeeee;">
+            <p style="margin:0;font-size:12px;color:#999999;line-height:1.6;">
+              11R Print &nbsp;|&nbsp; Built With Passion. Printed With Purpose.<br>
+              <a href="https://11rprint.com" style="color:#1a7a1a;text-decoration:none;">11rprint.com</a>
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              <a href="https://instagram.com/11RPRINT" style="color:#1a7a1a;text-decoration:none;">@11RPRINT</a>
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              <a href="mailto:orders@11rprint.com" style="color:#1a7a1a;text-decoration:none;">orders@11rprint.com</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: resendHeaders,
+          body: JSON.stringify({
+            from: '11R Print <orders@11rprint.com>',
+            to: o.customer_email,
+            reply_to: 'orders@11rprint.com',
+            subject: `Your Quote Request — 11R Print`,
+            html: customerHtml
+          })
+        }).catch(() => {});
+      }
     }
 
     // Fire-and-forget n8n webhook (if configured)
