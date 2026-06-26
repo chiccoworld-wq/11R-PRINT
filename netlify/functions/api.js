@@ -267,16 +267,16 @@ exports.handler = async (event) => {
 
         <!-- Header -->
         <tr>
-          <td style="background:#000000;padding:28px 36px;">
+          <td style="background:#ffffff;padding:32px 36px 20px;text-align:center;">
             <a href="https://11rprint.com" style="text-decoration:none;">
-              <img src="https://11rprint.com/images/11R%20VECTOR%20FINAL%20SVG.png" alt="11R Print" width="64" height="64" style="display:block;border:none;" />
+              <img src="https://11rprint.com/images/11R%20VECTOR%20FINAL%20SVG.png" alt="11R Print" width="120" height="120" style="display:inline-block;border:none;" />
             </a>
           </td>
         </tr>
 
-        <!-- Green accent bar -->
+        <!-- Accent bar -->
         <tr>
-          <td style="height:4px;background:linear-gradient(to right,#000 40%,#1a7a1a 60%);font-size:0;line-height:0;">&nbsp;</td>
+          <td style="height:3px;background:linear-gradient(to right,#000000 40%,#1a7a1a 60%);font-size:0;line-height:0;">&nbsp;</td>
         </tr>
 
         <!-- Body -->
