@@ -389,11 +389,17 @@ img{display:block;max-width:100%;}
   .pricing-table th:nth-child(3),.pricing-table td:nth-child(3){display:none;}
   .header-date{display:none;}
   #success-state{padding:48px 16px;}
-  .brand-hero-inner{flex-direction:column;min-height:auto;padding:40px 5%;}
-  .bh-logo-side{padding-right:0;padding-bottom:32px;max-width:340px;width:100%;}
-  .bh-logo-side img{max-height:340px;}
-  .bh-divider{width:80%;height:1px;background:linear-gradient(to right,transparent,rgba(32,255,123,.35),transparent);}
-  .bh-info-side{width:100%;padding-left:0;padding-top:28px;}
+  .brand-hero-inner{flex-direction:row;min-height:auto;padding:28px 4%;align-items:center;}
+  .bh-logo-side{flex:1;padding-right:12px;padding-bottom:0;}
+  .bh-logo-side img{max-height:200px;}
+  .bh-divider{width:1px;height:160px;background:linear-gradient(to bottom,transparent,rgba(32,255,123,.35),transparent);}
+  .bh-info-side{flex:0 0 44%;width:auto;padding-left:16px;padding-top:0;}
+  .bh-section-title{font-size:9px;margin-bottom:8px;}
+  .bh-item{margin-top:14px;gap:9px;}
+  .bh-item-icon{width:24px;height:24px;border-radius:4px;}
+  .bh-item-label{font-size:8px;}
+  .bh-item-value{font-size:14px;}
+  .bh-item-value.mono{font-size:13px;}
 }
 
 /* ── PRINT HEADER (hidden on screen) ── */
@@ -757,7 +763,7 @@ function renderProof(proof) {
     approvedText.style.display = 'block';
     approvedText.innerHTML = `Approved by <strong>${esc(proof.approved_by_name)}</strong> on ${formatDate(proof.approved_at)}`;
   } else {
-    pillWrap.innerHTML = `<span class="status-pill pending"><span class="dot"></span>Pending Approval</span>`;
+    banner.style.display = 'none';
   }
 
   // Job info — compact bar
