@@ -55,7 +55,7 @@ img{display:block;max-width:100%;}
 #brand-hero{display:none;}
 .brand-hero-inner{
   display:flex;align-items:center;gap:0;
-  padding:48px 5%;min-height:360px;
+  padding:48px 5%;min-height:calc(100vh - 68px);
   background:var(--charcoal);
   border-bottom:1px solid var(--line);
   position:relative;overflow:hidden;
@@ -81,7 +81,7 @@ img{display:block;max-width:100%;}
   animation:bHeroCard .68s cubic-bezier(.16,1,.3,1) both;
 }
 .bh-logo-side img{
-  max-height:360px;max-width:100%;
+  max-height:520px;max-width:100%;
   width:auto;height:auto;display:block;object-fit:contain;
 }
 /* Vertical divider */
@@ -91,7 +91,7 @@ img{display:block;max-width:100%;}
 }
 /* Info side */
 .bh-info-side{
-  flex:0 0 auto;width:270px;padding-left:44px;
+  flex:0 0 auto;width:320px;padding-left:44px;
   position:relative;z-index:1;
   animation:bHeroName .68s .14s cubic-bezier(.16,1,.3,1) both;
 }
@@ -112,9 +112,9 @@ img{display:block;max-width:100%;}
   color:var(--muted);margin-bottom:5px;
 }
 .bh-item-value{
-  font-size:17px;font-weight:700;color:var(--white);line-height:1.25;
+  font-size:20px;font-weight:700;color:var(--white);line-height:1.25;
 }
-.bh-item-value.mono{font-family:monospace;font-size:16px;letter-spacing:.04em;}
+.bh-item-value.mono{font-family:monospace;font-size:18px;letter-spacing:.04em;}
 .bh-item-value.st-pending{color:var(--yel);}
 .bh-item-value.st-approved{color:var(--gb);}
 @keyframes bHeroCard{
@@ -389,9 +389,9 @@ img{display:block;max-width:100%;}
   .pricing-table th:nth-child(3),.pricing-table td:nth-child(3){display:none;}
   .header-date{display:none;}
   #success-state{padding:48px 16px;}
-  .brand-hero-inner{flex-direction:column;min-height:auto;padding:32px 5%;}
-  .bh-logo-side{padding-right:0;padding-bottom:28px;max-width:280px;width:100%;}
-  .bh-logo-side img{max-height:260px;}
+  .brand-hero-inner{flex-direction:column;min-height:auto;padding:40px 5%;}
+  .bh-logo-side{padding-right:0;padding-bottom:32px;max-width:340px;width:100%;}
+  .bh-logo-side img{max-height:340px;}
   .bh-divider{width:80%;height:1px;background:linear-gradient(to right,transparent,rgba(32,255,123,.35),transparent);}
   .bh-info-side{width:100%;padding-left:0;padding-top:28px;}
 }
