@@ -1214,7 +1214,8 @@ document.getElementById('proof-form').addEventListener('submit', async (e) => {
     customer_phone: document.getElementById('f-phone').value.trim(),
     customer_company: document.getElementById('f-company').value.trim(),
     customer_logo_url: customerLogoUrl || null,
-    mockup_urls: mockups.map(m => ({ url: m.url, w: m.w, h: m.h, label: m.label })),
+    mockup_urls: mockups.map(m => m.url),
+    mockup_dimensions: mockups.map(m => ({ w: m.w, h: m.h, label: m.label })),
     pricing_items: pricingRows.filter(r => r.description || r.qty || r.rate).map(r => ({
       description: r.description,
       qty: parseFloat(r.qty) || 0,

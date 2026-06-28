@@ -738,11 +738,14 @@ function renderProof(proof) {
     </div>
   `;
 
-  // Mockup images — support both legacy string[] and new {url,w,h,label}[]
-  const rawMockups = proof.mockup_urls || [];
-  const mockupItems = rawMockups.map(item =>
-    typeof item === 'string' ? { url: item, w: '', h: '', label: '' } : item
-  );
+  // Mockup images — merge string URL array with optional dimensions array
+  const rawUrls = proof.mockup_urls || [];
+  const rawDims = proof.mockup_dimensions || [];
+  const mockupItems = rawUrls.map((u, i) => {
+    const url = typeof u === 'string' ? u : (u && u.url) || '';
+    const dim = rawDims[i] || {};
+    return { url, w: dim.w || '', h: dim.h || '', label: dim.label || '' };
+  }).filter(m => m.url);
   if (mockupItems.length) {
     document.getElementById('mockup-section').style.display = 'block';
     const gallery = document.getElementById('mockup-gallery');

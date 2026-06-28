@@ -119,13 +119,30 @@ exports.handler = async (event) => {
   // POST /proofs — create (admin)
   if (path === '/proofs' && method === 'POST') {
     if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
-    const { customer_name, customer_email, customer_phone, mockup_urls, pricing_items, deposit_amount, order_notes, policy_text } = body;
+    const { customer_name, customer_email, customer_phone, customer_company, customer_logo_url, mockup_urls, mockup_dimensions, pricing_items, deposit_amount, order_notes, policy_text } = body;
     if (!customer_name || !customer_email) return res(400, { error: 'Name and email required' });
+
+    // Ensure mockup_urls is stored as a plain string array (text[] column)
+    const cleanUrls = (mockup_urls || []).map(u => typeof u === 'string' ? u : (u && u.url) || '').filter(Boolean);
 
     const token = crypto.randomBytes(22).toString('hex');
     const { data, error } = await sb()
       .from('proofs')
-      .insert([{ token, customer_name, customer_email, customer_phone: customer_phone || null, mockup_urls: mockup_urls || [], pricing_items: pricing_items || [], deposit_amount: deposit_amount || null, order_notes: order_notes || null, policy_text: policy_text || '', status: 'pending' }])
+      .insert([{
+        token,
+        customer_name,
+        customer_email,
+        customer_phone: customer_phone || null,
+        customer_company: customer_company || null,
+        customer_logo_url: customer_logo_url || null,
+        mockup_urls: cleanUrls,
+        mockup_dimensions: mockup_dimensions || [],
+        pricing_items: pricing_items || [],
+        deposit_amount: deposit_amount || null,
+        order_notes: order_notes || null,
+        policy_text: policy_text || '',
+        status: 'pending'
+      }])
       .select()
       .single();
     if (error) return res(500, { error: error.message });
@@ -137,7 +154,7 @@ exports.handler = async (event) => {
   if (tokGet && method === 'GET') {
     const { data, error } = await sb()
       .from('proofs')
-      .select('token,customer_name,customer_phone,mockup_urls,pricing_items,deposit_amount,order_notes,policy_text,status,created_at,approved_at,approved_by_name')
+      .select('token,customer_name,customer_phone,customer_company,customer_logo_url,mockup_urls,mockup_dimensions,pricing_items,deposit_amount,order_notes,policy_text,status,created_at,approved_at,approved_by_name')
       .eq('token', tokGet[1])
       .single();
     if (error || !data) return res(404, { error: 'Proof not found' });

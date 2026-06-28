@@ -53,3 +53,9 @@ CREATE INDEX IF NOT EXISTS orders_created_idx ON orders (created_at DESC);
 -- Bucket name: proof-mockups
 -- Set bucket to PUBLIC so images are accessible via URL
 -- (Customer order artwork + mockups are stored under the orders/ prefix in this same bucket.)
+
+-- ── MIGRATION: run once to add new columns ──
+ALTER TABLE proofs
+  ADD COLUMN IF NOT EXISTS customer_company  text,
+  ADD COLUMN IF NOT EXISTS customer_logo_url text,
+  ADD COLUMN IF NOT EXISTS mockup_dimensions jsonb DEFAULT '[]';
