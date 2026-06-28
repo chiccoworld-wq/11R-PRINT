@@ -225,20 +225,101 @@ button{font-family:inherit;cursor:pointer;}
 .upload-zone-sub{font-size:12px;color:var(--muted);}
 .upload-link{color:var(--gb);text-decoration:underline;}
 
-.upload-previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
-.upload-thumb{
-  position:relative;width:90px;height:90px;border-radius:10px;overflow:hidden;
-  border:1px solid rgba(32,255,123,.25);background:var(--charcoal-2);flex-shrink:0;
+.upload-previews{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;}
+
+/* Per-mockup card with dimension inputs */
+.mockup-upload-card{
+  width:158px;background:var(--charcoal-2);flex-shrink:0;
+  border:1px solid rgba(32,255,123,.22);border-radius:12px;overflow:hidden;
+  transition:border-color .2s;
 }
-.upload-thumb img{width:100%;height:100%;object-fit:cover;}
-.upload-thumb .del-img{
-  position:absolute;top:4px;right:4px;
-  background:rgba(0,0,0,.7);border:none;border-radius:50%;
-  width:22px;height:22px;color:var(--white);font-size:12px;cursor:pointer;
+.mockup-upload-card:hover{border-color:rgba(32,255,123,.5);}
+.mockup-card-preview{
+  position:relative;height:120px;background:var(--charcoal);
   display:flex;align-items:center;justify-content:center;
 }
-.upload-thumb .del-img:hover{background:var(--danger);}
-.upload-thumb.pdf-thumb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:var(--muted);}
+.mockup-card-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+.mockup-card-preview .del-img{
+  position:absolute;top:5px;right:5px;
+  background:rgba(0,0,0,.78);border:none;border-radius:50%;
+  width:22px;height:22px;color:var(--white);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.mockup-card-preview .del-img:hover{background:var(--danger);}
+.mockup-card-dims{padding:8px 8px 10px;display:flex;flex-direction:column;gap:5px;}
+.dim-size-row{display:flex;align-items:center;gap:3px;}
+.dim-inp{
+  flex:1;min-width:0;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:5px;
+  color:var(--white);padding:5px 4px;font-size:12px;font-weight:700;
+  outline:none;font-family:inherit;text-align:center;transition:border-color .15s;
+}
+.dim-inp:focus{border-color:var(--gb);}
+.dim-inp::placeholder{color:rgba(255,255,255,.25);font-weight:400;}
+.dim-unit{font-size:9px;color:var(--muted);font-weight:900;flex-shrink:0;letter-spacing:.04em;}
+.dim-sep{font-size:10px;color:var(--muted);font-weight:900;flex-shrink:0;padding:0 1px;}
+.dim-label-inp{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line);
+  border-radius:5px;color:var(--muted);padding:5px 6px;
+  font-size:10px;outline:none;font-family:inherit;transition:border-color .15s,color .15s;
+}
+.dim-label-inp:focus{border-color:rgba(32,255,123,.35);color:var(--white);}
+.dim-label-inp::placeholder{font-size:10px;color:rgba(255,255,255,.2);}
+.dim-section-hint{
+  font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;
+  margin-top:4px;opacity:.6;
+}
+
+/* ── CUSTOMER LOGO UPLOAD CARD ── */
+.logo-upload-card{
+  background:var(--charcoal);
+  border:1.5px dashed rgba(32,255,123,.28);
+  border-radius:14px;
+  display:flex;align-items:center;gap:16px;
+  padding:18px 22px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+  min-height:82px;
+}
+.logo-upload-card:hover,.logo-upload-card.drag{
+  border-color:var(--gb);background:rgba(32,255,123,.04);
+}
+.lup-icon{
+  width:50px;height:50px;flex-shrink:0;
+  border:1.5px dashed rgba(32,255,123,.3);border-radius:10px;
+  background:rgba(32,255,123,.05);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;transition:border-color .2s;
+}
+.logo-upload-card:hover .lup-icon{border-color:rgba(32,255,123,.6);}
+.lup-title{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--white);margin-bottom:3px;}
+.lup-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+.lup-badge{
+  margin-left:auto;flex-shrink:0;
+  font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;
+}
+
+.logo-preview-bar{
+  display:none;
+  background:rgba(32,255,123,.04);border:1px solid rgba(32,255,123,.3);
+  border-radius:14px;padding:14px 18px;
+  align-items:center;gap:16px;
+}
+.logo-preview-box{
+  width:100px;height:64px;background:#fff;border-radius:10px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-preview-box img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.logo-preview-info{flex:1;}
+.logo-preview-ok{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--gb);margin-bottom:4px;}
+.logo-preview-note{font-size:12px;color:var(--muted);}
+.btn-remove-logo{
+  background:transparent;border:1px solid var(--line);border-radius:8px;
+  color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.08em;
+  text-transform:uppercase;padding:7px 14px;cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.btn-remove-logo:hover{border-color:rgba(255,77,77,.4);color:var(--danger);}
 
 /* Pricing table */
 .pricing-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
@@ -454,6 +535,32 @@ button{font-family:inherit;cursor:pointer;}
     <div id="tab-new-proof" style="display:none">
       <form id="proof-form">
 
+        <!-- STEP 0: Customer Logo (optional) -->
+        <div class="form-section">
+          <div class="form-section-title">00 — Customer Brand Logo <span style="font-size:9px;color:var(--muted);letter-spacing:.1em;font-weight:700">OPTIONAL</span></div>
+
+          <!-- Upload state -->
+          <div class="logo-upload-card" id="logo-upload-card">
+            <div class="lup-icon">🏷️</div>
+            <div>
+              <div class="lup-title">Upload Customer Logo</div>
+              <div class="lup-sub">Displays as a branded header on their proof page.<br/>Leave blank if they don't have a logo.</div>
+            </div>
+            <span class="lup-badge">Optional</span>
+          </div>
+          <input type="file" id="logo-file-input" accept="image/*" style="display:none"/>
+
+          <!-- Preview state (hidden until logo uploaded) -->
+          <div class="logo-preview-bar" id="logo-preview-bar">
+            <div class="logo-preview-box"><img id="logo-preview-img" src="" alt="Logo"/></div>
+            <div class="logo-preview-info">
+              <div class="logo-preview-ok">✓ Logo Ready</div>
+              <div class="logo-preview-note">Will display at the top of the customer's proof page.</div>
+            </div>
+            <button type="button" class="btn-remove-logo" id="remove-logo-btn">Remove ×</button>
+          </div>
+        </div>
+
         <!-- STEP 1: Customer -->
         <div class="form-section">
           <div class="form-section-title">01 — Customer Info</div>
@@ -561,7 +668,8 @@ button{font-family:inherit;cursor:pointer;}
 <script>
 const API = '/api';
 let adminKey = sessionStorage.getItem('11r_ak') || '';
-let mockupUrls = [];
+let mockups = []; // [{id,url,w,h,label}]
+let customerLogoUrl = '';
 let pricingRows = [];
 let proofs = [];
 let orders = [];
@@ -872,6 +980,62 @@ async function deleteProof(token, btn) {
   }
 }
 
+// ── LOGO UPLOAD ──
+const logoCard  = document.getElementById('logo-upload-card');
+const logoInput = document.getElementById('logo-file-input');
+
+logoCard.addEventListener('click', () => logoInput.click());
+logoCard.addEventListener('dragover', e => { e.preventDefault(); logoCard.classList.add('drag'); });
+logoCard.addEventListener('dragleave', () => logoCard.classList.remove('drag'));
+logoCard.addEventListener('drop', e => {
+  e.preventDefault(); logoCard.classList.remove('drag');
+  if (e.dataTransfer.files[0]) handleLogoFile(e.dataTransfer.files[0]);
+});
+logoInput.addEventListener('change', () => { if (logoInput.files[0]) handleLogoFile(logoInput.files[0]); });
+document.getElementById('remove-logo-btn').addEventListener('click', removeLogo);
+
+async function handleLogoFile(file) {
+  logoCard.innerHTML = `<div class="lup-icon"><div class="spinner" style="width:22px;height:22px;border-width:2px;margin:0"></div></div><div><div class="lup-title">Uploading…</div><div class="lup-sub">${file.name}</div></div>`;
+
+  const r = await fetch(`${API}/upload-url`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify({ filename: 'logo_' + file.name })
+  }).catch(() => null);
+
+  if (!r || !r.ok) {
+    showToast('Logo upload failed');
+    resetLogoCard(); return;
+  }
+  const { signedUrl, publicUrl } = await r.json();
+
+  const up = await fetch(signedUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type || 'image/png' },
+    body: file
+  }).catch(() => null);
+
+  if (!up || !up.ok) { showToast('Logo upload failed'); resetLogoCard(); return; }
+
+  customerLogoUrl = publicUrl;
+  logoCard.style.display = 'none';
+  const bar = document.getElementById('logo-preview-bar');
+  document.getElementById('logo-preview-img').src = publicUrl;
+  bar.style.display = 'flex';
+}
+
+function removeLogo() {
+  customerLogoUrl = '';
+  document.getElementById('logo-preview-bar').style.display = 'none';
+  resetLogoCard();
+  logoInput.value = '';
+}
+
+function resetLogoCard() {
+  logoCard.style.display = 'flex';
+  logoCard.innerHTML = `<div class="lup-icon">🏷️</div><div><div class="lup-title">Upload Customer Logo</div><div class="lup-sub">Displays as a branded header on their proof page.<br/>Leave blank if they don't have a logo.</div></div><span class="lup-badge">Optional</span>`;
+}
+
 // ── FILE UPLOAD ──
 const uploadZone = document.getElementById('upload-zone');
 const fileInput = document.getElementById('file-input');
@@ -917,27 +1081,55 @@ async function handleFiles(files) {
       continue;
     }
 
-    mockupUrls.push(publicUrl);
-    addThumb(publicUrl, file.type, file.name);
+    const entry = { id: 'mo_' + Date.now() + '_' + Math.random().toString(36).slice(2,5), url: publicUrl, w: '', h: '', label: '' };
+    mockups.push(entry);
+    addThumb(entry, file.type, file.name);
     resetUploadZone();
   }
 }
 
-function addThumb(url, type, name) {
+function addThumb(entry, type, name) {
   const preview = document.getElementById('upload-previews');
   const div = document.createElement('div');
-  div.className = 'upload-thumb' + (type.includes('pdf') ? ' pdf-thumb' : '');
-  if (type.includes('image')) {
-    div.innerHTML = `<img src="${url}" alt="mockup"/><button type="button" class="del-img" onclick="removeImg('${url}',this)">×</button>`;
-  } else {
-    div.innerHTML = `<div style="font-size:22px">📄</div><span>${name.split('.').pop().toUpperCase()}</span><button type="button" class="del-img" onclick="removeImg('${url}',this)">×</button>`;
-  }
+  div.className = 'mockup-upload-card';
+  div.dataset.id = entry.id;
+
+  const previewBlock = type.includes('image')
+    ? `<img src="${entry.url}" alt="mockup"/>`
+    : `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="font-size:26px">📄</div><span style="font-size:10px;color:var(--muted);font-weight:900">${name.split('.').pop().toUpperCase()}</span></div>`;
+
+  div.innerHTML = `
+    <div class="mockup-card-preview">
+      ${previewBlock}
+      <button type="button" class="del-img" onclick="removeImg('${entry.id}')">×</button>
+    </div>
+    <div class="mockup-card-dims">
+      <div class="dim-size-row">
+        <input type="text" class="dim-inp" placeholder="3.75" title="Width in inches"
+          oninput="updateMockupDim('${entry.id}','w',this.value)"/>
+        <span class="dim-unit">w</span>
+        <span class="dim-sep">×</span>
+        <input type="text" class="dim-inp" placeholder="4.1" title="Height in inches"
+          oninput="updateMockupDim('${entry.id}','h',this.value)"/>
+        <span class="dim-unit">h</span>
+        <span class="dim-unit" style="margin-left:1px">"</span>
+      </div>
+      <input type="text" class="dim-label-inp" placeholder='Label (e.g. Front)'
+        oninput="updateMockupDim('${entry.id}','label',this.value)"/>
+    </div>
+  `;
   preview.appendChild(div);
 }
 
-function removeImg(url, btn) {
-  mockupUrls = mockupUrls.filter(u => u !== url);
-  btn.closest('.upload-thumb').remove();
+function updateMockupDim(id, field, val) {
+  const m = mockups.find(x => x.id === id);
+  if (m) m[field] = val;
+}
+
+function removeImg(id) {
+  mockups = mockups.filter(m => m.id !== id);
+  const card = document.querySelector(`.mockup-upload-card[data-id="${id}"]`);
+  if (card) card.remove();
 }
 
 function resetUploadZone() {
@@ -1020,7 +1212,9 @@ document.getElementById('proof-form').addEventListener('submit', async (e) => {
     customer_name: document.getElementById('f-name').value.trim(),
     customer_email: document.getElementById('f-email').value.trim(),
     customer_phone: document.getElementById('f-phone').value.trim(),
-    mockup_urls: [...mockupUrls],
+    customer_company: document.getElementById('f-company').value.trim(),
+    customer_logo_url: customerLogoUrl || null,
+    mockup_urls: mockups.map(m => ({ url: m.url, w: m.w, h: m.h, label: m.label })),
     pricing_items: pricingRows.filter(r => r.description || r.qty || r.rate).map(r => ({
       description: r.description,
       qty: parseFloat(r.qty) || 0,
@@ -1057,9 +1251,10 @@ document.getElementById('proof-form').addEventListener('submit', async (e) => {
 
   // Reset form
   document.getElementById('proof-form').reset();
-  mockupUrls = [];
+  mockups = [];
   document.getElementById('upload-previews').innerHTML = '';
   resetUploadZone();
+  removeLogo();
   initPricingRow();
   loadProofs();
 });
