@@ -75,19 +75,15 @@ img{display:block;max-width:100%;}
   background:radial-gradient(ellipse,rgba(32,255,123,.075) 0%,transparent 68%);
   pointer-events:none;
 }
-/* White logo card */
+/* Logo display — no background, no box */
 .brand-logo-card{
   display:inline-flex;align-items:center;justify-content:center;
-  background:#ffffff;
-  border-radius:20px;
-  padding:22px 36px;
-  box-shadow:0 14px 70px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12),0 0 60px rgba(32,255,123,.06);
   margin-bottom:22px;
   position:relative;z-index:1;
   animation:bHeroCard .68s cubic-bezier(.16,1,.3,1) both;
 }
 .brand-logo-card img{
-  max-height:90px;max-width:300px;
+  max-height:160px;max-width:420px;
   width:auto;height:auto;display:block;
 }
 .brand-company-name{
@@ -698,7 +694,6 @@ function renderProof(proof) {
         <img src="${esc(proof.customer_logo_url)}" alt="${esc(displayName)} logo" onerror="this.closest('.brand-logo-card').style.display='none'"/>
       </div>
       ${displayName ? `<div class="brand-company-name">${esc(displayName)}</div>` : ''}
-      <div class="brand-attr-line">Art Proof by 11R Print</div>
     </div>`;
   }
 
@@ -753,34 +748,32 @@ function renderProof(proof) {
       const url = item.url || item;
       const isPdf = url.toLowerCase().includes('.pdf');
 
-      let metaRow = '';
-      const hasSize  = item.w || item.h;
-      const hasLabel = item.label && item.label.trim();
-      if (hasSize || hasLabel) {
-        const labelPart = hasLabel ? `<span class="mockup-label-tag">${esc(item.label)}</span>` : '';
-        const sizePart  = hasSize
-          ? `<span class="mockup-size-tag"><span class="sz-val">${esc(item.w || '—')}"</span> w × <span class="sz-val">${esc(item.h || '—')}"</span> h</span>`
-          : '';
-        metaRow = `<div class="mockup-meta-row">${labelPart}${sizePart}</div>`;
-      }
+      const labelPart = (item.label && item.label.trim()) ? `<span class="mockup-label-tag">${esc(item.label)}</span>` : '';
+      const wVal = (item.w && String(item.w).trim()) ? String(item.w).trim() : '—';
+      const hVal = (item.h && String(item.h).trim()) ? String(item.h).trim() : '—';
 
       if (isPdf) {
         const name = url.split('/').pop();
+        const pdfMeta = labelPart ? `<div class="mockup-meta-row">${labelPart}</div>` : '';
         return `<div>
           <a href="${url}" target="_blank" class="mockup-pdf-link">
             <div class="pdf-icon">📄</div>
             <div class="pdf-info"><div class="pdf-name">${esc(name)}</div><div class="pdf-type">PDF — Tap to Open</div></div>
             <div class="pdf-arrow">→</div>
           </a>
-          ${metaRow}
+          ${pdfMeta}
         </div>`;
       }
+      const sizeRow = `<div class="mockup-meta-row">
+        ${labelPart}
+        <span class="mockup-size-tag"><span class="sz-val">${esc(wVal)}"</span> w × <span class="sz-val">${esc(hVal)}"</span> h</span>
+      </div>`;
       return `<div>
         <div class="mockup-img-wrap" onclick="openLightbox('${url}')">
           <img src="${url}" alt="Art proof mockup" loading="eager"/>
           <div class="mockup-zoom-hint">Tap to zoom</div>
         </div>
-        ${metaRow}
+        ${sizeRow}
       </div>`;
     }).join('');
   }
