@@ -1,17 +1,11 @@
 import { generate } from '@pdfme/generator';
 import { text, image, table, line, rectangle } from '@pdfme/schemas';
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let _font = null;
 let _logo = null;
 
 async function getFont() {
   if (_font) return _font;
-  // TTF only — WOFF2 triggers subsetting bug in pdfme/fontkit
   const r = await fetch(
     'https://fonts.gstatic.com/s/notosans/v42/o-0mIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A99d.ttf'
   );
@@ -22,14 +16,6 @@ async function getFont() {
 
 async function getLogo() {
   if (_logo) return _logo;
-  // Load black & green logo bundled with the function
-  try {
-    const logoPath = join(__dirname, '../../public/images/11r-logo-black.png');
-    const buf = readFileSync(logoPath);
-    _logo = `data:image/png;base64,${buf.toString('base64')}`;
-    return _logo;
-  } catch (_) {}
-  // Fallback: fetch from live site
   try {
     const r = await fetch('https://11rprint.com/images/11r-logo-black.png');
     if (r.ok) {
