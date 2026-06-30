@@ -406,10 +406,11 @@ img { display: block; max-width: 100%; }
 .showcase-client {
   font-size: clamp(30px, 5.5vw, 64px);
   font-weight: 900;
-  letter-spacing: -.03em;
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
   color: #fff;
   margin: 0 0 10px;
-  line-height: 1;
+  line-height: .87;
 }
 .showcase-detail {
   font-size: 11px;
