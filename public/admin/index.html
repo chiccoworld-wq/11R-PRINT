@@ -511,6 +511,7 @@ button{font-family:inherit;cursor:pointer;}
     <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
     <button class="tab-btn" data-tab="new-proof">New Proof</button>
     <button class="tab-btn" data-tab="orders">Customer Orders</button>
+    <button class="tab-btn" data-tab="quotes">Quote Requests</button>
   </div>
 
   <main class="main">
@@ -655,6 +656,20 @@ button{font-family:inherit;cursor:pointer;}
         <button class="btn-sm green" id="ord-refresh-btn">↻ Refresh</button>
       </div>
       <div class="proof-list" id="orders-list">
+        <div class="empty-state"><h3>Loading...</h3></div>
+      </div>
+    </div>
+
+    <!-- ── QUOTE REQUESTS TAB ── -->
+    <div id="tab-quotes" style="display:none">
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num green" id="qt-stat-total">—</div><div class="stat-label">Total Quotes</div></div>
+      </div>
+      <div class="section-head">
+        <span class="section-title">Quote Requests</span>
+        <button class="btn-sm green" id="qt-refresh-btn">↻ Refresh</button>
+      </div>
+      <div class="proof-list" id="quotes-list">
         <div class="empty-state"><h3>Loading...</h3></div>
       </div>
     </div>
@@ -836,8 +851,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('tab-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
     document.getElementById('tab-new-proof').style.display = tab === 'new-proof' ? 'block' : 'none';
     document.getElementById('tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+    document.getElementById('tab-quotes').style.display = tab === 'quotes' ? 'block' : 'none';
     if (tab === 'dashboard') loadProofs();
     if (tab === 'orders') loadOrders();
+    if (tab === 'quotes') loadQuotes();
   });
 });
 
@@ -923,6 +940,75 @@ function emailOrderCustomer(name, email) {
 }
 
 document.getElementById('ord-refresh-btn').addEventListener('click', loadOrders);
+
+// ── QUOTE REQUESTS ──
+let quotes = [];
+
+async function loadQuotes() {
+  const el = document.getElementById('quotes-list');
+  const r = await fetch(`${API}/quotes`, { headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    const d = await r.json();
+    quotes = d.quotes || [];
+    renderQuotes();
+  } else {
+    el.innerHTML = '<div class="empty-state"><h3>Couldn\'t load quotes</h3><p>Check your connection and refresh.</p></div>';
+  }
+}
+
+function renderQuotes() {
+  const el = document.getElementById('quotes-list');
+  document.getElementById('qt-stat-total').textContent = quotes.length;
+
+  if (!quotes.length) {
+    el.innerHTML = '<div class="empty-state"><h3>No Quote Requests Yet</h3><p>Quote requests from the homepage form will appear here.</p></div>';
+    return;
+  }
+
+  el.innerHTML = quotes.map(q => {
+    const date = new Date(q.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return `<div class="proof-card">
+      <div>
+        <div class="proof-customer">${esc(q.name)}${q.business ? ' — ' + esc(q.business) : ''}</div>
+        <div class="proof-meta">${esc(q.email)}${q.phone ? ' · ' + esc(q.phone) : ''} · ${date}</div>
+      </div>
+      <div class="ord-detail" style="margin:10px 0;">
+        ${q.quantity ? `<div class="d"><b>Quantity</b>${esc(q.quantity)}</div>` : ''}
+        ${q.shirt_color ? `<div class="d"><b>Fabric</b>${esc(q.shirt_color)}</div>` : ''}
+        ${q.print_locations ? `<div class="d"><b>Print Locations</b>${esc(q.print_locations)}</div>` : ''}
+        ${q.deadline ? `<div class="d"><b>Deadline</b>${esc(q.deadline)}</div>` : ''}
+      </div>
+      ${q.message ? `<div class="ord-notes"><b>Project Details</b><br/>${esc(q.message)}</div>` : ''}
+      ${q.artwork_url ? `<div class="ord-notes"><b>Design File</b><br/><a href="${esc(q.artwork_url)}" target="_blank" style="color:#20ff7b;font-size:13px;">${esc(q.artwork_filename || 'View File')} ↗</a></div>` : ''}
+      <div class="proof-actions">
+        <button class="btn-sm green" onclick="emailQuoteCustomer('${esc(q.name)}','${esc(q.email)}')">Reply</button>
+        <button class="btn-sm red" onclick="deleteQuote('${q.id}', this)">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteQuote(id, btn) {
+  if (!confirm('Delete this quote request? This cannot be undone.')) return;
+  btn.disabled = true;
+  const r = await fetch(`${API}/quotes/${id}`, { method: 'DELETE', headers: { 'x-admin-key': adminKey } }).catch(() => null);
+  if (r && r.ok) {
+    quotes = quotes.filter(q => q.id !== id);
+    renderQuotes();
+    showToast('Quote deleted');
+  } else {
+    btn.disabled = false;
+    showToast('Delete failed');
+  }
+}
+
+function emailQuoteCustomer(name, email) {
+  const subject = encodeURIComponent('Your Quote Request — 11R Print');
+  const body = encodeURIComponent(`Hi ${name},\n\nThanks for reaching out! Here's what we've put together for you...\n\n— 11R Print\norders@11rprint.com`);
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+document.getElementById('qt-refresh-btn').addEventListener('click', loadQuotes);
 
 // ── PROOF LIST ──
 async function loadProofs() {

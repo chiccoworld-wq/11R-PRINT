@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>11R Print | Custom Screen Printing</title>
   <meta name="description" content="11R Print is a custom screen printing shop built for businesses, crews, brands, events, and teams. Screen printed, not pressed. Real ink. Real durability." />
   <link rel="stylesheet" href="style.css" />
@@ -334,9 +335,7 @@
           </div>
         </div>
 
-        <form class="quote-form reveal-up" action="https://formspree.io/f/xykabbqe" method="POST">
-          <input type="hidden" name="_subject" value="New 11R Print quote request" />
-
+        <form class="quote-form reveal-up" id="quote-form">
           <div class="form-row">
             <div class="form-field">
               <label for="q-name">Name *</label>
@@ -381,8 +380,135 @@
             <label for="q-message">Project Details *</label>
             <textarea id="q-message" name="message" placeholder="Describe what you need printed: design details, number of colors, special requests, and any other helpful notes." required></textarea>
           </div>
-          <button type="submit" class="submit-btn magnetic">Send Quote Request &rarr;</button>
+
+          <!-- Design / Logo File Upload -->
+          <div class="form-field full">
+            <label>Design / Logo Files</label>
+            <div id="q-upload-zone" style="border:1.5px dashed rgba(32,255,123,.35);border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:rgba(32,255,123,.03);" ondragover="qFileDragOver(event)" ondragleave="qFileDragLeave(event)" ondrop="qFileDrop(event)" onclick="document.getElementById('q-file-input').click()">
+              <div id="q-upload-idle">
+                <div style="font-size:26px;margin-bottom:8px;">📎</div>
+                <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;">Drop your file here or <span style="color:#20ff7b;text-decoration:underline;">click to browse</span></div>
+                <div style="font-size:12px;color:rgba(255,255,255,.4);">PNG · JPG · SVG · PDF · AI · EPS</div>
+              </div>
+              <div id="q-upload-progress" style="display:none;">
+                <div style="font-size:13px;color:rgba(255,255,255,.6);">Uploading…</div>
+              </div>
+              <div id="q-upload-done" style="display:none;align-items:center;gap:12px;justify-content:center;">
+                <div style="font-size:22px;">✓</div>
+                <div style="text-align:left;">
+                  <div id="q-file-name" style="font-size:13px;font-weight:700;color:#20ff7b;"></div>
+                  <div style="font-size:11px;color:rgba(255,255,255,.4);">File attached · <span style="cursor:pointer;color:rgba(255,100,100,.7);text-decoration:underline;" onclick="qRemoveFile(event)">Remove</span></div>
+                </div>
+              </div>
+            </div>
+            <input type="file" id="q-file-input" accept="image/*,.pdf,.ai,.eps,.svg" style="display:none" onchange="qFileSelected(this.files[0])"/>
+          </div>
+
+          <div id="quote-error" style="display:none;color:#ff6b6b;font-size:13px;margin-bottom:12px;"></div>
+          <button type="submit" class="submit-btn magnetic" id="quote-submit-btn">Send Quote Request &rarr;</button>
         </form>
+        <div id="quote-success" style="display:none;text-align:center;padding:40px 20px;">
+          <div style="font-size:32px;margin-bottom:12px;">✓</div>
+          <div style="font-size:20px;font-weight:900;margin-bottom:8px;">Quote Request Sent</div>
+          <div style="color:rgba(255,255,255,.6);font-size:14px;">We'll review your details and follow up within 1 business day.</div>
+        </div>
+        <script>
+          let qArtworkUrl = '';
+          let qArtworkFilename = '';
+          let qUploading = false;
+
+          function qFileDragOver(e) { e.preventDefault(); document.getElementById('q-upload-zone').style.borderColor = '#20ff7b'; document.getElementById('q-upload-zone').style.background = 'rgba(32,255,123,.07)'; }
+          function qFileDragLeave(e) { document.getElementById('q-upload-zone').style.borderColor = 'rgba(32,255,123,.35)'; document.getElementById('q-upload-zone').style.background = 'rgba(32,255,123,.03)'; }
+          function qFileDrop(e) { e.preventDefault(); qFileDragLeave(e); const f = e.dataTransfer.files[0]; if (f) qFileSelected(f); }
+
+          async function qFileSelected(file) {
+            if (!file) return;
+            const allowed = ['image/png','image/jpeg','image/jpg','image/svg+xml','image/webp','application/pdf'];
+            if (!allowed.includes(file.type) && !file.name.match(/\.(ai|eps|svg)$/i)) {
+              document.getElementById('quote-error').textContent = 'File type not supported. Use PNG, JPG, SVG, PDF, AI, or EPS.';
+              document.getElementById('quote-error').style.display = 'block';
+              return;
+            }
+            document.getElementById('q-upload-idle').style.display = 'none';
+            document.getElementById('q-upload-progress').style.display = 'block';
+            document.getElementById('q-upload-done').style.display = 'none';
+            qUploading = true;
+            try {
+              const urlRes = await fetch('/api/order-upload-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name })
+              });
+              if (!urlRes.ok) throw new Error('Upload failed');
+              const { signedUrl, publicUrl } = await urlRes.json();
+              await fetch(signedUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type || 'application/octet-stream' } });
+              qArtworkUrl = publicUrl;
+              qArtworkFilename = file.name;
+              document.getElementById('q-file-name').textContent = file.name;
+              document.getElementById('q-upload-progress').style.display = 'none';
+              document.getElementById('q-upload-done').style.display = 'flex';
+            } catch {
+              qArtworkUrl = ''; qArtworkFilename = '';
+              document.getElementById('q-upload-idle').style.display = 'block';
+              document.getElementById('q-upload-progress').style.display = 'none';
+              document.getElementById('quote-error').textContent = 'File upload failed. You can still submit without it.';
+              document.getElementById('quote-error').style.display = 'block';
+            }
+            qUploading = false;
+          }
+
+          function qRemoveFile(e) {
+            e.stopPropagation();
+            qArtworkUrl = ''; qArtworkFilename = '';
+            document.getElementById('q-upload-done').style.display = 'none';
+            document.getElementById('q-upload-idle').style.display = 'block';
+            document.getElementById('q-file-input').value = '';
+          }
+
+          document.getElementById('quote-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (qUploading) return;
+            const btn = document.getElementById('quote-submit-btn');
+            const errEl = document.getElementById('quote-error');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            errEl.style.display = 'none';
+            try {
+              const r = await fetch('/api/quotes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: document.getElementById('q-name').value.trim(),
+                  business: document.getElementById('q-business').value.trim(),
+                  email: document.getElementById('q-email').value.trim(),
+                  phone: document.getElementById('q-phone').value.trim(),
+                  quantity: document.getElementById('q-qty').value.trim(),
+                  shirt_color: document.getElementById('q-color').value.trim(),
+                  print_locations: document.getElementById('q-loc').value.trim(),
+                  deadline: document.getElementById('q-deadline').value.trim(),
+                  message: document.getElementById('q-message').value.trim(),
+                  artwork_url: qArtworkUrl || null,
+                  artwork_filename: qArtworkFilename || null
+                })
+              });
+              const d = await r.json();
+              if (r.ok) {
+                document.getElementById('quote-form').style.display = 'none';
+                document.getElementById('quote-success').style.display = 'block';
+              } else {
+                errEl.textContent = d.error || 'Something went wrong. Please try again.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Send Quote Request →';
+              }
+            } catch {
+              errEl.textContent = 'Network error. Please try again.';
+              errEl.style.display = 'block';
+              btn.disabled = false;
+              btn.textContent = 'Send Quote Request →';
+            }
+          });
+        </script>
 
       </div>
     </section>
@@ -433,7 +559,6 @@
         <a href="#process" class="mobile-link">Process</a>
         <a href="#quote" class="mobile-link">Quote</a>
         <a href="custom-order.html" class="mobile-link" style="color:var(--green-bright)">Start Order</a>
-        <a href="customer-dashboard.html" class="mobile-link">Customer Login</a>
       </nav>
 
       <div class="mobile-overlay-footer">

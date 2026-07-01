@@ -465,6 +465,80 @@ exports.handler = async (event) => {
     }
   }
 
+  // POST /quotes — submit quote from homepage (PUBLIC)
+  if (path === '/quotes' && method === 'POST') {
+    const q = body;
+    if (!q.name) return res(400, { error: 'Name required' });
+    if (!q.email) return res(400, { error: 'Email required' });
+    if (!q.message) return res(400, { error: 'Project details required' });
+
+    const { data, error } = await sb()
+      .from('quotes')
+      .insert([{
+        name: q.name,
+        business: q.business || null,
+        email: q.email,
+        phone: q.phone || null,
+        quantity: q.quantity || null,
+        shirt_color: q.shirt_color || null,
+        print_locations: q.print_locations || null,
+        deadline: q.deadline || null,
+        message: q.message,
+        artwork_url: q.artwork_url || null,
+        artwork_filename: q.artwork_filename || null
+      }])
+      .select()
+      .single();
+    if (error) return res(500, { error: error.message });
+
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_KEY) {
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Orders <orders@11rprint.com>',
+          to: 'orders@11rprint.com',
+          subject: `New Quote Request — ${q.name}`,
+          text: [
+            `New quote request from ${q.name}`,
+            q.business ? `Business: ${q.business}` : '',
+            `Email: ${q.email}`,
+            q.phone ? `Phone: ${q.phone}` : '',
+            q.quantity ? `Quantity: ${q.quantity}` : '',
+            q.shirt_color ? `Fabric: ${q.shirt_color}` : '',
+            q.print_locations ? `Print Locations: ${q.print_locations}` : '',
+            q.deadline ? `Deadline: ${q.deadline}` : '',
+            `\nDetails:\n${q.message}`,
+            q.artwork_url ? `\nArtwork File: ${q.artwork_url}` : ''
+          ].filter(Boolean).join('\n')
+        })
+      }).catch(() => {});
+    }
+
+    return res(200, { ok: true });
+  }
+
+  // GET /quotes — list quote requests (admin)
+  if (path === '/quotes' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb()
+      .from('quotes')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res(500, { error: error.message });
+    return res(200, { quotes: data });
+  }
+
+  // DELETE /quotes/:id (admin)
+  const quoteDel = path.match(/^\/quotes\/([a-f0-9-]+)$/);
+  if (quoteDel && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('quotes').delete().eq('id', quoteDel[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
   // GET /orders — list customer orders (admin)
   if (path === '/orders' && method === 'GET') {
     if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });

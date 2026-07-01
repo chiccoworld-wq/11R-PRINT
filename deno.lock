@@ -11,7 +11,12 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@supabase/supabase-js@^2.49.0"
+        "npm:@pdfme/common@^6.1.10",
+        "npm:@pdfme/generator@^6.1.10",
+        "npm:@pdfme/schemas@^6.1.10",
+        "npm:@sparticuz/chromium@119",
+        "npm:@supabase/supabase-js@^2.49.0",
+        "npm:puppeteer-core@19"
       ]
     }
   }
