@@ -1119,6 +1119,16 @@ textarea { min-height: 130px; resize: vertical; }
   color: #001708 !important;
 }
 
+/* ---- Customer Login nav link ---- */
+.nav-customer-login {
+  color: rgba(255,255,255,.65) !important;
+  font-size: 13px;
+  transition: color .2s;
+}
+.nav-customer-login:hover {
+  color: var(--green-bright) !important;
+}
+
 /* ---- CMYK / print decorations ---- */
 .crop {
   position: absolute;
