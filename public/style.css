@@ -3150,19 +3150,14 @@ textarea { min-height: 130px; resize: vertical; }
 
 .pcalc-shirt-wrap {
   flex-shrink: 0;
-  width: 72px;
-}
-.pcalc-shirt-wrap svg {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  width: 100px;
 }
 .pcalc-shirt-photo {
   width: 100%;
   height: auto;
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  display: block;
 }
 
 .pcalc-spec-chips {
