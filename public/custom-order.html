@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>Start Your Custom Order | 11R Print</title>
   <meta name="description" content="Design your custom screen printed apparel. Pick a product, choose a color, upload your artwork, and get an instant quote." />
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body class="order-page">
 
@@ -89,7 +89,7 @@
             <div class="pcalc-preview" id="pcalc-preview">
               <div class="pcalc-preview-top">
                 <div class="pcalc-shirt-wrap" id="pcalc-shirt-wrap" style="display:none">
-                  <img id="pcalc-shirt-photo" src="" alt="Garment photo" class="pcalc-shirt-photo"/>
+                  <img id="pcalc-shirt-photo" alt="Garment photo" class="pcalc-shirt-photo" loading="eager"/>
                 </div>
                 <div class="pcalc-spec-chips" id="pcalc-spec-chips"></div>
               </div>
@@ -228,7 +228,7 @@
                 material: '~100% Cotton', weight: '5.3 oz', fit: 'Classic Unisex', longSleeve: false,
                 colors: [
                   {n:'Black',h:'#1c1c1c'},
-                  {n:'White',h:'#f2f2f2',img:'images/garments/g500-white-front.jpg'},
+                  {n:'White',h:'#f2f2f2',img:'/images/garments/g500-white-front.jpg'},
                   {n:'Navy',h:'#1d2d5b'},
                   {n:'Sport Grey',h:'#9e9e9e'},{n:'Dark Heather',h:'#4a4a4a'},{n:'Red',h:'#bf2131'},
                   {n:'Royal',h:'#1a56a8'},{n:'Forest Green',h:'#1e5c32'},{n:'Charcoal',h:'#3c3c3c'},
@@ -380,8 +380,8 @@
               { name: 'G840 DryBlend Safety-Color Long Sleeve', style: 'Gildan G840', supplierCost: 6.00,
                 material: '50/50 Cotton/Polyester', weight: '5.5 oz', fit: 'Classic Unisex', longSleeve: true,
                 colors: [
-                  {n:'Safety Green',h:'#39e600',img:'images/garments/g840-safety-green-front.jpg'},
-                  {n:'Safety Orange',h:'#ff5500',img:'images/garments/g840-safety-orange-front.jpg'},
+                  {n:'Safety Green',h:'#39e600',img:'/images/garments/g840-safety-green-front.jpg'},
+                  {n:'Safety Orange',h:'#ff5500',img:'/images/garments/g840-safety-orange-front.jpg'},
                   {n:'Black',h:'#1c1c1c'},{n:'Navy',h:'#1d2d5b'}
                 ]
               },
