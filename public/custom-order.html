@@ -448,7 +448,7 @@
 
         function updatePreview(item) {
           var card = document.getElementById('pcalc-preview');
-          if (!item) { card.classList.remove('visible'); return; }
+          if (!item || item.style === '+$2.00/shirt handling') { card.classList.remove('visible'); return; }
 
           // Spec chips
           var chips = document.getElementById('pcalc-spec-chips');
