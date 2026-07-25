@@ -220,33 +220,35 @@
       (function() {
         var MARKUP = 2.50;
 
+        var D = '/images/garments/'; // base path shorthand
+
         var catalog = {
           'basic-tee': {
             label: 'Best-Value Basic T-Shirts',
             items: [
-              { name: 'G500 Basic Cotton T-Shirt',  style: 'Gildan G500',         supplierCost: 3.25,
-                material: '~100% Cotton', weight: '5.3 oz', fit: 'Classic Unisex', longSleeve: false,
+              { name: 'G500 Basic Cotton T-Shirt', style: 'Gildan G500', supplierCost: 3.25,
+                material: '~100% Cotton', weight: '5.3 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g500-heavy-cotton-t-shirt.webp',
                 colors: [
-                  {n:'Black',h:'#1c1c1c'},
-                  {n:'White',h:'#f2f2f2',img:'/images/garments/g500-white-front.jpg'},
-                  {n:'Navy',h:'#1d2d5b'},
-                  {n:'Sport Grey',h:'#9e9e9e'},{n:'Dark Heather',h:'#4a4a4a'},{n:'Red',h:'#bf2131'},
-                  {n:'Royal',h:'#1a56a8'},{n:'Forest Green',h:'#1e5c32'},{n:'Charcoal',h:'#3c3c3c'},
-                  {n:'Cardinal',h:'#7a1520'},{n:'Purple',h:'#4a2475'},{n:'Safety Green',h:'#39e600'},
-                  {n:'Safety Orange',h:'#ff5500'},{n:'Military Green',h:'#4a5c2a'}
+                  {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2',img:D+'g500-white-front.jpg'},
+                  {n:'Navy',h:'#1d2d5b'},{n:'Sport Grey',h:'#9e9e9e'},{n:'Dark Heather',h:'#4a4a4a'},
+                  {n:'Red',h:'#bf2131'},{n:'Royal',h:'#1a56a8'},{n:'Forest Green',h:'#1e5c32'},
+                  {n:'Charcoal',h:'#3c3c3c'},{n:'Cardinal',h:'#7a1520'},{n:'Purple',h:'#4a2475'},
+                  {n:'Safety Green',h:'#39e600'},{n:'Safety Orange',h:'#ff5500'},{n:'Military Green',h:'#4a5c2a'}
                 ]
               },
               { name: 'G640 Soft Basic T-Shirt', style: 'Gildan G640', supplierCost: 4.00,
-                material: 'Ring-Spun Cotton', weight: '4.5 oz', fit: 'Modern Unisex', longSleeve: false,
+                material: 'Ring-Spun Cotton', weight: '4.5 oz', fit: 'Modern Unisex',
+                defaultImg: D+'gildan-g640-softstyle-t-shirt.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
                   {n:'Sport Grey',h:'#9e9e9e'},{n:'Dark Heather',h:'#4a4a4a'},{n:'Red',h:'#bf2131'},
-                  {n:'Indigo',h:'#3a4a8c'},{n:'Maroon',h:'#6b1f2a'},{n:'Midnight',h:'#2a2a3a'},
-                  {n:'Charcoal',h:'#3c3c3c'}
+                  {n:'Indigo',h:'#3a4a8c'},{n:'Maroon',h:'#6b1f2a'},{n:'Midnight',h:'#2a2a3a'},{n:'Charcoal',h:'#3c3c3c'}
                 ]
               },
               { name: 'PC54 Core Cotton T-Shirt', style: 'Port & Company PC54', supplierCost: 3.48,
-                material: '~100% Cotton', weight: '5.4 oz', fit: 'Traditional Unisex', longSleeve: false,
+                material: '~100% Cotton', weight: '5.4 oz', fit: 'Traditional Unisex',
+                defaultImg: D+'port-company-pc54-core-cotton-t-shirt.webp',
                 colors: [
                   {n:'Jet Black',h:'#111111'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
                   {n:'Athletic Heather',h:'#b0b0b0'},{n:'Red',h:'#bf2131'},{n:'Royal',h:'#1a56a8'},
@@ -259,7 +261,8 @@
             label: 'Soft Premium T-Shirts',
             items: [
               { name: '3001C Premium Soft T-Shirt', style: 'Bella+Canvas 3001C', supplierCost: 5.50,
-                material: 'Airlume Combed Ring-Spun Cotton', weight: '4.2 oz', fit: 'Modern Unisex', longSleeve: false,
+                material: 'Airlume Combed Ring-Spun Cotton', weight: '4.2 oz', fit: 'Modern Unisex',
+                defaultImg: D+'bella-canvas-3001c-premium-soft-t-shirt.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Dark Grey Heather',h:'#4a4a4a'},
                   {n:'Navy',h:'#1d2d5b'},{n:'Red',h:'#bf2131'},{n:'True Royal',h:'#1a56a8'},
@@ -269,7 +272,8 @@
                 ]
               },
               { name: '6210 Premium CVC T-Shirt', style: 'Next Level 6210', supplierCost: 5.29,
-                material: 'Cotton/Poly CVC', weight: '4.3 oz', fit: 'Modern Unisex', longSleeve: false,
+                material: 'Cotton/Poly CVC', weight: '4.3 oz', fit: 'Modern Unisex',
+                defaultImg: D+'next-level-6210-premium-cvc-t-shirt.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Natural',h:'#e8e0d0'},
                   {n:'Heather Navy',h:'#2a3a5c'},{n:'Royal',h:'#1a56a8'},{n:'Forest',h:'#1e5c32'},
@@ -282,7 +286,8 @@
             label: 'Heavyweight Premium T-Shirts',
             items: [
               { name: 'C1717 Garment-Dyed Heavyweight T-Shirt', style: 'Comfort Colors C1717', supplierCost: 8.00,
-                material: 'Ring-Spun Cotton (Garment-Dyed)', weight: '6.1 oz', fit: 'Relaxed Unisex', longSleeve: false,
+                material: 'Ring-Spun Cotton (Garment-Dyed)', weight: '6.1 oz', fit: 'Relaxed Unisex',
+                defaultImg: D+'comfort-colors-c1717-garment-dyed-heavyweight-t-shirt.webp',
                 colors: [
                   {n:'Black',h:'#252220'},{n:'White',h:'#f0ede6'},{n:'Ivory',h:'#f5f0e0'},
                   {n:'Pepper',h:'#3d3a35'},{n:'Brick',h:'#7a3028'},{n:'Yam',h:'#c4622a'},
@@ -292,7 +297,8 @@
                 ]
               },
               { name: 'SHMHSS Max Heavyweight Streetwear T-Shirt', style: 'Shaka Wear SHMHSS', supplierCost: 9.29,
-                material: 'Heavyweight Cotton', weight: '7.5 oz', fit: 'Boxy Streetwear', longSleeve: false,
+                material: 'Heavyweight Cotton', weight: '7.5 oz', fit: 'Boxy Streetwear',
+                defaultImg: D+'shaka-wear-shmhss-max-heavyweight-t-shirt.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Dark Heather',h:'#4a4a4a'},
                   {n:'Navy',h:'#1d2d5b'},{n:'Khaki',h:'#c4a87a'},{n:'Light Pink',h:'#e8b0b8'},
@@ -305,7 +311,8 @@
             label: 'Basic Long-Sleeve Shirts',
             items: [
               { name: 'G540 Basic Cotton Long Sleeve', style: 'Gildan G540', supplierCost: 5.50,
-                material: '~100% Cotton', weight: '5.3 oz', fit: 'Classic Unisex', longSleeve: true,
+                material: '~100% Cotton', weight: '5.3 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g540-heavy-cotton-long-sleeve.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
                   {n:'Sport Grey',h:'#9e9e9e'},{n:'Dark Heather',h:'#4a4a4a'},{n:'Red',h:'#bf2131'},
@@ -314,7 +321,8 @@
                 ]
               },
               { name: 'PC54LS Core Cotton Long Sleeve', style: 'Port & Company PC54LS', supplierCost: 5.75,
-                material: '~100% Cotton', weight: '5.4 oz', fit: 'Traditional Unisex', longSleeve: true,
+                material: '~100% Cotton', weight: '5.4 oz', fit: 'Traditional Unisex',
+                defaultImg: D+'port-company-pc54ls-core-cotton-long-sleeve.webp',
                 colors: [
                   {n:'Jet Black',h:'#111111'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
                   {n:'Athletic Heather',h:'#b0b0b0'},{n:'Red',h:'#bf2131'},{n:'Royal',h:'#1a56a8'},
@@ -327,7 +335,8 @@
             label: 'Premium Long-Sleeve Shirts',
             items: [
               { name: '3501 Premium Soft Long Sleeve', style: 'Bella+Canvas 3501', supplierCost: 7.50,
-                material: 'Combed Ring-Spun Cotton', weight: '4.2 oz', fit: 'Modern Unisex', longSleeve: true,
+                material: 'Combed Ring-Spun Cotton', weight: '4.2 oz', fit: 'Modern Unisex',
+                defaultImg: D+'bella-canvas-3501-jersey-long-sleeve.webp',
                 colors: [
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Dark Grey Heather',h:'#4a4a4a'},
                   {n:'Navy',h:'#1d2d5b'},{n:'Forest',h:'#1e5c32'},{n:'Military Green',h:'#4a5c2a'},
@@ -336,7 +345,8 @@
                 ]
               },
               { name: '6014 Garment-Dyed Heavyweight Long Sleeve', style: 'Comfort Colors 6014', supplierCost: 10.00,
-                material: 'Ring-Spun Cotton (Garment-Dyed)', weight: '6.1 oz', fit: 'Relaxed Unisex', longSleeve: true,
+                material: 'Ring-Spun Cotton (Garment-Dyed)', weight: '6.1 oz', fit: 'Relaxed Unisex',
+                defaultImg: D+'comfort-colors-6014-garment-dyed-long-sleeve.webp',
                 colors: [
                   {n:'Black',h:'#252220'},{n:'White',h:'#f0ede6'},{n:'Ivory',h:'#f5f0e0'},
                   {n:'Pepper',h:'#3d3a35'},{n:'Brick',h:'#7a3028'},{n:'Yam',h:'#c4622a'},
@@ -350,13 +360,15 @@
             label: 'Safety-Color Short Sleeves',
             items: [
               { name: 'G500 Basic Safety-Color Work T-Shirt', style: 'Gildan G500', supplierCost: 3.25,
-                material: 'Cotton/Poly Blend', weight: '5.3 oz', fit: 'Classic Unisex', longSleeve: false,
+                material: 'Cotton/Poly Blend', weight: '5.3 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g500-safety-color-t-shirt.webp',
                 colors: [
                   {n:'Safety Green',h:'#39e600'},{n:'Safety Orange',h:'#ff5500'}
                 ]
               },
               { name: 'G800 DryBlend Safety-Color Work T-Shirt', style: 'Gildan G800', supplierCost: 5.29,
-                material: '50/50 Cotton/Polyester', weight: '5.5 oz', fit: 'Classic Unisex', longSleeve: false,
+                material: '50/50 Cotton/Polyester', weight: '5.5 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g800-dryblend-safety-color-t-shirt.webp',
                 colors: [
                   {n:'Safety Green',h:'#39e600'},{n:'Safety Orange',h:'#ff5500'},
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
@@ -364,12 +376,12 @@
                 ]
               },
               { name: 'N3142 Performance Safety-Color Work T-Shirt', style: 'A4 N3142', supplierCost: 6.50,
-                material: '100% Polyester', weight: '4.0 oz', fit: 'Athletic Unisex', longSleeve: false,
+                material: '100% Polyester', weight: '4.0 oz', fit: 'Athletic Unisex',
+                defaultImg: D+'a4-n3142-cooling-performance-t-shirt.webp',
                 colors: [
                   {n:'Safety Yellow',h:'#ffe600'},{n:'Safety Orange',h:'#ff5500'},{n:'Light Lime',h:'#b5f542'},
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'},
-                  {n:'Red',h:'#bf2131'},{n:'Royal',h:'#1a56a8'},{n:'Kelly Green',h:'#1a8c3a'},
-                  {n:'Gold',h:'#d4a017'}
+                  {n:'Red',h:'#bf2131'},{n:'Royal',h:'#1a56a8'},{n:'Kelly Green',h:'#1a8c3a'},{n:'Gold',h:'#d4a017'}
                 ]
               }
             ]
@@ -378,29 +390,33 @@
             label: 'Safety-Color Long Sleeves',
             items: [
               { name: 'G840 DryBlend Safety-Color Long Sleeve', style: 'Gildan G840', supplierCost: 6.00,
-                material: '50/50 Cotton/Polyester', weight: '5.5 oz', fit: 'Classic Unisex', longSleeve: true,
+                material: '50/50 Cotton/Polyester', weight: '5.5 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g840-dryblend-safety-color-long-sleeve.webp',
                 colors: [
-                  {n:'Safety Green',h:'#39e600',img:'/images/garments/g840-safety-green-front.jpg'},
-                  {n:'Safety Orange',h:'#ff5500',img:'/images/garments/g840-safety-orange-front.jpg'},
+                  {n:'Safety Green',h:'#39e600',img:D+'g840-safety-green-front.jpg'},
+                  {n:'Safety Orange',h:'#ff5500',img:D+'g840-safety-orange-front.jpg'},
                   {n:'Black',h:'#1c1c1c'},{n:'Navy',h:'#1d2d5b'}
                 ]
               },
               { name: '29L Dri-Power Safety-Color Long Sleeve', style: 'Jerzees 29L', supplierCost: 5.50,
-                material: '50/50 Cotton/Polyester', weight: '5.4 oz', fit: 'Traditional Unisex', longSleeve: true,
+                material: '50/50 Cotton/Polyester', weight: '5.4 oz', fit: 'Traditional Unisex',
+                defaultImg: D+'jerzees-29l-dri-power-safety-color-long-sleeve.webp',
                 colors: [
                   {n:'Safety Green',h:'#39e600'},{n:'Safety Orange',h:'#ff5500'},
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'}
                 ]
               },
               { name: 'G241 Heavyweight Safety-Color Pocket Long Sleeve', style: 'Gildan G241', supplierCost: 6.50,
-                material: '~100% Cotton', weight: '6.0 oz', fit: 'Classic Unisex', longSleeve: true,
+                material: '~100% Cotton', weight: '6.0 oz', fit: 'Classic Unisex',
+                defaultImg: D+'gildan-g241-ultra-cotton-long-sleeve-pocket-t-shirt.webp',
                 colors: [
                   {n:'Safety Green',h:'#39e600'},{n:'Safety Orange',h:'#ff5500'},
                   {n:'Black',h:'#1c1c1c'},{n:'Navy',h:'#1d2d5b'},{n:'Sport Grey',h:'#9e9e9e'}
                 ]
               },
               { name: 'N3165 Performance Safety-Color Long Sleeve', style: 'A4 N3165', supplierCost: 7.55,
-                material: '100% Polyester', weight: '4.0 oz', fit: 'Athletic Unisex', longSleeve: true,
+                material: '100% Polyester', weight: '4.0 oz', fit: 'Athletic Unisex',
+                defaultImg: D+'a4-n3165-cooling-performance-long-sleeve.webp',
                 colors: [
                   {n:'Safety Yellow',h:'#ffe600'},{n:'Safety Orange',h:'#ff5500'},{n:'Light Lime',h:'#b5f542'},
                   {n:'Black',h:'#1c1c1c'},{n:'White',h:'#f2f2f2'},{n:'Navy',h:'#1d2d5b'}
@@ -412,7 +428,7 @@
             label: 'Customer-Supplied Garment',
             items: [
               { name: 'Customer-Supplied Garment', style: '+$2.00/shirt handling', supplierCost: -0.50,
-                material: 'Your garment', weight: '—', fit: '—', longSleeve: false,
+                material: 'Your garment', weight: '—', fit: '—',
                 colors: [{n:'Your color',h:'#888888'}]
               }
             ]
@@ -421,6 +437,7 @@
 
         var currentItems = [];
         var currentColors = [];
+        var currentItem   = null;
         var selectedColorIdx = 0;
 
         function fmt(n) { return '$' + n.toFixed(2); }
@@ -433,9 +450,10 @@
 
           var photo = document.getElementById('pcalc-shirt-photo');
           var wrap  = document.getElementById('pcalc-shirt-wrap');
+          var src   = c.img || (currentItem && currentItem.defaultImg);
 
-          if (c.img) {
-            photo.src      = c.img;
+          if (src) {
+            photo.src          = src;
             wrap.style.display = '';
           } else {
             wrap.style.display = 'none';
@@ -457,6 +475,9 @@
             (item.weight !== '—' ? '<span class="pcalc-chip">' + item.weight + '</span>' : '') +
             (item.fit    !== '—' ? '<span class="pcalc-chip">' + item.fit    + '</span>' : '') +
             '<span class="pcalc-chip pcalc-chip-style">' + item.style + '</span>';
+
+          // Track active item for defaultImg fallback
+          currentItem = item;
 
           // Swatches
           currentColors = item.colors || [];
