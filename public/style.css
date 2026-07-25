@@ -3163,9 +3163,46 @@ textarea { min-height: 130px; resize: vertical; }
   .price-calc { padding: 60px 5% 80px; }
 }
 @media (max-width: 600px) {
-  .pcalc-per-price { font-size: 44px; }
-  .pcalc-output { padding: 24px 20px; }
-  .price-calc { padding: 50px 4% 70px; }
-  .pcalc-toggles { gap: 6px; }
-  .pcalc-tog { font-size: 11px; padding: 9px 14px; }
+  .price-calc { padding: 44px 4% 64px; }
+  .pcalc-head { margin-bottom: 32px; }
+  .pcalc-title { font-size: 26px; }
+
+  /* Controls stack tighter */
+  .pcalc-controls { gap: 18px; }
+  .pcalc-field label { margin-bottom: 8px; }
+
+  /* Color/location toggles: wrap and fill row evenly */
+  .pcalc-toggles { gap: 6px; flex-wrap: wrap; }
+  .pcalc-tog {
+    font-size: 12px;
+    padding: 10px 0;
+    flex: 1 1 calc(33.33% - 6px);
+    text-align: center;
+    min-width: 0;
+  }
+
+  /* Garment select full width already, just ensure readable */
+  .pcalc-select { font-size: 14px; padding: 12px 14px; }
+
+  /* Qty input row */
+  .pcalc-qty-wrap { gap: 10px; }
+  .pcalc-qty-num { width: 64px; font-size: 14px; padding: 8px 8px; }
+
+  /* Output card */
+  .pcalc-output { padding: 20px 16px; border-radius: 12px; }
+  .pcalc-per-price { font-size: 48px; }
+  .pcalc-result-main { padding-bottom: 18px; }
+
+  /* Receipt breakdown */
+  .pcalc-receipt-hdr { font-size: 8px; padding: 12px 0 4px; }
+  .pcalc-row { padding: 8px 0; }
+  .pcalc-row-info span:first-child { font-size: 12px; }
+  .pcalc-row-sub { font-size: 9px; }
+  .pcalc-row strong { font-size: 12px; }
+  .pcalc-total-row span { font-size: 13px; }
+  .pcalc-total-row strong { font-size: 16px; }
+
+  /* CTA button */
+  .pcalc-cta { font-size: 12px; padding: 13px; }
+  .pcalc-blanks-note { font-size: 10px; }
 }
