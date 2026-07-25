@@ -1012,6 +1012,10 @@ textarea { min-height: 130px; resize: vertical; }
 .mobile-overlay.open .mobile-link:nth-child(3) { transition-delay: 0.30s; }
 .mobile-overlay.open .mobile-link:nth-child(4) { transition-delay: 0.36s; }
 .mobile-overlay.open .mobile-link:nth-child(5) { transition-delay: 0.42s; }
+.mobile-overlay.open .mobile-link:nth-child(6) { transition-delay: 0.48s; }
+.mobile-instant-quote-link {
+  line-height: 0.98;
+}
 
 .mobile-overlay-footer {
   display: flex; flex-direction: column; gap: 16px;
