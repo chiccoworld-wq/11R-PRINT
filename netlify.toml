@@ -17,6 +17,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/quote-upload"
+  to = "/.netlify/functions/quote-upload"
+  status = 200
+
+[[redirects]]
+  from = "/api/quote-submit"
+  to = "/.netlify/functions/quote-submit"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"
   status = 200

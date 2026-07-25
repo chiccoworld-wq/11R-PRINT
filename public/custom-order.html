@@ -123,6 +123,16 @@
               <p class="pcalc-garment-note" id="pcalc-artwork-hint" style="display:none;margin-top:6px;"></p>
             </div>
 
+            <div class="pcalc-field" id="pcalc-upload-wrap" style="display:none;">
+              <label>Upload Your Artwork</label>
+              <div class="pcalc-upload-zone" id="pcalc-dropzone">
+                <input type="file" id="pcalc-file-input" accept=".ai,.eps,.svg,.pdf,.png,.psd,.jpg,.jpeg,.tif,.tiff,.webp" />
+                <div class="pcalc-upload-icon">↑</div>
+                <div class="pcalc-upload-label"><strong>Click to browse</strong> or drag & drop<br>AI, EPS, SVG, PDF, PNG, PSD, JPG accepted</div>
+              </div>
+              <div class="pcalc-upload-status" id="pcalc-upload-status"></div>
+            </div>
+
             <div class="pcalc-field">
               <label>Print Location</label>
               <div class="pcalc-toggles" id="pcalc-locs">
@@ -235,7 +245,7 @@
                 Customer-supplied garments may also react differently to heat, ink, pretreatment, and curing. For this reason, 11R Print cannot guarantee results on garments that were not purchased through our shop.
               </p>
 
-              <a href="index.html#quote" class="pcalc-cta" id="pcalc-cta-btn">Request a Free Quote →</a>
+              <button type="button" class="pcalc-cta" id="pcalc-cta-btn">SEND FOR REVIEW →</button>
             </div>
           </div><!-- /pcalc-output -->
 
@@ -1054,8 +1064,306 @@
     </div>
   </div>
 
+  <!-- Quote Request Modal -->
+  <div class="qmodal-overlay hidden" id="qmodal-overlay">
+    <div class="qmodal-box" id="qmodal-box">
+      <button class="qmodal-close" id="qmodal-close" aria-label="Close">×</button>
+      <p class="qmodal-title">Request a Review</p>
+      <p class="qmodal-sub">Fill in your details and we'll confirm your quote after reviewing your order.</p>
+
+      <p class="qmodal-section">Contact Information</p>
+
+      <div class="qmodal-field">
+        <label>Full Name <span>*</span></label>
+        <p class="qmodal-hint">Enter your first and last name.</p>
+        <input class="qmodal-input" type="text" id="qm-name" placeholder="Jane Smith" />
+      </div>
+      <div class="qmodal-field">
+        <label>Business Name</label>
+        <p class="qmodal-hint">Optional</p>
+        <input class="qmodal-input" type="text" id="qm-biz" placeholder="Optional" />
+      </div>
+      <div class="qmodal-field">
+        <label>Email Address <span>*</span></label>
+        <p class="qmodal-hint">We'll send your quote and order updates here.</p>
+        <input class="qmodal-input" type="email" id="qm-email" placeholder="you@example.com" />
+      </div>
+      <div class="qmodal-field">
+        <label>Phone Number <span>*</span></label>
+        <p class="qmodal-hint">Used only to contact you about your quote.</p>
+        <input class="qmodal-input" type="tel" id="qm-phone" placeholder="(407) 555-0100" />
+      </div>
+      <div class="qmodal-field">
+        <label>Preferred Contact Method <span>*</span></label>
+        <div class="qmodal-radios" id="qm-contact-radios">
+          <label class="qmodal-radio" data-val="text"><input type="radio" name="contact" value="text" /> Text</label>
+          <label class="qmodal-radio" data-val="email"><input type="radio" name="contact" value="email" /> Email</label>
+          <label class="qmodal-radio" data-val="call"><input type="radio" name="contact" value="call" /> Phone Call</label>
+        </div>
+      </div>
+
+      <p class="qmodal-section">Delivery Details</p>
+
+      <div class="qmodal-field">
+        <label>Date Needed <span>*</span></label>
+        <p class="qmodal-hint">Select the date you need the order completed.</p>
+        <input class="qmodal-input" type="date" id="qm-date" />
+      </div>
+      <div class="qmodal-field">
+        <label>Order Delivery <span>*</span></label>
+        <div class="qmodal-radios" id="qm-delivery-radios">
+          <label class="qmodal-radio" data-val="pickup"><input type="radio" name="delivery" value="pickup" /> Local Pickup</label>
+          <label class="qmodal-radio" data-val="shipping"><input type="radio" name="delivery" value="shipping" /> Shipping</label>
+        </div>
+        <div class="qmodal-zip" id="qm-zip-wrap">
+          <input class="qmodal-input" type="text" id="qm-zip" placeholder="Shipping ZIP Code" maxlength="10" />
+          <p class="qmodal-hint">Required only if shipping is selected.</p>
+        </div>
+      </div>
+
+      <div class="qmodal-field">
+        <label>Additional Notes</label>
+        <p class="qmodal-hint">Optional</p>
+        <textarea class="qmodal-input" id="qm-notes" rows="3" placeholder="Anything else we should know..."></textarea>
+      </div>
+
+      <label class="qmodal-agree" id="qm-agree-label">
+        <input type="checkbox" id="qm-agree" />
+        <span>I understand that this is an estimated quote and that final pricing is confirmed after 11R Print reviews my artwork and order requirements.</span>
+      </label>
+
+      <button class="qmodal-submit" id="qm-submit">Submit for Review</button>
+      <p class="qmodal-err" id="qm-err"></p>
+    </div>
+  </div>
+
+  <!-- Success screen -->
+  <div class="qmodal-overlay hidden" id="qmodal-success">
+    <div class="qmodal-box" style="text-align:center;padding:48px 28px;">
+      <div style="font-size:40px;margin-bottom:16px;">✓</div>
+      <h2 style="margin:0 0 8px;font-size:22px;">Request Sent!</h2>
+      <p style="color:#555;font-size:14px;margin:0 0 24px;">We've received your quote request. Eleven will review your order and reach out soon.</p>
+      <button class="qmodal-submit" style="max-width:200px;margin:0 auto;" onclick="document.getElementById('qmodal-success').classList.add('hidden')">Close</button>
+    </div>
+  </div>
+
   <!-- Fabric.js must load before script.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <script src="script.js"></script>
+
+  <script>
+  (function() {
+    // ── State ────────────────────────────────────────────────
+    var uploadedFileUrl  = null;
+    var uploadedFileName = null;
+    var selectedContact  = null;
+    var selectedDelivery = null;
+
+    // ── File Upload Zone ─────────────────────────────────────
+    var uploadWrap  = document.getElementById('pcalc-upload-wrap');
+    var dropzone    = document.getElementById('pcalc-dropzone');
+    var fileInput   = document.getElementById('pcalc-file-input');
+    var uploadStatus = document.getElementById('pcalc-upload-status');
+    var artworkSel2 = document.getElementById('pcalc-artwork');
+
+    // Show/hide upload for artwork options that need a file
+    artworkSel2.addEventListener('change', function() {
+      var showUpload = ['vector','hires','vectorize'].indexOf(this.value) !== -1;
+      uploadWrap.style.display = showUpload ? 'block' : 'none';
+      if (!showUpload) { uploadedFileUrl = null; uploadedFileName = null; uploadStatus.textContent = ''; uploadStatus.className = 'pcalc-upload-status'; }
+    });
+
+    dropzone.addEventListener('click', function() { fileInput.click(); });
+
+    dropzone.addEventListener('dragover', function(e) { e.preventDefault(); dropzone.classList.add('drag'); });
+    dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag'); });
+    dropzone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropzone.classList.remove('drag');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (this.files.length) handleFile(this.files[0]);
+    });
+
+    function handleFile(file) {
+      var MAX = 6 * 1024 * 1024; // 6MB
+      if (file.size > MAX) {
+        uploadStatus.textContent = 'File too large (max 6MB). Please compress or send via email.';
+        uploadStatus.className = 'pcalc-upload-status err';
+        return;
+      }
+      uploadStatus.textContent = 'Uploading…';
+      uploadStatus.className = 'pcalc-upload-status loading';
+      uploadedFileUrl  = null;
+      uploadedFileName = file.name;
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64 = e.target.result.split(',')[1];
+        fetch('/api/quote-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: file.name, type: file.type, data: base64 }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.url) {
+            uploadedFileUrl = data.url;
+            uploadStatus.textContent = '✓ ' + file.name + ' uploaded';
+            uploadStatus.className = 'pcalc-upload-status ok';
+          } else {
+            uploadStatus.textContent = 'Upload failed — attach your file via email if needed.';
+            uploadStatus.className = 'pcalc-upload-status err';
+          }
+        })
+        .catch(function() {
+          uploadStatus.textContent = 'Upload failed — attach your file via email if needed.';
+          uploadStatus.className = 'pcalc-upload-status err';
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── CTA → Open Modal ────────────────────────────────────
+    document.getElementById('pcalc-cta-btn').addEventListener('click', function() {
+      document.getElementById('qmodal-overlay').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeModal() {
+      document.getElementById('qmodal-overlay').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('qmodal-close').addEventListener('click', closeModal);
+    document.getElementById('qmodal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ── Radio buttons ────────────────────────────────────────
+    document.getElementById('qm-contact-radios').addEventListener('click', function(e) {
+      var lbl = e.target.closest('.qmodal-radio');
+      if (!lbl) return;
+      selectedContact = lbl.dataset.val;
+      document.querySelectorAll('#qm-contact-radios .qmodal-radio').forEach(function(l) {
+        l.classList.toggle('selected', l === lbl);
+      });
+    });
+
+    document.getElementById('qm-delivery-radios').addEventListener('click', function(e) {
+      var lbl = e.target.closest('.qmodal-radio');
+      if (!lbl) return;
+      selectedDelivery = lbl.dataset.val;
+      document.querySelectorAll('#qm-delivery-radios .qmodal-radio').forEach(function(l) {
+        l.classList.toggle('selected', l === lbl);
+      });
+      document.getElementById('qm-zip-wrap').classList.toggle('visible', selectedDelivery === 'shipping');
+    });
+
+    // ── Submit ───────────────────────────────────────────────
+    document.getElementById('qm-submit').addEventListener('click', function() {
+      var errEl  = document.getElementById('qm-err');
+      var btn    = this;
+      errEl.style.display = 'none';
+
+      // Collect calculator state from the DOM
+      var garmentSel   = document.getElementById('pcalc-garment');
+      var garmentName  = garmentSel.options[garmentSel.selectedIndex]
+                          ? garmentSel.options[garmentSel.selectedIndex].text.split('·')[0].trim()
+                          : '—';
+      var qty          = document.getElementById('pcalc-qty-n').value;
+      var total        = document.getElementById('pcalc-b-total').textContent;
+      var artworkVal   = document.getElementById('pcalc-artwork').value;
+      var locBtns      = document.querySelectorAll('#pcalc-locs .pcalc-tog.active');
+      var locLabel     = locBtns.length ? locBtns[0].textContent : '—';
+      var fColors      = document.querySelectorAll('#pcalc-colors .pcalc-tog.active');
+      var bColors      = document.querySelectorAll('#pcalc-colors-back .pcalc-tog.active');
+      var frontC       = fColors.length ? fColors[0].dataset.val : '1';
+      var backC        = bColors.length ? bColors[0].dataset.val : '1';
+      var inkColors    = locLabel === 'Back Only' ? backC + ' color(s)' : locLabel === 'Front + Back' ? frontC + ' front / ' + backC + ' back' : frontC + ' color(s)';
+
+      // Validate
+      var name   = document.getElementById('qm-name').value.trim();
+      var email  = document.getElementById('qm-email').value.trim();
+      var phone  = document.getElementById('qm-phone').value.trim();
+      var date   = document.getElementById('qm-date').value;
+      var zip    = document.getElementById('qm-zip').value.trim();
+      var notes  = document.getElementById('qm-notes').value.trim();
+      var agreed = document.getElementById('qm-agree').checked;
+
+      var errs = [];
+      if (!name)           errs.push('Full Name is required.');
+      if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) errs.push('Valid Email is required.');
+      if (!phone)          errs.push('Phone Number is required.');
+      if (!selectedContact) errs.push('Preferred Contact Method is required.');
+      if (!date)           errs.push('Date Needed is required.');
+      if (!selectedDelivery) errs.push('Order Delivery is required.');
+      if (selectedDelivery === 'shipping' && !zip) errs.push('ZIP Code is required for shipping.');
+      if (!agreed)         errs.push('Please check the agreement box.');
+
+      if (errs.length) {
+        errEl.textContent = errs[0];
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      fetch('/api/quote-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName:       name,
+          businessName:   document.getElementById('qm-biz').value.trim(),
+          email:          email,
+          phone:          phone,
+          contactMethod:  selectedContact,
+          dateNeeded:     date,
+          delivery:       selectedDelivery,
+          zipCode:        zip,
+          notes:          notes,
+          garmentName:    garmentName,
+          qty:            qty,
+          printLocation:  locLabel,
+          inkColors:      inkColors,
+          artworkStatus:  artworkVal,
+          estimatedTotal: total,
+          fileUrl:        uploadedFileUrl || null,
+          fileName:       uploadedFileName || null,
+        }),
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          document.getElementById('qmodal-overlay').classList.add('hidden');
+          document.getElementById('qmodal-success').classList.remove('hidden');
+          document.body.style.overflow = '';
+        } else {
+          errEl.textContent = 'Something went wrong. Please email Orders@11rprint.com directly.';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Submit for Review';
+        }
+      })
+      .catch(function() {
+        errEl.textContent = 'Network error. Please email Orders@11rprint.com directly.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit for Review';
+      });
+    });
+
+    // Close success on overlay click
+    document.getElementById('qmodal-success').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
