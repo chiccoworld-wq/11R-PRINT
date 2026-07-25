@@ -3116,6 +3116,139 @@ textarea { min-height: 130px; resize: vertical; }
 .pcalc-row-info span:first-child { color: var(--white); font-size: 13px; }
 .pcalc-row-sub { font-size: 10px; color: rgba(255,255,255,.35); letter-spacing: .02em; }
 
+.pcalc-garment-note {
+  font-size: 10px;
+  color: rgba(255,255,255,.28);
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+/* ── GARMENT PREVIEW CARD ── */
+.pcalc-preview {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+  margin-top: 0;
+}
+.pcalc-preview.visible {
+  max-height: 480px;
+  opacity: 1;
+  margin-top: 12px;
+}
+
+.pcalc-preview-top {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.pcalc-shirt-wrap {
+  flex-shrink: 0;
+  width: 72px;
+}
+.pcalc-shirt-wrap svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+.pcalc-shirt-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+}
+
+.pcalc-spec-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 2px;
+}
+.pcalc-chip {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.65);
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+.pcalc-chip-style {
+  color: var(--green-bright);
+  background: rgba(32,255,123,.08);
+  border-color: rgba(32,255,123,.2);
+}
+
+.pcalc-color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+.pcalc-color-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+}
+.pcalc-color-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .02em;
+}
+
+.pcalc-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 2px;
+}
+.pcalc-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.18);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.pcalc-swatch:hover {
+  transform: scale(1.12);
+  border-color: rgba(255,255,255,.5);
+}
+.pcalc-swatch.active {
+  border-color: var(--green-bright);
+  box-shadow: 0 0 0 2px rgba(32,255,123,.35);
+  transform: scale(1.1);
+}
+
+.pcalc-color-note {
+  font-size: 9px;
+  color: rgba(255,255,255,.22);
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .pcalc-shirt-wrap { width: 62px; }
+  .pcalc-swatch { width: 36px; height: 36px; }
+  .pcalc-chip { font-size: 9px; padding: 3px 6px; }
+}
+
 .pcalc-blanks-note {
   font-size: 11px;
   color: rgba(255,255,255,.3);
