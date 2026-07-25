@@ -3369,7 +3369,7 @@ textarea { min-height: 130px; resize: vertical; }
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
-.qmodal-overlay.hidden { display: none; }
+.qmodal-overlay.hidden { display: none !important; }
 .qmodal-box {
   width: min(520px, 100%);
   max-height: min(90vh, 760px);

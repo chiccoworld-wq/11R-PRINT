@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>Start Your Custom Order | 11R Print</title>
   <meta name="description" content="Design your custom screen printed apparel. Pick a product, choose a color, upload your artwork, and get an instant quote." />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body class="order-page">
 
@@ -125,7 +125,7 @@
 
             <div class="pcalc-field" id="pcalc-upload-wrap" style="display:none;">
               <label style="display:block;margin-bottom:6px;">Upload Your Artwork</label>
-              <label class="pcalc-upload-zone" id="pcalc-dropzone" for="pcalc-file-input">
+              <label class="pcalc-upload-zone" id="pcalc-dropzone">
                 <input type="file" id="pcalc-file-input" accept=".ai,.eps,.svg,.pdf,.png,.psd,.jpg,.jpeg,.tif,.tiff,.webp" />
                 <div class="pcalc-upload-icon">↑</div>
                 <div class="pcalc-upload-label"><strong>Tap to choose file</strong> or drag & drop<br>AI · EPS · SVG · PDF · PNG · PSD · JPG</div>
@@ -1065,7 +1065,7 @@
   </div>
 
   <!-- Quote Request Modal -->
-  <div class="qmodal-overlay hidden" id="qmodal-overlay">
+  <div class="qmodal-overlay hidden" id="qmodal-overlay" style="display:none;">
     <div class="qmodal-box" id="qmodal-box">
       <button class="qmodal-close" id="qmodal-close" aria-label="Close">×</button>
       <p class="qmodal-title">Request a Review</p>
@@ -1231,21 +1231,42 @@
     }
 
     // ── CTA → Open Modal ────────────────────────────────────
-    document.getElementById('pcalc-cta-btn').addEventListener('click', function() {
-      document.getElementById('qmodal-overlay').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      setTimeout(function() { document.getElementById('qm-name').focus(); }, 80);
-    });
+    var overlay = document.getElementById('qmodal-overlay');
+    var modalBox = document.getElementById('qmodal-box');
 
-    function closeModal() {
-      document.getElementById('qmodal-overlay').classList.add('hidden');
-      document.body.style.overflow = '';
+    function openModal() {
+      overlay.style.display = 'flex';
+      // Allow display to paint before transition
+      requestAnimationFrame(function() {
+        overlay.classList.remove('hidden');
+      });
     }
 
-    document.getElementById('qmodal-close').addEventListener('click', closeModal);
-    document.getElementById('qmodal-overlay').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
+    function closeModal() {
+      overlay.classList.add('hidden');
+      // Let transition finish, then hide
+      setTimeout(function() {
+        if (overlay.classList.contains('hidden')) overlay.style.display = 'none';
+      }, 200);
+    }
+
+    document.getElementById('pcalc-cta-btn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      openModal();
     });
+
+    document.getElementById('qmodal-close').addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeModal();
+    });
+
+    // Tap backdrop to close — but stop the box itself from propagating
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeModal();
+    });
+    if (modalBox) {
+      modalBox.addEventListener('click', function(e) { e.stopPropagation(); });
+    }
 
     // ── Radio buttons ────────────────────────────────────────
     document.getElementById('qm-contact-radios').addEventListener('click', function(e) {
