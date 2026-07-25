@@ -111,6 +111,19 @@
             </div>
 
             <div class="pcalc-field">
+              <label>Artwork Readiness</label>
+              <p class="pcalc-garment-note" style="margin-bottom:8px;">Tell us what type of artwork you currently have. Print-ready artwork helps us produce cleaner results and confirm your quote faster.</p>
+              <select class="pcalc-select" id="pcalc-artwork">
+                <option value="" disabled selected>Select your artwork status</option>
+                <option value="vector">Print-Ready Vector File — No Additional Charge</option>
+                <option value="hires">High-Resolution Image — Subject to Review</option>
+                <option value="vectorize">Artwork Needs Vectorization — Add $25</option>
+                <option value="newdesign">I Need a New Design — Custom Quote Required</option>
+              </select>
+              <p class="pcalc-garment-note" id="pcalc-artwork-hint" style="display:none;margin-top:6px;"></p>
+            </div>
+
+            <div class="pcalc-field">
               <label>Print Location</label>
               <div class="pcalc-toggles" id="pcalc-locs">
                 <button class="pcalc-tog active" type="button" data-loc="front">Front Only</button>
@@ -192,6 +205,14 @@
                     <span class="pcalc-row-sub">One-time setup fee · not per shirt</span>
                   </div>
                   <strong id="pcalc-b-screens">—</strong>
+                </div>
+
+                <div class="pcalc-row" id="pcalc-row-artwork" style="display:none;">
+                  <div class="pcalc-row-info">
+                    <span>Artwork Vectorization</span>
+                    <span class="pcalc-row-sub">One-time fee</span>
+                  </div>
+                  <strong id="pcalc-b-artwork">$25.00</strong>
                 </div>
 
                 <div class="pcalc-row pcalc-total-row">
@@ -557,6 +578,25 @@
         };
 
         var SCREEN_FEE = 15; // per color, per location, one-time
+        var ARTWORK_FEE = 0;
+
+        var artworkHints = {
+          'vector':    'Great — your file is print-ready. We\'ll confirm specs during review.',
+          'hires':     'We\'ll review your file before finalizing the quote. Transparent background and 300 DPI at print size recommended.',
+          'vectorize': 'A $25 vectorization fee will be added to your order total.',
+          'newdesign': 'Design pricing varies by scope. We\'ll reach out with a custom quote after reviewing your request.'
+        };
+
+        var artworkSel  = document.getElementById('pcalc-artwork');
+        var artworkHint = document.getElementById('pcalc-artwork-hint');
+
+        artworkSel.addEventListener('change', function() {
+          var val = this.value;
+          ARTWORK_FEE = val === 'vectorize' ? 25 : 0;
+          artworkHint.textContent = artworkHints[val] || '';
+          artworkHint.style.display = val ? 'block' : 'none';
+          calc();
+        });
 
         var qtyR    = document.getElementById('pcalc-qty-r');
         var qtyN    = document.getElementById('pcalc-qty-n');
@@ -602,7 +642,7 @@
           var garmentTotal = garmentCost * qty;
           var frontTotal   = printL1 * qty;
           var backTotal    = printL2 * qty;
-          var grandTotal   = garmentTotal + frontTotal + backTotal + screenSetup;
+          var grandTotal   = garmentTotal + frontTotal + backTotal + screenSetup + ARTWORK_FEE;
           var perUnitAllin = garmentCost + printL1 + printL2 + screenSetup / qty;
 
           var garmentRawName = garment.options[garment.selectedIndex].text.split('·')[0].trim();
@@ -634,6 +674,7 @@
           }
           document.getElementById('pcalc-b-screens-label').textContent = screenLabel;
           document.getElementById('pcalc-b-screens').textContent       = fmt(screenSetup);
+          document.getElementById('pcalc-row-artwork').style.display   = ARTWORK_FEE > 0 ? 'flex' : 'none';
           document.getElementById('pcalc-b-total').textContent         = fmt(grandTotal);
         }
 
