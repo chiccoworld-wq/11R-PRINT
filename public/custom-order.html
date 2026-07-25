@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>Start Your Custom Order | 11R Print</title>
   <meta name="description" content="Design your custom screen printed apparel. Pick a product, choose a color, upload your artwork, and get an instant quote." />
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body class="order-page">
 
@@ -124,12 +124,12 @@
             </div>
 
             <div class="pcalc-field" id="pcalc-upload-wrap" style="display:none;">
-              <label>Upload Your Artwork</label>
-              <div class="pcalc-upload-zone" id="pcalc-dropzone">
+              <label style="display:block;margin-bottom:6px;">Upload Your Artwork</label>
+              <label class="pcalc-upload-zone" id="pcalc-dropzone" for="pcalc-file-input">
                 <input type="file" id="pcalc-file-input" accept=".ai,.eps,.svg,.pdf,.png,.psd,.jpg,.jpeg,.tif,.tiff,.webp" />
                 <div class="pcalc-upload-icon">↑</div>
-                <div class="pcalc-upload-label"><strong>Click to browse</strong> or drag & drop<br>AI, EPS, SVG, PDF, PNG, PSD, JPG accepted</div>
-              </div>
+                <div class="pcalc-upload-label"><strong>Tap to choose file</strong> or drag & drop<br>AI · EPS · SVG · PDF · PNG · PSD · JPG</div>
+              </label>
               <div class="pcalc-upload-status" id="pcalc-upload-status"></div>
             </div>
 
@@ -1160,21 +1160,25 @@
     var selectedDelivery = null;
 
     // ── File Upload Zone ─────────────────────────────────────
-    var uploadWrap  = document.getElementById('pcalc-upload-wrap');
-    var dropzone    = document.getElementById('pcalc-dropzone');
-    var fileInput   = document.getElementById('pcalc-file-input');
+    var uploadWrap   = document.getElementById('pcalc-upload-wrap');
+    var dropzone     = document.getElementById('pcalc-dropzone');
+    var fileInput    = document.getElementById('pcalc-file-input');
     var uploadStatus = document.getElementById('pcalc-upload-status');
-    var artworkSel2 = document.getElementById('pcalc-artwork');
 
-    // Show/hide upload for artwork options that need a file
-    artworkSel2.addEventListener('change', function() {
-      var showUpload = ['vector','hires','vectorize'].indexOf(this.value) !== -1;
+    // Show/hide upload — piggyback on existing artwork select via a MutationObserver
+    // so we don't double-bind on the same element
+    var artworkSel = document.getElementById('pcalc-artwork');
+    function syncUpload() {
+      var showUpload = ['vector','hires','vectorize'].indexOf(artworkSel.value) !== -1;
       uploadWrap.style.display = showUpload ? 'block' : 'none';
-      if (!showUpload) { uploadedFileUrl = null; uploadedFileName = null; uploadStatus.textContent = ''; uploadStatus.className = 'pcalc-upload-status'; }
-    });
+      if (!showUpload) {
+        uploadedFileUrl = null; uploadedFileName = null;
+        uploadStatus.textContent = ''; uploadStatus.className = 'pcalc-upload-status';
+      }
+    }
+    artworkSel.addEventListener('change', syncUpload);
 
-    dropzone.addEventListener('click', function() { fileInput.click(); });
-
+    // Drag-and-drop (desktop) — the <label for> handles click/tap natively on mobile
     dropzone.addEventListener('dragover', function(e) { e.preventDefault(); dropzone.classList.add('drag'); });
     dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag'); });
     dropzone.addEventListener('drop', function(e) {
