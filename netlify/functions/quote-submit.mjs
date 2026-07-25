@@ -77,7 +77,7 @@ export const handler = async (event) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'onboarding@resend.dev',
+      from: 'Orders <orders@11rprint.com>',
       to: ['Orders@11rprint.com'],
       reply_to: d.email || undefined,
       subject: `New Quote Request — ${d.fullName || 'Customer'} · ${d.qty || '?'} ${d.garmentName || 'units'}`,
