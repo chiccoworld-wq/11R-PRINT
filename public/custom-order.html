@@ -1115,9 +1115,10 @@
           <label class="qmodal-radio" data-val="pickup"><input type="radio" name="delivery" value="pickup" /> Local Pickup</label>
           <label class="qmodal-radio" data-val="shipping"><input type="radio" name="delivery" value="shipping" /> Shipping</label>
         </div>
-        <div class="qmodal-zip" id="qm-zip-wrap">
-          <input class="qmodal-input" type="text" id="qm-zip" placeholder="Shipping ZIP Code" maxlength="10" />
-          <p class="qmodal-hint">Required only if shipping is selected.</p>
+        <div class="qmodal-zip" id="qm-zip-wrap" role="region" aria-label="Shipping ZIP code">
+          <label class="qmodal-inline-label" for="qm-zip">Shipping ZIP Code <span>*</span></label>
+          <input class="qmodal-input" type="text" id="qm-zip" placeholder="Enter ZIP code" maxlength="10" inputmode="numeric" autocomplete="postal-code" />
+          <p class="qmodal-shipping-note">Shipping may be subject to an additional cost after 11R Print reviews the order size, weight, and destination.</p>
         </div>
       </div>
 
@@ -1234,6 +1235,7 @@
     document.getElementById('pcalc-cta-btn').addEventListener('click', function() {
       document.getElementById('qmodal-overlay').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
+      setTimeout(function() { document.getElementById('qm-name').focus(); }, 80);
     });
 
     function closeModal() {
@@ -1263,7 +1265,15 @@
       document.querySelectorAll('#qm-delivery-radios .qmodal-radio').forEach(function(l) {
         l.classList.toggle('selected', l === lbl);
       });
-      document.getElementById('qm-zip-wrap').classList.toggle('visible', selectedDelivery === 'shipping');
+      var zipWrap = document.getElementById('qm-zip-wrap');
+      var zipInput = document.getElementById('qm-zip');
+      var shipping = selectedDelivery === 'shipping';
+      zipWrap.classList.toggle('visible', shipping);
+      if (shipping) {
+        setTimeout(function() { zipInput.focus(); }, 80);
+      } else {
+        zipInput.value = '';
+      }
     });
 
     // ── Submit ───────────────────────────────────────────────
