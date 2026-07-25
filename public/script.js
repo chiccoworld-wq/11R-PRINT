@@ -339,7 +339,6 @@ function bootBuilder() {
   document.addEventListener('click', onProductSelect);
   document.getElementById('btb-back')?.addEventListener('click', () => {
     document.getElementById('builder-screen').hidden = true;
-    document.getElementById('ps-screen').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
@@ -389,7 +388,6 @@ function onProductSelect(e) {
   document.getElementById('bpn-product-name').textContent = product.name;
   document.getElementById('bpn-product-price').textContent = `from $${product.basePrice.toFixed(2)}/shirt`;
 
-  document.getElementById('ps-screen').hidden = true;
   document.getElementById('builder-screen').hidden = false;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 

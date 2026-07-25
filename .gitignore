@@ -11,6 +11,8 @@ USER.md
 memory/
 node_modules/
 .env
+.env.*
+!.env.production.example
 
 # Local Netlify folder
 .netlify

@@ -8,6 +8,7 @@
     "puppeteer-core": "^19.0.0"
   },
   "scripts": {
-    "build": "echo 'Build complete — serving public/ directly'"
+    "build": "echo 'Build complete — serving public/ directly'",
+    "start": "node server.mjs"
   }
 }

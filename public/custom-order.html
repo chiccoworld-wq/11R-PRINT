@@ -31,9 +31,9 @@
   <main>
 
     <!-- ======================================================
-         PRODUCT SELECTION SCREEN
+         PRODUCT SELECTION SCREEN — disabled, preserved for later
     ====================================================== -->
-    <section class="ps-screen" id="ps-screen">
+    <section class="ps-screen" id="ps-screen" hidden>
       <div class="ps-inner">
         <div class="ps-head">
           <p class="eyebrow">SCREEN PRINTED · NOT PRESSED</p>
@@ -44,6 +44,298 @@
           <!-- Populated by JS -->
         </div>
       </div>
+    </section>
+
+    <!-- ======================================================
+         PRICE CALCULATOR
+    ====================================================== -->
+    <section class="price-calc" id="price-calc">
+      <div class="pcalc-inner">
+
+        <div class="pcalc-head">
+          <p class="eyebrow">INSTANT ESTIMATE</p>
+          <h2 class="pcalc-title">Build Your Price</h2>
+          <p class="pcalc-sub">Adjust the options — your estimate updates live. No account needed.</p>
+        </div>
+
+        <div class="pcalc-layout">
+
+          <!-- Controls -->
+          <div class="pcalc-controls">
+
+            <div class="pcalc-field">
+              <label>Garment Type</label>
+              <select class="pcalc-select" id="pcalc-garment">
+                <option value="5.85">Basic Tee</option>
+                <option value="10">Premium Tee</option>
+                <option value="8">Safety Color T-Shirt (Short Sleeve)</option>
+                <option value="10">Safety Color T-Shirt (Long Sleeve)</option>
+                <option value="2">Customer-Supplied Garment  ·  +$2.00/shirt handling</option>
+              </select>
+            </div>
+
+            <div class="pcalc-field">
+              <label>Quantity <span id="pcalc-qty-display">48</span></label>
+              <div class="pcalc-qty-wrap">
+                <input type="range" id="pcalc-qty-r" min="12" max="144" step="1" value="48" />
+                <input type="number" class="pcalc-qty-num" id="pcalc-qty-n" min="12" max="144" value="48" />
+              </div>
+              <div class="pcalc-range-hint"><span>12 shirts</span><span>144 shirts</span></div>
+            </div>
+
+            <div class="pcalc-field">
+              <label>Print Location</label>
+              <div class="pcalc-toggles" id="pcalc-locs">
+                <button class="pcalc-tog active" type="button" data-loc="front">Front Only</button>
+                <button class="pcalc-tog" type="button" data-loc="back">Back Only</button>
+                <button class="pcalc-tog" type="button" data-loc="both">Front + Back</button>
+              </div>
+            </div>
+
+            <!-- Front colors — hidden for back-only -->
+            <div class="pcalc-field" id="pcalc-front-wrap">
+              <label>Ink Colors — Front</label>
+              <div class="pcalc-toggles" id="pcalc-colors">
+                <button class="pcalc-tog active" type="button" data-val="1">1</button>
+                <button class="pcalc-tog" type="button" data-val="2">2</button>
+                <button class="pcalc-tog" type="button" data-val="3">3</button>
+                <button class="pcalc-tog" type="button" data-val="4">4</button>
+                <button class="pcalc-tog" type="button" data-val="5">5</button>
+                <button class="pcalc-tog" type="button" data-val="6">6</button>
+              </div>
+            </div>
+
+            <!-- Back colors — shown for back-only and front+back -->
+            <div class="pcalc-field" id="pcalc-back-wrap" style="display:none;">
+              <label>Ink Colors — Back</label>
+              <div class="pcalc-toggles" id="pcalc-colors-back">
+                <button class="pcalc-tog active" type="button" data-val="1">1</button>
+                <button class="pcalc-tog" type="button" data-val="2">2</button>
+                <button class="pcalc-tog" type="button" data-val="3">3</button>
+                <button class="pcalc-tog" type="button" data-val="4">4</button>
+                <button class="pcalc-tog" type="button" data-val="5">5</button>
+                <button class="pcalc-tog" type="button" data-val="6">6</button>
+              </div>
+            </div>
+
+          </div><!-- /pcalc-controls -->
+
+          <!-- Output -->
+          <div class="pcalc-output">
+            <div id="pcalc-estimate-wrap">
+              <div class="pcalc-result-main">
+                <p class="pcalc-per-label">Cost Per Unit</p>
+                <div class="pcalc-per-price" id="pcalc-per">—</div>
+                <p class="pcalc-per-sub">garment + print + screen setup included</p>
+              </div>
+
+              <div class="pcalc-divider"></div>
+
+              <div class="pcalc-breakdown">
+
+                <div class="pcalc-receipt-hdr">Garment</div>
+                <div class="pcalc-row">
+                  <div class="pcalc-row-info">
+                    <span id="pcalc-b-garment-name">Basic Tee</span>
+                    <span class="pcalc-row-sub" id="pcalc-b-garment-detail">$5.85 × 48 units</span>
+                  </div>
+                  <strong id="pcalc-b-garment">—</strong>
+                </div>
+
+                <div class="pcalc-receipt-hdr">Printing</div>
+                <div class="pcalc-row" id="pcalc-row-front">
+                  <div class="pcalc-row-info">
+                    <span id="pcalc-b-print-label">Front Print · 1 Color</span>
+                    <span class="pcalc-row-sub" id="pcalc-b-print-detail">— × 48 units</span>
+                  </div>
+                  <strong id="pcalc-b-print">—</strong>
+                </div>
+                <div class="pcalc-row" id="pcalc-row-back" style="display:none;">
+                  <div class="pcalc-row-info">
+                    <span id="pcalc-b-back-label">Back Print · 1 Color</span>
+                    <span class="pcalc-row-sub" id="pcalc-b-back-detail">— × 48 units</span>
+                  </div>
+                  <strong id="pcalc-b-back">—</strong>
+                </div>
+
+                <div class="pcalc-receipt-hdr">Screen Setup</div>
+                <div class="pcalc-row">
+                  <div class="pcalc-row-info">
+                    <span id="pcalc-b-screens-label">1 Screen · $15.00 ea.</span>
+                    <span class="pcalc-row-sub">One-time setup fee · not per shirt</span>
+                  </div>
+                  <strong id="pcalc-b-screens">—</strong>
+                </div>
+
+                <div class="pcalc-row pcalc-total-row">
+                  <span>Estimated Total</span>
+                  <strong id="pcalc-b-total">—</strong>
+                </div>
+
+              </div>
+
+              <p class="pcalc-blanks-note">
+                Screen setup is a one-time fee per color, per location.<br>
+                Estimate subject to final artwork review.<br>
+                Need 144+? <a href="index.html#quote">Contact us for custom pricing →</a>
+              </p>
+
+              <a href="index.html#quote" class="pcalc-cta" id="pcalc-cta-btn">Request a Free Quote →</a>
+            </div>
+          </div><!-- /pcalc-output -->
+
+        </div><!-- /pcalc-layout -->
+
+      </div><!-- /pcalc-inner -->
+
+      <script>
+      (function() {
+        var cfg = {
+          pricings: {
+            12:  [3.5,  4.2,  5.5,  6.35, 7.3,  8.35],
+            20:  [3,    4,    5,    6,    7,    8   ],
+            48:  [2.85, 3.85, 4.75, 5.7,  6.65, 7.9 ],
+            50:  [2.82, 3.8,  4.7,  5.65, 6.6,  7.5 ],
+            144: [2.8,  3.35, 4.6,  5.62, 6,    7.5 ]
+          },
+          altpricings: {
+            12:  [1.3,  1.85, 2.35, 3.15, 3.9,  4.65],
+            20:  [1.25, 1.75, 2.25, 3,    4.75, 4.5 ],
+            50:  [1.2,  1.65, 2.12, 2.85, 3.55, 4.25],
+            144: [1.18, 1.62, 2.09, 2.81, 3.49, 4.18]
+          }
+        };
+
+        var SCREEN_FEE = 15; // per color, per location, one-time
+
+        var qtyR    = document.getElementById('pcalc-qty-r');
+        var qtyN    = document.getElementById('pcalc-qty-n');
+        var qtyDisp = document.getElementById('pcalc-qty-display');
+        var garment = document.getElementById('pcalc-garment');
+
+        var selColors     = 1;
+        var selBackColors = 1;
+        var selLocMode    = 'front'; // 'front' | 'back' | 'both'
+        var MIN_Q = 12, MAX_Q = 144;
+
+        function closest(tbl, qty) {
+          var keys = Object.keys(tbl).map(Number).sort(function(a,b){return a-b;});
+          return keys.reduce(function(prev, cur) {
+            return Math.abs(cur - qty) < Math.abs(prev - qty) ? cur : prev;
+          });
+        }
+
+        function fmt(n) { return '$' + n.toFixed(2); }
+
+        function calc() {
+          var qty         = Math.min(Math.max(parseInt(qtyN.value) || MIN_Q, MIN_Q), MAX_Q);
+          var garmentCost = parseFloat(garment.value) || 0;
+          qtyDisp.textContent = qty;
+
+          var tier1 = closest(cfg.pricings, qty);
+          var printL1 = 0, printL2 = 0, totalScreens = 0;
+
+          if (selLocMode === 'front') {
+            printL1      = cfg.pricings[tier1][selColors - 1];
+            totalScreens = selColors;
+          } else if (selLocMode === 'back') {
+            printL1      = cfg.pricings[tier1][selBackColors - 1];
+            totalScreens = selBackColors;
+          } else {
+            var tier2 = closest(cfg.altpricings, qty);
+            printL1      = cfg.pricings[tier1][selColors - 1];
+            printL2      = cfg.altpricings[tier2][selBackColors - 1];
+            totalScreens = selColors + selBackColors;
+          }
+
+          var screenSetup  = totalScreens * SCREEN_FEE;
+          var garmentTotal = garmentCost * qty;
+          var frontTotal   = printL1 * qty;
+          var backTotal    = printL2 * qty;
+          var grandTotal   = garmentTotal + frontTotal + backTotal + screenSetup;
+          var perUnitAllin = garmentCost + printL1 + printL2 + screenSetup / qty;
+
+          var garmentRawName = garment.options[garment.selectedIndex].text.split('·')[0].trim();
+          var colorWord  = function(n) { return n + ' Color' + (n > 1 ? 's' : ''); };
+          var screenLabel = totalScreens + ' Screen' + (totalScreens > 1 ? 's' : '') + ' · $' + SCREEN_FEE + '.00 ea.';
+
+          // Location label for front row
+          var frontLocLabel = selLocMode === 'back' ? 'Back Print' : 'Front Print';
+          var frontColorLabel = selLocMode === 'back'
+            ? colorWord(selBackColors)
+            : colorWord(selColors);
+
+          // Show/hide rows
+          document.getElementById('pcalc-row-front').style.display = 'flex';
+          var showBack = selLocMode === 'both';
+          document.getElementById('pcalc-row-back').style.display = showBack ? 'flex' : 'none';
+
+          document.getElementById('pcalc-per').textContent          = fmt(perUnitAllin);
+          document.getElementById('pcalc-b-garment-name').textContent  = garmentRawName;
+          document.getElementById('pcalc-b-garment-detail').textContent = fmt(garmentCost) + ' × ' + qty + ' units';
+          document.getElementById('pcalc-b-garment').textContent     = fmt(garmentTotal);
+          document.getElementById('pcalc-b-print-label').textContent  = frontLocLabel + ' · ' + frontColorLabel;
+          document.getElementById('pcalc-b-print-detail').textContent = fmt(printL1) + ' × ' + qty + ' units';
+          document.getElementById('pcalc-b-print').textContent        = fmt(frontTotal);
+          if (showBack) {
+            document.getElementById('pcalc-b-back-label').textContent  = 'Back Print · ' + colorWord(selBackColors);
+            document.getElementById('pcalc-b-back-detail').textContent = fmt(printL2) + ' × ' + qty + ' units';
+            document.getElementById('pcalc-b-back').textContent        = fmt(backTotal);
+          }
+          document.getElementById('pcalc-b-screens-label').textContent = screenLabel;
+          document.getElementById('pcalc-b-screens').textContent       = fmt(screenSetup);
+          document.getElementById('pcalc-b-total').textContent         = fmt(grandTotal);
+        }
+
+        // Quantity sync
+        qtyR.addEventListener('input', function() { qtyN.value = qtyR.value; calc(); });
+        qtyN.addEventListener('input', function() {
+          var v = Math.min(Math.max(parseInt(qtyN.value) || MIN_Q, MIN_Q), MAX_Q);
+          qtyR.value = v; calc();
+        });
+        qtyN.addEventListener('change', function() {
+          qtyN.value = Math.min(Math.max(parseInt(qtyN.value) || MIN_Q, MIN_Q), MAX_Q);
+          qtyR.value = qtyN.value; calc();
+        });
+
+        garment.addEventListener('change', calc);
+
+        document.getElementById('pcalc-colors').addEventListener('click', function(e) {
+          var btn = e.target.closest('[data-val]');
+          if (!btn) return;
+          selColors = parseInt(btn.dataset.val);
+          document.querySelectorAll('#pcalc-colors .pcalc-tog').forEach(function(b) {
+            b.classList.toggle('active', b === btn);
+          });
+          calc();
+        });
+
+        document.getElementById('pcalc-locs').addEventListener('click', function(e) {
+          var btn = e.target.closest('[data-loc]');
+          if (!btn) return;
+          selLocMode = btn.dataset.loc;
+          document.querySelectorAll('#pcalc-locs .pcalc-tog').forEach(function(b) {
+            b.classList.toggle('active', b === btn);
+          });
+          document.getElementById('pcalc-front-wrap').style.display = selLocMode === 'back'  ? 'none'  : 'block';
+          document.getElementById('pcalc-back-wrap').style.display  = selLocMode === 'front' ? 'none'  : 'block';
+          calc();
+        });
+
+        document.getElementById('pcalc-colors-back').addEventListener('click', function(e) {
+          var btn = e.target.closest('[data-val]');
+          if (!btn) return;
+          selBackColors = parseInt(btn.dataset.val);
+          document.querySelectorAll('#pcalc-colors-back .pcalc-tog').forEach(function(b) {
+            b.classList.toggle('active', b === btn);
+          });
+          calc();
+        });
+
+        calc();
+      })();
+      </script>
+
     </section>
 
     <!-- ======================================================
