@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>Start Your Custom Order | 11R Print</title>
   <meta name="description" content="Design your custom screen printed apparel. Pick a product, choose a color, upload your artwork, and get an instant quote." />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body class="order-page">
 
@@ -1140,11 +1140,10 @@
 
   <!-- Success screen -->
   <div class="qmodal-overlay hidden" id="qmodal-success">
-    <div class="qmodal-box" style="text-align:center;padding:48px 28px;">
-      <div style="font-size:40px;margin-bottom:16px;">✓</div>
-      <h2 style="margin:0 0 8px;font-size:22px;">Request Sent!</h2>
-      <p style="color:#555;font-size:14px;margin:0 0 24px;">We've received your quote request. Eleven will review your order and reach out soon.</p>
-      <button class="qmodal-submit" style="max-width:200px;margin:0 auto;" onclick="document.getElementById('qmodal-success').classList.add('hidden')">Close</button>
+    <div class="qmodal-box" style="text-align:center;padding:48px 24px 36px;">
+      <h2 style="margin:0 0 14px;font-size:clamp(26px,7vw,34px);font-weight:900;letter-spacing:-.02em;text-transform:uppercase;">Request Sent!</h2>
+      <p style="color:rgba(255,255,255,.62);font-size:15px;font-weight:700;margin:0 0 32px;line-height:1.5;">We've received your quote request.<br>11R Print will review your order and reach out soon.</p>
+      <button class="qmodal-submit" style="max-width:220px;margin:0 auto;" onclick="document.getElementById('qmodal-success').classList.add('hidden');document.body.style.overflow='';">Close</button>
     </div>
   </div>
 
