@@ -436,6 +436,8 @@ button{font-family:inherit;cursor:pointer;}
 @media(max-width:720px){
   .main{padding:20px 16px;}
   .admin-header{padding:0 16px;}
+  .admin-header > div:last-child .crm-links{display:none;}
+
   .tabs{padding:0 16px;}
   .field-row,.field-row.three{grid-template-columns:1fr;}
   .proof-card{grid-template-columns:1fr;}
@@ -512,11 +514,15 @@ button{font-family:inherit;cursor:pointer;}
     </div>
   </header>
 
-  <div class="tabs">
+  <div class="tabs" style="overflow-x:auto;scrollbar-width:none;">
     <button class="tab-btn active" data-tab="dashboard">Proofs</button>
     <button class="tab-btn" data-tab="new-proof">New Proof</button>
     <button class="tab-btn" data-tab="orders">Customer Orders</button>
     <button class="tab-btn" data-tab="quotes">Quote Requests</button>
+    <div style="flex:1;min-width:20px;"></div>
+    <a href="/admin/crm.html" class="tab-btn" style="color:var(--gb);border-bottom:2px solid rgba(32,255,123,.3);">🗂 CRM</a>
+    <a href="/admin/jobs.html" class="tab-btn" style="color:var(--gb);border-bottom:2px solid rgba(32,255,123,.3);">⚙️ Jobs</a>
+    <a href="/admin/invoices.html" class="tab-btn" style="color:var(--gb);border-bottom:2px solid rgba(32,255,123,.3);">💰 Invoices</a>
   </div>
 
   <main class="main">
