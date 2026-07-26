@@ -1,13 +1,94 @@
-const { createClient } = require('@supabase/supabase-js');
+const { db } = require('../../lib/db');
 const crypto = require('crypto');
 
-let _sb;
+let _db;
 function sb() {
-  if (!_sb) _sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
-  return _sb;
+  if (!_db) _db = db();
+  return _db;
 }
 
 const PW = () => process.env.ADMIN_PASSWORD;
+
+// ── MODULE-LEVEL HELPERS ──────────────────────────────────────────────────
+
+async function recalcInvoice(supabase, invoiceId) {
+  const { data: items } = await supabase.from('invoice_items').select('quantity,unit_price').eq('invoice_id', invoiceId);
+  if (!items) return;
+  const subtotal = items.reduce((s, i) => s + (parseFloat(i.quantity)||1) * (parseFloat(i.unit_price)||0), 0);
+  const { data: inv } = await supabase.from('invoices').select('tax_rate,deposit_type,deposit_value,amount_paid').eq('id', invoiceId).single();
+  if (!inv) return;
+  const taxAmount = subtotal * (parseFloat(inv.tax_rate) || 0);
+  const total = subtotal + taxAmount;
+  const depVal = parseFloat(inv.deposit_value) || 50;
+  const depositRequired = inv.deposit_type === 'percent' ? total * (depVal / 100) : depVal;
+  const balance = Math.max(0, total - (parseFloat(inv.amount_paid) || 0));
+  await supabase.from('invoices').update({
+    subtotal: parseFloat(subtotal.toFixed(2)),
+    tax_amount: parseFloat(taxAmount.toFixed(2)),
+    total: parseFloat(total.toFixed(2)),
+    deposit_required: parseFloat(depositRequired.toFixed(2)),
+    balance_due: parseFloat(balance.toFixed(2)),
+    updated_at: new Date().toISOString()
+  }).eq('id', invoiceId);
+}
+
+function buildReceiptEmail(snapshot, printUrl) {
+  const s = snapshot;
+  const amt = `$${parseFloat(s.payment.amount).toFixed(2)}`;
+  const bal = `$${parseFloat(s.invoice.new_balance).toFixed(2)}`;
+  const methodLabel = { cash:'Cash', card:'Credit/Debit Card', check:'Check', zelle:'Zelle', venmo:'Venmo', stripe:'Stripe', ach:'ACH' };
+  const statusColor = s.status === 'PAID IN FULL' ? '#2e7d32' : s.status === 'DEPOSIT PAID' ? '#1565c0' : '#e65100';
+  const statusBg = s.status === 'PAID IN FULL' ? '#e8f5e9' : s.status === 'DEPOSIT PAID' ? '#e3f2fd' : '#fff8e1';
+  const statusBorder = s.status === 'PAID IN FULL' ? '#4caf50' : s.status === 'DEPOSIT PAID' ? '#2196f3' : '#ffc107';
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;">
+<tr><td style="background:#050706;padding:24px 32px;">
+  <img src="https://11rprint.com/images/11r-logo-new.png" alt="11R Print" style="height:36px;display:block;"/>
+  <p style="margin:8px 0 0;color:#20ff7b;font-size:11px;font-weight:bold;letter-spacing:.14em;text-transform:uppercase;">Payment Receipt</p>
+</td></tr>
+<tr><td style="padding:32px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;"><tr>
+    <td><h2 style="margin:0 0 4px;font-size:22px;color:#050706;">Receipt ${s.receipt_number}</h2>
+      <p style="margin:0;font-size:13px;color:#888;">Invoice: ${s.invoice_number} &nbsp;|&nbsp; Payment: ${s.payment_number}</p>
+      <p style="margin:4px 0 0;font-size:12px;color:#888;">Issued: ${new Date(s.issued_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p>
+    </td>
+    <td align="right"><div style="background:${statusBg};border:1px solid ${statusBorder};padding:8px 16px;border-radius:999px;display:inline-block;">
+      <p style="margin:0;font-size:10px;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:${statusColor};">${s.status}</p>
+    </div></td>
+  </tr></table>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border-radius:8px;margin-bottom:20px;">
+    <tr><td style="padding:10px 16px;font-size:12px;color:#888;width:150px;">Customer</td><td style="padding:10px 16px;font-size:14px;font-weight:bold;">${s.customer.name}${s.customer.company?' — '+s.customer.company:''}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Email</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${s.customer.email||'—'}</td></tr>
+    ${s.customer.billing_address?`<tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Address</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${s.customer.billing_address}</td></tr>`:''}
+  </table>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border-radius:8px;margin-bottom:20px;">
+    <tr><td style="padding:10px 16px;font-size:12px;color:#888;width:150px;">Amount Received</td><td style="padding:10px 16px;font-size:20px;font-weight:bold;color:#058f45;">${amt}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Payment Method</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${methodLabel[s.payment.method]||s.payment.method}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Payment Date</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${new Date(s.payment.paid_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</td></tr>
+    ${s.payment.reference?`<tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Reference #</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${s.payment.reference}</td></tr>`:''}
+  </table>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+    <tr><td style="padding:6px 0;color:#888;font-size:13px;">Invoice Total</td><td style="padding:6px 0;text-align:right;font-size:13px;">$${parseFloat(s.invoice.total).toFixed(2)}</td></tr>
+    <tr><td style="padding:6px 0;color:#888;font-size:13px;">Previous Payments</td><td style="padding:6px 0;text-align:right;font-size:13px;">$${parseFloat(s.invoice.prior_paid).toFixed(2)}</td></tr>
+    <tr><td style="padding:6px 0;color:#888;font-size:13px;">This Payment</td><td style="padding:6px 0;text-align:right;font-size:13px;color:#058f45;font-weight:bold;">${amt}</td></tr>
+    <tr><td style="padding:10px 0 6px;font-size:15px;font-weight:bold;border-top:2px solid #eee;">Remaining Balance</td><td style="padding:10px 0 6px;text-align:right;font-size:15px;font-weight:bold;color:${parseFloat(s.invoice.new_balance)===0?'#058f45':'#333'};border-top:2px solid #eee;">${bal}</td></tr>
+  </table>
+
+  <a href="${printUrl}" style="display:inline-block;background:#050706;color:#20ff7b;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:.06em;">View &amp; Print Receipt</a>
+  <p style="margin:24px 0 0;font-size:12px;color:#999;line-height:1.6;">Thank you for your business! Questions? Email <a href="mailto:orders@11rprint.com" style="color:#058f45;">orders@11rprint.com</a></p>
+  <p style="margin:8px 0 0;font-size:11px;color:#ccc;">Verification: ${s.receipt_number}</p>
+</td></tr>
+<tr><td style="background:#f9f9f9;padding:16px 32px;border-top:1px solid #eee;">
+  <p style="margin:0;font-size:12px;color:#999;">11R Print &nbsp;·&nbsp; Built With Passion. Printed With Purpose. &nbsp;·&nbsp; <a href="https://11rprint.com" style="color:#058f45;text-decoration:none;">11rprint.com</a></p>
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
+}
 
 function res(status, body, extra = {}) {
   return {
@@ -557,6 +638,338 @@ exports.handler = async (event) => {
     const { error } = await sb().from('orders').delete().eq('id', ordDel[1]);
     if (error) return res(500, { error: error.message });
     return res(200, { ok: true });
+  }
+
+  // ── CRM: CUSTOMERS ─────────────────────────────────────────────────────
+
+  if (path === '/customers' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const qs = event.queryStringParameters || {};
+    let query = sb().from('customers').select('*').order('created_at', { ascending: false });
+    if (qs.q) {
+      const q = qs.q.replace(/[%_]/g, '\\$&');
+      query = query.or(`name.ilike.%${q}%,company.ilike.%${q}%,email.ilike.%${q}%,phone.ilike.%${q}%`);
+    }
+    const { data, error } = await query;
+    if (error) return res(500, { error: error.message });
+    return res(200, { customers: data });
+  }
+
+  if (path === '/customers' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { name, company, email, phone, billing_address, tax_exempt, notes, lead_source, preferred_contact } = body;
+    if (!name) return res(400, { error: 'Name required' });
+    const { data, error } = await sb().from('customers').insert([{
+      name: name.trim(), company: company||null, email: email||null, phone: phone||null,
+      billing_address: billing_address||null, tax_exempt: !!tax_exempt,
+      notes: notes||null, lead_source: lead_source||null, preferred_contact: preferred_contact||'email'
+    }]).select().single();
+    if (error) return res(500, { error: error.message });
+    const N8N = process.env.N8N_WEBHOOK_URL;
+    if (N8N) fetch(N8N, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event:'customer_created', customer: data }) }).catch(()=>{});
+    return res(200, { customer: data });
+  }
+
+  const custMatch = path.match(/^\/customers\/([a-f0-9-]+)$/);
+  if (custMatch && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb().from('customers').select('*').eq('id', custMatch[1]).single();
+    if (error || !data) return res(404, { error: 'Customer not found' });
+    const [jr, ir] = await Promise.all([
+      sb().from('jobs').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false }),
+      sb().from('invoices').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false })
+    ]);
+    return res(200, { customer: data, jobs: jr.data||[], invoices: ir.data||[] });
+  }
+
+  if (custMatch && method === 'PUT') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const allowed = ['name','company','email','phone','billing_address','tax_exempt','notes','lead_source','preferred_contact'];
+    const update = { updated_at: new Date().toISOString() };
+    allowed.forEach(k => { if (body[k] !== undefined) update[k] = body[k]; });
+    const { data, error } = await sb().from('customers').update(update).eq('id', custMatch[1]).select().single();
+    if (error) return res(500, { error: error.message });
+    return res(200, { customer: data });
+  }
+
+  if (custMatch && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('customers').delete().eq('id', custMatch[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
+  // ── JOBS ────────────────────────────────────────────────────────────────
+
+  if (path === '/jobs' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const qs = event.queryStringParameters || {};
+    let q = sb().from('jobs').select('*,customers(name,company,email)').order('created_at', { ascending: false });
+    if (qs.status) q = q.eq('status', qs.status);
+    if (qs.customer_id) q = q.eq('customer_id', qs.customer_id);
+    const { data, error } = await q;
+    if (error) return res(500, { error: error.message });
+    return res(200, { jobs: data });
+  }
+
+  if (path === '/jobs' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { customer_id, title, due_date, garment_style, garment_color, quantity, sizes, print_locations, ink_colors, notes, internal_notes } = body;
+    if (!customer_id || !title) return res(400, { error: 'customer_id and title required' });
+    const { count: jc } = await sb().from('jobs').select('*', { count: 'exact', head: true });
+    const job_number = `JOB-${new Date().getFullYear()}-${String((jc||0)+1).padStart(4,'0')}`;
+    const { data, error } = await sb().from('jobs').insert([{
+      customer_id, job_number, title, status: 'new',
+      due_date: due_date||null, garment_style: garment_style||null, garment_color: garment_color||null,
+      quantity: quantity||null, sizes: sizes||{}, print_locations: print_locations||[],
+      ink_colors: ink_colors||null, notes: notes||null, internal_notes: internal_notes||null
+    }]).select().single();
+    if (error) return res(500, { error: error.message });
+    return res(200, { job: data });
+  }
+
+  const jobMatch = path.match(/^\/jobs\/([a-f0-9-]+)$/);
+  if (jobMatch && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb().from('jobs').select('*,customers(name,company,email,phone)').eq('id', jobMatch[1]).single();
+    if (error || !data) return res(404, { error: 'Job not found' });
+    return res(200, { job: data });
+  }
+
+  if (jobMatch && method === 'PUT') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const allowed = ['title','status','due_date','garment_style','garment_color','quantity','sizes','print_locations','ink_colors','notes','internal_notes','artwork_url'];
+    const update = { updated_at: new Date().toISOString() };
+    allowed.forEach(k => { if (body[k] !== undefined) update[k] = body[k]; });
+    const { data, error } = await sb().from('jobs').update(update).eq('id', jobMatch[1]).select().single();
+    if (error) return res(500, { error: error.message });
+    return res(200, { job: data });
+  }
+
+  if (jobMatch && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('jobs').delete().eq('id', jobMatch[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
+  // ── INVOICES ─────────────────────────────────────────────────────────────
+
+  if (path === '/invoices' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const qs = event.queryStringParameters || {};
+    let q = sb().from('invoices').select('*,customers(name,company,email)').order('created_at', { ascending: false });
+    if (qs.status) q = q.eq('status', qs.status);
+    if (qs.customer_id) q = q.eq('customer_id', qs.customer_id);
+    const { data, error } = await q;
+    if (error) return res(500, { error: error.message });
+    return res(200, { invoices: data });
+  }
+
+  if (path === '/invoices' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { customer_id, job_id, items, tax_rate, deposit_type, deposit_value, due_date, terms, notes, internal_notes } = body;
+    if (!customer_id) return res(400, { error: 'customer_id required' });
+    const { count: ic } = await sb().from('invoices').select('*', { count: 'exact', head: true });
+    const invoice_number = `INV-${new Date().getFullYear()}-${String((ic||0)+1).padStart(4,'0')}`;
+    const lineItems = items || [];
+    const subtotal = lineItems.reduce((s, i) => s + (parseFloat(i.quantity)||1) * (parseFloat(i.unit_price)||0), 0);
+    const taxRate = parseFloat(tax_rate) || 0;
+    const taxAmount = subtotal * taxRate;
+    const total = subtotal + taxAmount;
+    const depType = deposit_type || 'percent';
+    const depVal = parseFloat(deposit_value) || 50;
+    const depositRequired = depType === 'percent' ? total * (depVal / 100) : depVal;
+    const { data: inv, error: invErr } = await sb().from('invoices').insert([{
+      invoice_number, customer_id, job_id: job_id||null, status: 'draft',
+      subtotal: parseFloat(subtotal.toFixed(2)), tax_rate: taxRate,
+      tax_amount: parseFloat(taxAmount.toFixed(2)), total: parseFloat(total.toFixed(2)),
+      deposit_type: depType, deposit_value: depVal,
+      deposit_required: parseFloat(depositRequired.toFixed(2)),
+      amount_paid: 0, balance_due: parseFloat(total.toFixed(2)),
+      due_date: due_date||null, terms: terms||null, notes: notes||null, internal_notes: internal_notes||null
+    }]).select().single();
+    if (invErr) return res(500, { error: invErr.message });
+    if (lineItems.length > 0) {
+      const rows = lineItems.map((item, idx) => ({
+        invoice_id: inv.id,
+        description: item.description||'',
+        quantity: parseFloat(item.quantity)||1,
+        unit_price: parseFloat(item.unit_price)||0,
+        amount: parseFloat(((parseFloat(item.quantity)||1)*(parseFloat(item.unit_price)||0)).toFixed(2)),
+        sort_order: idx
+      }));
+      await sb().from('invoice_items').insert(rows);
+    }
+    return res(200, { invoice: inv });
+  }
+
+  const invMatch = path.match(/^\/invoices\/([a-f0-9-]+)$/);
+  if (invMatch && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data: inv, error } = await sb().from('invoices').select('*,customers(name,company,email,phone,billing_address)').eq('id', invMatch[1]).single();
+    if (error || !inv) return res(404, { error: 'Invoice not found' });
+    const [ir, pr] = await Promise.all([
+      sb().from('invoice_items').select('*').eq('invoice_id', invMatch[1]).order('sort_order'),
+      sb().from('payments').select('*').eq('invoice_id', invMatch[1]).order('paid_at')
+    ]);
+    return res(200, { invoice: inv, items: ir.data||[], payments: pr.data||[] });
+  }
+
+  if (invMatch && method === 'PUT') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const allowed = ['status','due_date','terms','notes','internal_notes','deposit_type','deposit_value'];
+    const update = { updated_at: new Date().toISOString() };
+    allowed.forEach(k => { if (body[k] !== undefined) update[k] = body[k]; });
+    if (update.deposit_type !== undefined || update.deposit_value !== undefined) {
+      const { data: cur } = await sb().from('invoices').select('total,deposit_type,deposit_value').eq('id', invMatch[1]).single();
+      if (cur) {
+        const dt = update.deposit_type || cur.deposit_type;
+        const dv = parseFloat(update.deposit_value !== undefined ? update.deposit_value : cur.deposit_value);
+        update.deposit_required = dt === 'percent' ? parseFloat((cur.total*(dv/100)).toFixed(2)) : dv;
+      }
+    }
+    const { data: inv, error } = await sb().from('invoices').update(update).eq('id', invMatch[1]).select('*,customers(name,company,email)').single();
+    if (error) return res(500, { error: error.message });
+    if (body.status === 'sent' && inv.customers?.email) {
+      const RESEND_KEY = process.env.RESEND_API_KEY;
+      if (RESEND_KEY) {
+        const portalLink = `https://11rprint.com/admin/invoice-print.html?id=${invMatch[1]}`;
+        const emailHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#f9f9f9;">
+<div style="background:#050706;padding:24px 28px;border-radius:12px 12px 0 0;"><img src="https://11rprint.com/images/11r-logo-new.png" alt="11R Print" style="height:36px;"/></div>
+<div style="background:#fff;padding:32px 28px;border-radius:0 0 12px 12px;">
+<h2 style="margin:0 0 8px;font-size:22px;color:#050706;">Invoice ${inv.invoice_number}</h2>
+<p style="color:#555;font-size:14px;margin:0 0 24px;">Hi ${inv.customers.name}, here is your invoice from 11R Print.</p>
+<table style="width:100%;border-collapse:collapse;margin-bottom:24px;background:#f9f9f9;border-radius:8px;">
+<tr><td style="padding:10px 16px;font-size:12px;color:#888;width:150px;">Invoice #</td><td style="padding:10px 16px;font-size:14px;font-weight:bold;">${inv.invoice_number}</td></tr>
+<tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Total</td><td style="padding:10px 16px;font-size:18px;font-weight:bold;color:#058f45;border-top:1px solid #eee;">$${parseFloat(inv.total).toFixed(2)}</td></tr>
+<tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Deposit Due</td><td style="padding:10px 16px;font-size:14px;font-weight:bold;border-top:1px solid #eee;">$${parseFloat(inv.deposit_required).toFixed(2)}</td></tr>
+${inv.due_date?`<tr><td style="padding:10px 16px;font-size:12px;color:#888;border-top:1px solid #eee;">Due Date</td><td style="padding:10px 16px;font-size:13px;border-top:1px solid #eee;">${inv.due_date}</td></tr>`:''}
+</table>
+${inv.notes?`<p style="background:#f5f5f5;padding:14px;border-radius:8px;font-size:13px;color:#555;">${inv.notes}</p>`:''}
+<a href="${portalLink}" style="display:inline-block;margin-top:24px;background:#058f45;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">View Invoice</a>
+<p style="margin-top:32px;font-size:12px;color:#999;">Questions? Email <a href="mailto:orders@11rprint.com" style="color:#058f45;">orders@11rprint.com</a></p>
+</div></body></html>`;
+        fetch('https://api.resend.com/emails', { method:'POST', headers:{'Authorization':`Bearer ${RESEND_KEY}`,'Content-Type':'application/json'}, body: JSON.stringify({ from:'11R Print <orders@11rprint.com>', to: inv.customers.email, subject:`Invoice ${inv.invoice_number} from 11R Print`, html: emailHtml }) }).catch(()=>{});
+      }
+      const N8N = process.env.N8N_WEBHOOK_URL;
+      if (N8N) fetch(N8N, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event:'invoice_sent', invoice_id: invMatch[1], invoice_number: inv.invoice_number }) }).catch(()=>{});
+    }
+    return res(200, { invoice: inv });
+  }
+
+  if (invMatch && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('invoices').update({ status:'void', updated_at: new Date().toISOString() }).eq('id', invMatch[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
+  // POST /invoices/:id/items — add line item
+  const invItemsMatch = path.match(/^\/invoices\/([a-f0-9-]+)\/items$/);
+  if (invItemsMatch && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const qty = parseFloat(body.quantity)||1;
+    const price = parseFloat(body.unit_price)||0;
+    const { data: item, error } = await sb().from('invoice_items').insert([{
+      invoice_id: invItemsMatch[1], description: body.description||'',
+      quantity: qty, unit_price: price, amount: parseFloat((qty*price).toFixed(2)), sort_order: 99
+    }]).select().single();
+    if (error) return res(500, { error: error.message });
+    await recalcInvoice(sb(), invItemsMatch[1]);
+    const { data: inv } = await sb().from('invoices').select('subtotal,tax_amount,total,deposit_required,balance_due').eq('id', invItemsMatch[1]).single();
+    return res(200, { item, invoice: inv });
+  }
+
+  // DELETE /invoice-items/:id
+  const invItemDel = path.match(/^\/invoice-items\/([a-f0-9-]+)$/);
+  if (invItemDel && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data: item } = await sb().from('invoice_items').select('invoice_id').eq('id', invItemDel[1]).single();
+    const { error } = await sb().from('invoice_items').delete().eq('id', invItemDel[1]);
+    if (error) return res(500, { error: error.message });
+    if (item?.invoice_id) await recalcInvoice(sb(), item.invoice_id);
+    return res(200, { ok: true });
+  }
+
+  // ── PAYMENTS ──────────────────────────────────────────────────────────────
+
+  const payMatch = path.match(/^\/invoices\/([a-f0-9-]+)\/payments$/);
+  if (payMatch && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const payAmount = parseFloat(body.amount);
+    if (!payAmount || payAmount <= 0) return res(400, { error: 'Valid amount required' });
+    const { data: inv } = await sb().from('invoices').select('*,customers(name,company,email,phone,billing_address)').eq('id', payMatch[1]).single();
+    if (!inv) return res(404, { error: 'Invoice not found' });
+    if (payAmount > inv.balance_due + 0.01) return res(400, { error: 'Payment exceeds balance due' });
+    const { count: pc } = await sb().from('payments').select('*', { count: 'exact', head: true });
+    const yr = new Date().getFullYear();
+    const payment_number = `PAY-${yr}-${String((pc||0)+1).padStart(4,'0')}`;
+    const { data: payment, error: pErr } = await sb().from('payments').insert([{
+      payment_number, invoice_id: inv.id, customer_id: inv.customer_id,
+      amount: payAmount, method: body.method||'cash', reference: body.reference||null,
+      paid_at: body.paid_at||new Date().toISOString(),
+      payment_type: body.payment_type||'deposit', notes: body.notes||null
+    }]).select().single();
+    if (pErr) return res(500, { error: pErr.message });
+    const newPaid = parseFloat((inv.amount_paid + payAmount).toFixed(2));
+    const newBal = parseFloat(Math.max(0, inv.total - newPaid).toFixed(2));
+    let newStatus = newBal <= 0 ? 'paid' : newPaid >= inv.deposit_required ? 'deposit_paid' : 'partially_paid';
+    await sb().from('invoices').update({ amount_paid: newPaid, balance_due: newBal, status: newStatus, updated_at: new Date().toISOString() }).eq('id', inv.id);
+    const { count: rc } = await sb().from('receipts').select('*', { count: 'exact', head: true });
+    const receipt_number = `RCT-${yr}-${String((rc||0)+1).padStart(4,'0')}`;
+    const snapshot = {
+      receipt_number, payment_number, invoice_number: inv.invoice_number,
+      issued_at: new Date().toISOString(),
+      customer: { name: inv.customers?.name||'', company: inv.customers?.company||'', email: inv.customers?.email||'', phone: inv.customers?.phone||'', billing_address: inv.customers?.billing_address||'' },
+      payment: { amount: payAmount, method: body.method||'cash', reference: body.reference||'', paid_at: body.paid_at||new Date().toISOString(), payment_type: body.payment_type||'deposit' },
+      invoice: { total: inv.total, prior_paid: inv.amount_paid, this_payment: payAmount, new_balance: newBal },
+      status: newBal <= 0 ? 'PAID IN FULL' : newPaid >= inv.deposit_required ? 'DEPOSIT PAID' : 'PARTIALLY PAID'
+    };
+    const { data: receipt } = await sb().from('receipts').insert([{ receipt_number, payment_id: payment.id, invoice_id: inv.id, customer_id: inv.customer_id, snapshot }]).select().single();
+    if (receipt) await sb().from('payments').update({ receipt_id: receipt.id }).eq('id', payment.id);
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_KEY && inv.customers?.email) {
+      const printUrl = `https://11rprint.com/admin/receipt-print.html?id=${receipt?.id}`;
+      fetch('https://api.resend.com/emails', { method:'POST', headers:{'Authorization':`Bearer ${RESEND_KEY}`,'Content-Type':'application/json'}, body: JSON.stringify({ from:'11R Print <orders@11rprint.com>', to: inv.customers.email, subject:`Receipt ${receipt_number} — 11R Print`, html: buildReceiptEmail(snapshot, printUrl) }) }).catch(()=>{});
+      await sb().from('receipts').update({ emailed_at: new Date().toISOString() }).eq('id', receipt?.id);
+    }
+    const N8N = process.env.N8N_WEBHOOK_URL;
+    if (N8N) fetch(N8N, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event:'payment_received', payment_number, invoice_id: inv.id, amount: payAmount, new_status: newStatus }) }).catch(()=>{});
+    return res(200, { payment, receipt, new_status: newStatus, balance_due: newBal });
+  }
+
+  // ── RECEIPTS ─────────────────────────────────────────────────────────────
+
+  const rcptMatch = path.match(/^\/receipts\/([a-f0-9-]+)$/);
+  if (rcptMatch && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { data, error } = await sb().from('receipts').select('*').eq('id', rcptMatch[1]).single();
+    if (error || !data) return res(404, { error: 'Receipt not found' });
+    return res(200, { receipt: data });
+  }
+
+  const rcptPub = path.match(/^\/receipts\/([a-f0-9-]+)\/public$/);
+  if (rcptPub && method === 'GET') {
+    const { data, error } = await sb().from('receipts').select('receipt_number,snapshot,created_at').eq('id', rcptPub[1]).single();
+    if (error || !data) return res(404, { error: 'Receipt not found' });
+    return res(200, { receipt: data });
+  }
+
+  // ── DASHBOARD STATS ────────────────────────────────────────────────────────
+
+  if (path === '/dashboard' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+    const [cc, jc, ib, pm] = await Promise.all([
+      sb().from('customers').select('*', { count:'exact', head:true }),
+      sb().from('jobs').select('*', { count:'exact', head:true }).not('status','eq','complete'),
+      sb().from('invoices').select('balance_due').not('status','in','("paid","void")'),
+      sb().from('payments').select('amount').gte('paid_at', monthStart)
+    ]);
+    const outstanding = (ib.data||[]).reduce((s, i) => s + parseFloat(i.balance_due||0), 0);
+    const monthRev = (pm.data||[]).reduce((s, p) => s + parseFloat(p.amount||0), 0);
+    return res(200, { customers: cc.count||0, open_jobs: jc.count||0, outstanding: outstanding.toFixed(2), month_revenue: monthRev.toFixed(2) });
   }
 
   return res(404, { error: 'Not found' });

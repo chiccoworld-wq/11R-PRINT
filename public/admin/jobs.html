@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Jobs</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{--black:#050706;--charcoal:#0d0f0e;--charcoal-2:#141918;--green:#058f45;--gb:#20ff7b;--white:#f5f7f4;--off:#dce7df;--muted:#7a8a7e;--line:rgba(255,255,255,.1);--danger:#ff4d4d;--yel:#fff03a;--cyan:#00d5ff;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+.admin-nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(5,7,6,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);}
+.nav-brand img{height:32px;filter:drop-shadow(0 0 8px rgba(32,255,123,.2));}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:all .2s;}
+.nav-link:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.nav-link.active{color:var(--gb);background:rgba(32,255,123,.08);}
+.btn-logout{background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+.toolbar{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.search-inp{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:9px 13px;font-size:13px;outline:none;font-family:inherit;width:220px;transition:border-color .2s;}
+.search-inp:focus{border-color:var(--gb);}
+.search-inp::placeholder{color:rgba(255,255,255,.2);}
+.filter-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex:1;}
+.filter-tabs::-webkit-scrollbar{display:none;}
+.ft{background:none;border:none;padding:8px 12px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-radius:8px;white-space:nowrap;transition:all .2s;}
+.ft:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.ft.active{color:var(--gb);background:rgba(32,255,123,.08);}
+.btn-new{background:var(--gb);color:#001708;border:none;border-radius:10px;padding:9px 18px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-new:hover{background:#00eb6e;}
+.layout{display:flex;height:calc(100vh - 120px);overflow:hidden;}
+.job-list-col{width:380px;flex-shrink:0;border-right:1px solid var(--line);overflow-y:auto;padding:8px;}
+.job-card{padding:14px 16px;border-radius:12px;cursor:pointer;border:1px solid transparent;margin-bottom:6px;transition:background .15s;}
+.job-card:hover{background:rgba(255,255,255,.04);}
+.job-card.active{background:rgba(32,255,123,.06);border-color:rgba(32,255,123,.2);}
+.job-num{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.job-title{font-size:14px;font-weight:900;letter-spacing:-.01em;margin-bottom:4px;}
+.job-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.job-cust{font-size:12px;color:var(--muted);flex:1;}
+.status-pill{padding:3px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}
+.sp-new{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.25);}
+.sp-quoted{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.25);}
+.sp-approved{background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.25);}
+.sp-deposit_paid{background:rgba(32,255,123,.15);color:var(--gb);border:1px solid rgba(32,255,123,.3);}
+.sp-in_production{background:rgba(5,143,69,.15);color:#6effb0;border:1px solid rgba(5,143,69,.3);}
+.sp-qc{background:rgba(0,213,255,.15);color:var(--cyan);border:1px solid rgba(0,213,255,.3);}
+.sp-complete{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-cancelled{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--line);}
+.due-badge{font-size:10px;color:var(--muted);}
+.due-badge.urgent{color:var(--danger);}
+.panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.panel-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);}
+.panel-empty h3{font-size:18px;font-weight:900;text-transform:uppercase;color:var(--white);}
+.panel-body{flex:1;overflow-y:auto;padding:28px;}
+.panel-header{padding:20px 28px;border-bottom:1px solid var(--line);}
+.ph-title{font-size:20px;font-weight:900;letter-spacing:-.02em;margin-bottom:4px;}
+.ph-sub{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-sm{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid var(--line);background:transparent;color:var(--muted);}
+.btn-sm:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+.btn-sm.green{border-color:rgba(32,255,123,.3);color:var(--gb);}
+.btn-sm.green:hover{background:rgba(32,255,123,.1);}
+.btn-sm.red{border-color:rgba(255,77,77,.3);color:var(--danger);}
+.btn-sm.red:hover{background:rgba(255,77,77,.1);}
+.status-select{background:var(--charcoal-2);border:1px solid var(--line);border-radius:8px;color:var(--white);padding:7px 12px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;outline:none;font-family:inherit;cursor:pointer;transition:border-color .2s;}
+.status-select:focus{border-color:var(--gb);}
+.status-select option{background:var(--charcoal);text-transform:none;}
+.section-label{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:20px 0 12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.detail-field{display:flex;flex-direction:column;gap:4px;}
+.detail-label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.detail-value{font-size:14px;color:var(--white);}
+.notes-box{background:var(--charcoal);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:13px;color:var(--off);line-height:1.6;white-space:pre-wrap;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-bg.show{display:flex;}
+.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:32px;}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;transition:color .2s;}
+.btn-close:hover{color:var(--white);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field input,.field select,.field textarea{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-size:14px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gb);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.22);}
+.field select option{background:var(--charcoal);}
+.field textarea{resize:vertical;min-height:80px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-primary{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .25s;margin-top:8px;}
+.btn-primary:hover{background:#00eb6e;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.err-box{padding:10px 14px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;margin-top:8px;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;transition:transform .3s,opacity .3s;opacity:0;z-index:9999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.empty-list{padding:32px;color:var(--muted);text-align:center;font-size:13px;}
+@media(max-width:768px){
+  .layout{flex-direction:column;height:auto;overflow:visible;}
+  .job-list-col{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:260px;}
+  .panel{height:auto;overflow:visible;}
+  .panel-body{overflow:visible;}
+  .detail-grid{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .nav-links{gap:2px;}.nav-link{padding:5px 10px;font-size:10px;}
+  .toolbar{padding:12px 16px;}
+  .search-inp{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav class="admin-nav">
+  <div class="nav-brand"><img src="../images/11r-logo-new.png" alt="11R Print"/></div>
+  <div class="nav-links">
+    <a href="/admin/" class="nav-link">Proofs</a>
+    <a href="/admin/crm.html" class="nav-link">CRM</a>
+    <a href="/admin/jobs.html" class="nav-link active">Jobs</a>
+    <a href="/admin/invoices.html" class="nav-link">Invoices</a>
+  </div>
+  <button class="btn-logout" onclick="logout()">Sign Out</button>
+</nav>
+
+<div class="toolbar">
+  <input class="search-inp" id="search" type="search" placeholder="Search jobs…" oninput="debounceSearch()"/>
+  <div class="filter-tabs">
+    <button class="ft active" onclick="setFilter('',this)">All</button>
+    <button class="ft" onclick="setFilter('new',this)">New</button>
+    <button class="ft" onclick="setFilter('quoted',this)">Quoted</button>
+    <button class="ft" onclick="setFilter('deposit_paid',this)">Deposit Paid</button>
+    <button class="ft" onclick="setFilter('in_production',this)">In Production</button>
+    <button class="ft" onclick="setFilter('qc',this)">QC</button>
+    <button class="ft" onclick="setFilter('complete',this)">Complete</button>
+  </div>
+  <button class="btn-new" onclick="openNewJob()">+ New Job</button>
+</div>
+
+<div class="layout">
+  <div class="job-list-col" id="jobList">
+    <div class="empty-list">Loading…</div>
+  </div>
+  <div class="panel">
+    <div class="panel-empty" id="emptyPanel">
+      <h3>Select a Job</h3>
+      <p>Pick from the list or create a new one.</p>
+    </div>
+    <div id="jobDetail" style="display:none;flex-direction:column;height:100%;">
+      <div class="panel-header">
+        <div class="ph-title" id="dTitle"></div>
+        <div class="ph-sub" id="dSub"></div>
+        <div class="ph-actions">
+          <select class="status-select" id="statusSel" onchange="updateStatus(this.value)">
+            <option value="new">New</option>
+            <option value="quoted">Quoted</option>
+            <option value="approved">Approved</option>
+            <option value="deposit_paid">Deposit Paid</option>
+            <option value="in_production">In Production</option>
+            <option value="qc">QC</option>
+            <option value="complete">Complete</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn-sm green" onclick="openEditJob()">Edit</button>
+          <a href="" id="invLink" style="display:none"><button class="btn-sm">→ Invoice</button></a>
+          <button class="btn-sm red" onclick="deleteJob()">Delete</button>
+        </div>
+      </div>
+      <div class="panel-body" id="jobBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- New/Edit Job Modal -->
+<div class="modal-bg" id="jobModal">
+  <div class="modal">
+    <div class="modal-title"><span id="jModalTitle">New Job</span><button class="btn-close" onclick="closeModal()">✕</button></div>
+    <div class="field">
+      <label>Customer *</label>
+      <select id="jCust"></select>
+    </div>
+    <div class="field"><label>Job Title *</label><input id="jTitle" placeholder="e.g. Nike Safety Shirts – Summer Run"/></div>
+    <div class="field-row">
+      <div class="field"><label>Due Date</label><input type="date" id="jDue"/></div>
+      <div class="field"><label>Quantity</label><input type="number" id="jQty" placeholder="100" min="1"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Garment Style</label><input id="jStyle" placeholder="Gildan 5000, N3165…"/></div>
+      <div class="field"><label>Garment Color</label><input id="jColor" placeholder="Black, Safety Orange…"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Ink Colors</label><input id="jInk" placeholder="2 color front + 1 color back"/></div>
+      <div class="field"><label>Print Location(s)</label><input id="jLoc" placeholder="Left chest, full back"/></div>
+    </div>
+    <div class="field"><label>Job Notes</label><textarea id="jNotes" placeholder="Customer-visible notes, artwork requirements…"></textarea></div>
+    <div class="field"><label>Internal Notes</label><textarea id="jInternal" placeholder="Private production notes…"></textarea></div>
+    <button class="btn-primary" id="saveJobBtn" onclick="saveJob()">Save Job</button>
+    <div class="err-box" id="jobErr"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = sessionStorage.getItem('11r_admin_key');
+if (!KEY) location.href = '/admin/';
+
+const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
+  headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+  ...opts
+}).then(r => r.json());
+
+let jobs = [], currentJob = null, currentFilter = '', editMode = false, customers = [], searchTimer = null;
+
+async function loadJobs() {
+  const qs = currentFilter ? `?status=${currentFilter}` : '';
+  const data = await API(`/jobs${qs}`);
+  jobs = data.jobs || [];
+  renderList();
+  const hash = location.hash.replace('#','');
+  if (hash) { const found = jobs.find(j=>j.id===hash); if(found) selectJob(found.id); }
+}
+
+function renderList() {
+  const el = document.getElementById('jobList');
+  let filtered = jobs;
+  const q = document.getElementById('search').value.toLowerCase();
+  if (q) filtered = jobs.filter(j => (j.title+j.job_number+(j.customers?.name||'')).toLowerCase().includes(q));
+  if (!filtered.length) { el.innerHTML = '<div class="empty-list">No jobs found.</div>'; return; }
+  el.innerHTML = filtered.map(j => {
+    const cust = j.customers;
+    const due = j.due_date ? new Date(j.due_date) : null;
+    const isUrgent = due && (due - Date.now()) < 3*24*3600*1000;
+    return `<div class="job-card${currentJob?.id===j.id?' active':''}" onclick="selectJob('${j.id}')">
+      <div class="job-num">${esc(j.job_number)}</div>
+      <div class="job-title">${esc(j.title)}</div>
+      <div class="job-meta">
+        <span class="job-cust">${cust?esc(cust.name):''}</span>
+        ${due?`<span class="due-badge${isUrgent?' urgent':''}">Due ${due.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
+        <span class="status-pill sp-${j.status}">${j.status.replace(/_/g,' ')}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function selectJob(id) {
+  const data = await API(`/jobs/${id}`);
+  currentJob = data.job;
+  history.replaceState(null,'',`#${id}`);
+  renderDetail(data.job);
+  renderList();
+}
+
+function renderDetail(j) {
+  document.getElementById('emptyPanel').style.display = 'none';
+  document.getElementById('jobDetail').style.display = 'flex';
+  document.getElementById('dTitle').textContent = j.title;
+  const cust = j.customers;
+  document.getElementById('dSub').textContent = `${j.job_number}${cust?' · '+cust.name:''}${j.due_date?' · Due '+fmt(j.due_date):''}`;
+  document.getElementById('statusSel').value = j.status;
+  document.getElementById('jobBody').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-field"><span class="detail-label">Customer</span><span class="detail-value">${cust?esc(cust.name)+(cust.company?' — '+esc(cust.company):''):'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Quantity</span><span class="detail-value">${j.quantity||'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Garment Style</span><span class="detail-value">${j.garment_style||'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Garment Color</span><span class="detail-value">${j.garment_color||'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Ink Colors</span><span class="detail-value">${j.ink_colors||'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Print Location</span><span class="detail-value">${Array.isArray(j.print_locations)&&j.print_locations.length?j.print_locations.join(', '):(j.print_locations||'—')}</span></div>
+      <div class="detail-field"><span class="detail-label">Due Date</span><span class="detail-value">${j.due_date?fmt(j.due_date):'—'}</span></div>
+      <div class="detail-field"><span class="detail-label">Created</span><span class="detail-value">${fmt(j.created_at)}</span></div>
+    </div>
+    ${j.notes?`<div class="section-label">Job Notes</div><div class="notes-box">${esc(j.notes)}</div>`:''}
+    ${j.internal_notes?`<div class="section-label">Internal Notes</div><div class="notes-box" style="border-color:rgba(255,240,58,.2);color:var(--yel);">${esc(j.internal_notes)}</div>`:''}
+    ${j.artwork_url?`<div class="section-label">Artwork</div><div><a href="${esc(j.artwork_url)}" target="_blank" style="color:var(--gb);font-size:13px;text-decoration:underline;">View Artwork File</a></div>`:''}
+  `;
+}
+
+async function updateStatus(status) {
+  if (!currentJob) return;
+  const data = await API(`/jobs/${currentJob.id}`, { method:'PUT', body: JSON.stringify({ status }) });
+  if (data.error) { toast('Error: '+data.error); return; }
+  currentJob.status = status;
+  toast(`Status → ${status.replace(/_/g,' ')}`);
+  renderList();
+}
+
+function setFilter(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.ft').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadJobs();
+}
+
+async function openNewJob() {
+  editMode = false;
+  document.getElementById('jModalTitle').textContent = 'New Job';
+  ['jTitle','jDue','jQty','jStyle','jColor','jInk','jLoc','jNotes','jInternal'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('jobErr').style.display = 'none';
+  await loadCustomersForModal();
+  const params = new URLSearchParams(location.search);
+  const cid = params.get('cid');
+  if (cid) { document.getElementById('jCust').value = cid; }
+  document.getElementById('jobModal').classList.add('show');
+}
+
+async function openEditJob() {
+  if (!currentJob) return;
+  editMode = true;
+  document.getElementById('jModalTitle').textContent = 'Edit Job';
+  await loadCustomersForModal();
+  document.getElementById('jCust').value = currentJob.customer_id || '';
+  document.getElementById('jTitle').value = currentJob.title || '';
+  document.getElementById('jDue').value = currentJob.due_date || '';
+  document.getElementById('jQty').value = currentJob.quantity || '';
+  document.getElementById('jStyle').value = currentJob.garment_style || '';
+  document.getElementById('jColor').value = currentJob.garment_color || '';
+  document.getElementById('jInk').value = currentJob.ink_colors || '';
+  const locs = Array.isArray(currentJob.print_locations) ? currentJob.print_locations.join(', ') : (currentJob.print_locations||'');
+  document.getElementById('jLoc').value = locs;
+  document.getElementById('jNotes').value = currentJob.notes || '';
+  document.getElementById('jInternal').value = currentJob.internal_notes || '';
+  document.getElementById('jobErr').style.display = 'none';
+  document.getElementById('jobModal').classList.add('show');
+}
+
+async function loadCustomersForModal() {
+  if (!customers.length) {
+    const d = await API('/customers');
+    customers = d.customers || [];
+  }
+  const sel = document.getElementById('jCust');
+  sel.innerHTML = '<option value="">— Select customer —</option>' + customers.map(c=>`<option value="${c.id}">${esc(c.name)}${c.company?' — '+esc(c.company):''}</option>`).join('');
+}
+
+async function saveJob() {
+  const cust = document.getElementById('jCust').value;
+  const title = document.getElementById('jTitle').value.trim();
+  if (!cust || !title) { showErr('Customer and title are required.'); return; }
+  const btn = document.getElementById('saveJobBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const locsRaw = document.getElementById('jLoc').value.trim();
+  const payload = {
+    customer_id: cust, title,
+    due_date: document.getElementById('jDue').value || null,
+    quantity: parseInt(document.getElementById('jQty').value)||null,
+    garment_style: document.getElementById('jStyle').value.trim(),
+    garment_color: document.getElementById('jColor').value.trim(),
+    ink_colors: document.getElementById('jInk').value.trim(),
+    print_locations: locsRaw ? locsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    notes: document.getElementById('jNotes').value.trim(),
+    internal_notes: document.getElementById('jInternal').value.trim()
+  };
+  let data;
+  if (editMode) {
+    data = await API(`/jobs/${currentJob.id}`, { method:'PUT', body: JSON.stringify(payload) });
+  } else {
+    data = await API('/jobs', { method:'POST', body: JSON.stringify(payload) });
+  }
+  btn.disabled = false; btn.textContent = 'Save Job';
+  if (data.error) { showErr(data.error); return; }
+  closeModal();
+  toast('Job saved!');
+  await loadJobs();
+  if (data.job) selectJob(data.job.id);
+}
+
+async function deleteJob() {
+  if (!currentJob) return;
+  if (!confirm(`Delete "${currentJob.title}"? This cannot be undone.`)) return;
+  await API(`/jobs/${currentJob.id}`, { method:'DELETE' });
+  currentJob = null;
+  document.getElementById('emptyPanel').style.display = 'flex';
+  document.getElementById('jobDetail').style.display = 'none';
+  toast('Job deleted.');
+  loadJobs();
+}
+
+function closeModal() { document.getElementById('jobModal').classList.remove('show'); }
+function showErr(msg) { const e=document.getElementById('jobErr'); e.textContent=msg; e.style.display='block'; }
+function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'; }
+function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(renderList, 250); }
+function toast(msg) { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
+
+const urlP = new URLSearchParams(location.search);
+if (urlP.get('new') === '1') window.addEventListener('load', openNewJob);
+
+loadJobs();
+</script>
+</body>
+</html>

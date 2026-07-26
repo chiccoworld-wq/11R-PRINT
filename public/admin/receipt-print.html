@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Payment Receipt</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#111;}
+.page{max-width:680px;margin:0 auto;background:#fff;padding:48px;}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid #111;}
+.brand{display:flex;flex-direction:column;gap:6px;}
+.brand img{height:48px;width:auto;}
+.brand-tagline{font-size:11px;color:#666;letter-spacing:.06em;}
+.doc-info{text-align:right;}
+.doc-title{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:#111;margin-bottom:6px;}
+.doc-num{font-size:14px;font-weight:bold;color:#058f45;}
+.doc-sub{font-size:12px;color:#888;margin-top:3px;}
+.status-badge{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}
+.badge-paid{background:#e8f5e9;color:#2e7d32;border:1px solid #4caf50;}
+.badge-deposit{background:#e3f2fd;color:#1565c0;border:1px solid #2196f3;}
+.badge-partial{background:#fff8e1;color:#e65100;border:1px solid #ffc107;}
+.section{margin-bottom:28px;}
+.section-title{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #eee;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.field-block{display:flex;flex-direction:column;gap:3px;}
+.field-label{font-size:10px;color:#888;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;}
+.field-value{font-size:14px;color:#111;}
+.payment-amount{font-size:32px;font-weight:900;color:#058f45;margin:12px 0 4px;}
+table.summary{width:100%;border-collapse:collapse;}
+table.summary td{padding:8px 0;font-size:13px;border-bottom:1px solid #f0f0f0;}
+table.summary td:last-child{text-align:right;font-weight:bold;}
+table.summary tr.total-row td{font-size:16px;font-weight:900;border-top:2px solid #111;border-bottom:none;padding-top:12px;}
+table.summary tr.total-row td:last-child{color:#058f45;}
+.footer{margin-top:40px;padding-top:20px;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.footer-text{font-size:11px;color:#888;line-height:1.6;}
+.footer-verify{text-align:right;font-size:10px;color:#bbb;font-family:monospace;}
+.print-btn{display:block;margin:20px auto;padding:12px 32px;background:#050706;color:#20ff7b;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.print-btn:hover{background:#1a1a1a;}
+.loading{text-align:center;padding:60px;color:#888;font-size:15px;}
+.error{text-align:center;padding:60px;color:#cc0000;}
+@media print{
+  body{background:#fff;}
+  .page{padding:24px;box-shadow:none;}
+  .print-btn,.no-print{display:none!important;}
+  .page{max-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">Loading receipt…</div>
+<div id="errorDiv" class="error" style="display:none;"></div>
+
+<div id="receiptPage" class="page" style="display:none;">
+  <div class="header">
+    <div class="brand">
+      <img src="../images/11r-logo-new.png" alt="11R Print" onerror="this.style.display='none'"/>
+      <div style="margin-top:4px;">
+        <div style="font-size:15px;font-weight:900;letter-spacing:.02em;">11R PRINT</div>
+        <div class="brand-tagline">Built With Passion. Printed With Purpose.</div>
+        <div style="font-size:11px;color:#888;margin-top:2px;">orders@11rprint.com · 11rprint.com</div>
+      </div>
+    </div>
+    <div class="doc-info">
+      <div class="doc-title">Payment Receipt</div>
+      <div class="doc-num" id="rNum"></div>
+      <div class="doc-sub" id="rDate"></div>
+      <div class="doc-sub" id="rRefs"></div>
+      <div id="rBadge"></div>
+    </div>
+  </div>
+
+  <div class="two-col section">
+    <div>
+      <div class="section-title">Bill To</div>
+      <div class="field-value" id="rCustName" style="font-weight:bold;font-size:15px;margin-bottom:4px;"></div>
+      <div class="field-value" id="rCustCompany" style="color:#555;margin-bottom:4px;"></div>
+      <div class="field-value" id="rCustEmail" style="font-size:13px;color:#888;"></div>
+      <div class="field-value" id="rCustAddr" style="font-size:12px;color:#888;margin-top:4px;white-space:pre-line;"></div>
+    </div>
+    <div>
+      <div class="section-title">Payment Details</div>
+      <div class="payment-amount" id="rAmt"></div>
+      <div class="field-label">Payment Method</div>
+      <div class="field-value" id="rMethod" style="margin-bottom:8px;"></div>
+      <div class="field-label">Payment Date</div>
+      <div class="field-value" id="rPaidAt" style="margin-bottom:8px;"></div>
+      <div id="rRefWrap" style="display:none;">
+        <div class="field-label">Reference #</div>
+        <div class="field-value" id="rRef"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Financial Summary</div>
+    <table class="summary">
+      <tr><td style="color:#888;">Invoice Total</td><td id="sTotal"></td></tr>
+      <tr><td style="color:#888;">Previous Payments</td><td id="sPrev"></td></tr>
+      <tr><td style="color:#888;">This Payment</td><td id="sThis" style="color:#058f45;"></td></tr>
+      <tr class="total-row"><td>Remaining Balance</td><td id="sBal"></td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">
+      Thank you for your business!<br>
+      Questions? Contact us at <strong>orders@11rprint.com</strong><br>
+      <a href="https://11rprint.com" style="color:#058f45;">11rprint.com</a>
+    </div>
+    <div class="footer-verify" id="rVerify"></div>
+  </div>
+</div>
+
+<button class="print-btn no-print" id="printBtn" style="display:none;" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+
+const methodLabel = { cash:'Cash', card:'Credit/Debit Card', check:'Check', zelle:'Zelle', venmo:'Venmo', stripe:'Stripe', ach:'ACH', other:'Other' };
+
+async function load() {
+  if (!id) { showError('No receipt ID provided.'); return; }
+  try {
+    const r = await fetch(`/.netlify/functions/api/receipts/${id}/public`);
+    const data = await r.json();
+    if (data.error || !data.receipt) { showError('Receipt not found.'); return; }
+    render(data.receipt);
+  } catch(e) { showError('Failed to load receipt.'); }
+}
+
+function render(receipt) {
+  const s = receipt.snapshot;
+  document.title = `Receipt ${s.receipt_number} — 11R Print`;
+  document.getElementById('rNum').textContent = s.receipt_number;
+  document.getElementById('rDate').textContent = 'Issued: ' + new Date(s.issued_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('rRefs').textContent = `Invoice: ${s.invoice_number}  ·  Payment: ${s.payment_number}`;
+  const badge = document.getElementById('rBadge');
+  badge.innerHTML = `<span class="status-badge ${s.status==='PAID IN FULL'?'badge-paid':s.status==='DEPOSIT PAID'?'badge-deposit':'badge-partial'}">${s.status}</span>`;
+  document.getElementById('rCustName').textContent = s.customer.name || '—';
+  document.getElementById('rCustCompany').textContent = s.customer.company || '';
+  document.getElementById('rCustEmail').textContent = s.customer.email || '';
+  document.getElementById('rCustAddr').textContent = s.customer.billing_address || '';
+  document.getElementById('rAmt').textContent = '$' + parseFloat(s.payment.amount).toFixed(2);
+  document.getElementById('rMethod').textContent = methodLabel[s.payment.method] || s.payment.method;
+  document.getElementById('rPaidAt').textContent = new Date(s.payment.paid_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  if (s.payment.reference) {
+    document.getElementById('rRefWrap').style.display = 'block';
+    document.getElementById('rRef').textContent = s.payment.reference;
+  }
+  document.getElementById('sTotal').textContent = '$' + parseFloat(s.invoice.total).toFixed(2);
+  document.getElementById('sPrev').textContent = '$' + parseFloat(s.invoice.prior_paid).toFixed(2);
+  document.getElementById('sThis').textContent = '$' + parseFloat(s.invoice.this_payment || s.payment.amount).toFixed(2);
+  const bal = parseFloat(s.invoice.new_balance);
+  const balEl = document.getElementById('sBal');
+  balEl.textContent = '$' + bal.toFixed(2);
+  if (bal === 0) balEl.style.color = '#058f45';
+  document.getElementById('rVerify').textContent = `Verification Code\n${s.receipt_number}`;
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('receiptPage').style.display = 'block';
+  document.getElementById('printBtn').style.display = 'block';
+}
+
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  const e = document.getElementById('errorDiv');
+  e.textContent = msg;
+  e.style.display = 'block';
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — CRM</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{--black:#050706;--charcoal:#0d0f0e;--charcoal-2:#141918;--green:#058f45;--gb:#20ff7b;--white:#f5f7f4;--off:#dce7df;--muted:#7a8a7e;--line:rgba(255,255,255,.1);--danger:#ff4d4d;--yel:#fff03a;--cyan:#00d5ff;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+.admin-nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(5,7,6,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-brand img{height:32px;filter:drop-shadow(0 0 8px rgba(32,255,123,.2));}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:all .2s;}
+.nav-link:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.nav-link.active{color:var(--gb);background:rgba(32,255,123,.08);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-logout{background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+.layout{display:flex;height:calc(100vh - 60px);overflow:hidden;}
+.sidebar{width:340px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-top{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+.search-wrap{position:relative;}
+.search-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:10px 12px 10px 36px;font-size:13px;outline:none;font-family:inherit;transition:border-color .2s;}
+.search-inp:focus{border-color:var(--gb);}
+.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none;}
+.btn-new{background:var(--gb);color:#001708;border:none;border-radius:10px;padding:10px 18px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%;}
+.btn-new:hover{background:#00eb6e;}
+.cust-list{flex:1;overflow-y:auto;padding:8px;}
+.cust-item{padding:14px 12px;border-radius:12px;cursor:pointer;transition:background .15s;border:1px solid transparent;margin-bottom:4px;}
+.cust-item:hover{background:rgba(255,255,255,.04);}
+.cust-item.active{background:rgba(32,255,123,.06);border-color:rgba(32,255,123,.2);}
+.cust-name{font-size:14px;font-weight:900;letter-spacing:-.01em;margin-bottom:3px;}
+.cust-sub{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
+.cust-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.2);margin-left:auto;flex-shrink:0;}
+.panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--black);}
+.panel-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);}
+.panel-empty h3{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;color:var(--white);}
+.panel-header{padding:20px 28px 0;border-bottom:1px solid var(--line);}
+.panel-name{font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:4px;}
+.panel-company{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.panel-actions{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:0;}
+.btn-sm{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid var(--line);background:transparent;color:var(--muted);}
+.btn-sm:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+.btn-sm.green{border-color:rgba(32,255,123,.3);color:var(--gb);}
+.btn-sm.green:hover{background:rgba(32,255,123,.1);border-color:var(--gb);}
+.btn-sm.red{border-color:rgba(255,77,77,.3);color:var(--danger);}
+.btn-sm.red:hover{background:rgba(255,77,77,.1);}
+.panel-tabs{display:flex;gap:0;padding:0 28px;background:var(--charcoal);}
+.tab-btn{background:none;border:none;padding:14px 18px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.tab-btn:hover{color:var(--white);}
+.tab-btn.active{color:var(--gb);border-bottom-color:var(--gb);}
+.panel-body{flex:1;overflow-y:auto;padding:24px 28px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.info-field{display:flex;flex-direction:column;gap:4px;}
+.info-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.info-value{font-size:14px;color:var(--white);}
+.info-value a{color:var(--gb);}
+.notes-box{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:16px;font-size:13px;color:var(--off);line-height:1.6;white-space:pre-wrap;min-height:80px;}
+.job-card,.inv-card{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:border-color .2s;cursor:pointer;}
+.job-card:hover,.inv-card:hover{border-color:rgba(32,255,123,.25);}
+.job-title{font-size:13px;font-weight:900;flex:1;}
+.job-num{font-size:11px;color:var(--muted);margin-top:2px;}
+.status-pill{padding:3px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
+.sp-new{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.25);}
+.sp-quoted{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.25);}
+.sp-approved,.sp-deposit_paid,.sp-deposit-paid{background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.25);}
+.sp-in_production,.sp-in-production{background:rgba(5,143,69,.15);color:#6effb0;border:1px solid rgba(5,143,69,.3);}
+.sp-qc{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.25);}
+.sp-complete,.sp-paid{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-draft{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line);}
+.sp-sent{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-overdue{background:rgba(255,77,77,.1);color:var(--danger);border:1px solid rgba(255,77,77,.2);}
+.sp-void,.sp-cancelled{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--line);opacity:.6;}
+.inv-amount{font-size:15px;font-weight:900;color:var(--gb);}
+.inv-bal{font-size:11px;color:var(--muted);margin-top:2px;}
+.section-head{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.empty-list{text-align:center;padding:32px;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:12px;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);display:none;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:32px;}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;transition:color .2s;}
+.btn-close:hover{color:var(--white);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field input,.field textarea,.field select{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-size:14px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gb);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.22);}
+.field textarea{min-height:80px;resize:vertical;}
+.field select option{background:var(--charcoal);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-primary{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .25s;margin-top:8px;}
+.btn-primary:hover{background:#00eb6e;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;transition:transform .3s,opacity .3s;opacity:0;z-index:9999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+@media(max-width:768px){
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:260px;}
+  .layout{flex-direction:column;height:auto;overflow:visible;}
+  .panel{height:auto;overflow:visible;}
+  .panel-body{overflow:visible;}
+  .nav-links{gap:2px;}.nav-link{padding:5px 10px;font-size:10px;}
+  .info-grid{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="admin-nav">
+  <div class="nav-brand">
+    <img src="../images/11r-logo-new.png" alt="11R Print"/>
+  </div>
+  <div class="nav-links">
+    <a href="/admin/" class="nav-link">Proofs</a>
+    <a href="/admin/crm.html" class="nav-link active">CRM</a>
+    <a href="/admin/jobs.html" class="nav-link">Jobs</a>
+    <a href="/admin/invoices.html" class="nav-link">Invoices</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-logout" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input class="search-inp" id="search" type="search" placeholder="Search customers…" oninput="debounceSearch()"/>
+      </div>
+      <button class="btn-new" onclick="openNewModal()">+ New Customer</button>
+    </div>
+    <div class="cust-list" id="custList">
+      <div class="empty-list">Loading…</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="panel-empty" id="emptyPanel">
+      <h3>Select a Customer</h3>
+      <p>Choose from the list or add a new one.</p>
+    </div>
+    <div id="custDetail" style="display:none;flex-direction:column;height:100%;">
+      <div class="panel-header">
+        <div class="panel-name" id="dName"></div>
+        <div class="panel-company" id="dCompany"></div>
+        <div class="panel-actions" style="display:flex;gap:8px;padding-bottom:14px;">
+          <button class="btn-sm green" onclick="openEditModal()">Edit</button>
+          <button class="btn-sm" onclick="newJobForCust()">+ Job</button>
+          <button class="btn-sm" onclick="newInvoiceForCust()">+ Invoice</button>
+          <button class="btn-sm red" onclick="deleteCust()">Delete</button>
+        </div>
+      </div>
+      <div class="panel-tabs" style="border-bottom:1px solid var(--line);">
+        <button class="tab-btn active" onclick="showTab('info',this)">Info</button>
+        <button class="tab-btn" onclick="showTab('jobs',this)">Jobs</button>
+        <button class="tab-btn" onclick="showTab('invoices',this)">Invoices</button>
+        <button class="tab-btn" onclick="showTab('notes',this)">Notes</button>
+      </div>
+      <div class="panel-body">
+        <div id="tab-info">
+          <div class="info-grid">
+            <div class="info-field"><span class="info-label">Email</span><span class="info-value" id="dEmail">—</span></div>
+            <div class="info-field"><span class="info-label">Phone</span><span class="info-value" id="dPhone">—</span></div>
+            <div class="info-field"><span class="info-label">Lead Source</span><span class="info-value" id="dLead">—</span></div>
+            <div class="info-field"><span class="info-label">Preferred Contact</span><span class="info-value" id="dPref">—</span></div>
+            <div class="info-field" style="grid-column:1/-1"><span class="info-label">Billing Address</span><span class="info-value" id="dAddr">—</span></div>
+            <div class="info-field"><span class="info-label">Tax Exempt</span><span class="info-value" id="dTax">No</span></div>
+            <div class="info-field"><span class="info-label">Customer Since</span><span class="info-value" id="dSince">—</span></div>
+          </div>
+        </div>
+        <div id="tab-jobs" style="display:none;">
+          <div class="section-head"><span>Jobs</span><button class="btn-sm green" onclick="newJobForCust()">+ New Job</button></div>
+          <div id="jobList"></div>
+        </div>
+        <div id="tab-invoices" style="display:none;">
+          <div class="section-head"><span>Invoices</span><button class="btn-sm green" onclick="newInvoiceForCust()">+ New Invoice</button></div>
+          <div id="invList"></div>
+        </div>
+        <div id="tab-notes" style="display:none;">
+          <div class="section-head">Internal Notes</div>
+          <div class="notes-box" id="dNotes">—</div>
+          <button class="btn-sm green" style="margin-top:12px;" onclick="editNotes()">Edit Notes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New/Edit Customer Modal -->
+<div class="modal-bg" id="custModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalTitle">New Customer</span>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Name *</label><input id="fName" placeholder="Full name"/></div>
+      <div class="field"><label>Company</label><input id="fCompany" placeholder="Business name"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="email@example.com"/></div>
+      <div class="field"><label>Phone</label><input id="fPhone" placeholder="(555) 000-0000"/></div>
+    </div>
+    <div class="field"><label>Billing Address</label><textarea id="fAddr" placeholder="123 Main St, City, FL 00000" rows="2"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Lead Source</label>
+        <select id="fLead">
+          <option value="">— Select —</option>
+          <option value="website">Website</option>
+          <option value="instagram">Instagram</option>
+          <option value="referral">Referral</option>
+          <option value="walk-in">Walk-in</option>
+          <option value="returning">Returning Customer</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Preferred Contact</label>
+        <select id="fPref">
+          <option value="email">Email</option>
+          <option value="text">Text</option>
+          <option value="call">Phone Call</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Internal Notes</label><textarea id="fNotes" placeholder="Private notes, follow-up reminders…"></textarea></div>
+    <div class="field" style="flex-direction:row;align-items:center;gap:10px;margin-top:4px;">
+      <input type="checkbox" id="fTax" style="width:auto;accent-color:var(--gb);"/><label for="fTax" style="font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">Tax Exempt</label>
+    </div>
+    <button class="btn-primary" id="saveCustBtn" onclick="saveCust()">Save Customer</button>
+    <div id="custErr" style="margin-top:10px;padding:10px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = sessionStorage.getItem('11r_admin_key');
+if (!KEY) location.href = '/admin/';
+
+const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
+  headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+  ...opts
+}).then(r => r.json());
+
+let customers = [], currentCust = null, editMode = false, searchTimer = null;
+
+async function loadCustomers(q='') {
+  const qs = q ? `?q=${encodeURIComponent(q)}` : '';
+  const data = await API(`/customers${qs}`);
+  customers = data.customers || [];
+  renderList();
+}
+
+function renderList() {
+  const el = document.getElementById('custList');
+  if (!customers.length) { el.innerHTML = '<div class="empty-list">No customers yet.</div>'; return; }
+  el.innerHTML = customers.map(c => `
+    <div class="cust-item${currentCust?.id === c.id ? ' active' : ''}" onclick="selectCust('${c.id}')">
+      <div class="cust-name">${esc(c.name)}${c.company ? ` <span style="color:var(--muted);font-weight:400;">— ${esc(c.company)}</span>` : ''}</div>
+      <div class="cust-sub">
+        ${c.email ? `<span>${esc(c.email)}</span>` : ''}
+        ${c.phone ? `<span>${esc(c.phone)}</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+async function selectCust(id) {
+  const data = await API(`/customers/${id}`);
+  currentCust = data.customer;
+  renderDetail(data.customer, data.jobs||[], data.invoices||[]);
+  renderList();
+}
+
+function renderDetail(c, jobs, invoices) {
+  document.getElementById('emptyPanel').style.display = 'none';
+  const det = document.getElementById('custDetail');
+  det.style.display = 'flex';
+  document.getElementById('dName').textContent = c.name;
+  document.getElementById('dCompany').textContent = c.company || '';
+  document.getElementById('dEmail').innerHTML = c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '—';
+  document.getElementById('dPhone').innerHTML = c.phone ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : '—';
+  document.getElementById('dLead').textContent = c.lead_source || '—';
+  document.getElementById('dPref').textContent = c.preferred_contact || '—';
+  document.getElementById('dAddr').textContent = c.billing_address || '—';
+  document.getElementById('dTax').textContent = c.tax_exempt ? 'Yes' : 'No';
+  document.getElementById('dSince').textContent = new Date(c.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('dNotes').textContent = c.notes || 'No notes.';
+
+  // Jobs tab
+  const jl = document.getElementById('jobList');
+  if (!jobs.length) { jl.innerHTML = '<div class="empty-list">No jobs yet.</div>'; }
+  else jl.innerHTML = jobs.map(j => `
+    <div class="job-card" onclick="location.href='/admin/jobs.html#${j.id}'">
+      <div style="flex:1"><div class="job-title">${esc(j.title)}</div><div class="job-num">${esc(j.job_number)}${j.due_date?' · Due '+fmt(j.due_date):''}</div></div>
+      <span class="status-pill sp-${j.status}">${j.status.replace('_',' ')}</span>
+    </div>`).join('');
+
+  // Invoices tab
+  const il = document.getElementById('invList');
+  if (!invoices.length) { il.innerHTML = '<div class="empty-list">No invoices yet.</div>'; }
+  else il.innerHTML = invoices.map(i => `
+    <div class="inv-card" onclick="location.href='/admin/invoices.html#${i.id}'">
+      <div style="flex:1"><div class="job-title">${esc(i.invoice_number)}</div><div class="job-num">${fmt(i.created_at)}</div></div>
+      <div style="text-align:right"><div class="inv-amount">$${parseFloat(i.total).toFixed(2)}</div><div class="inv-bal">Bal: $${parseFloat(i.balance_due).toFixed(2)}</div></div>
+      <span class="status-pill sp-${i.status}">${i.status.replace('_',' ')}</span>
+    </div>`).join('');
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('[id^=tab-]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display = 'block';
+  btn.classList.add('active');
+}
+
+function openNewModal() {
+  editMode = false;
+  document.getElementById('modalTitle').textContent = 'New Customer';
+  ['fName','fCompany','fEmail','fPhone','fAddr','fNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fLead').value = '';
+  document.getElementById('fPref').value = 'email';
+  document.getElementById('fTax').checked = false;
+  document.getElementById('custErr').style.display = 'none';
+  document.getElementById('custModal').classList.add('show');
+}
+
+function openEditModal() {
+  if (!currentCust) return;
+  editMode = true;
+  document.getElementById('modalTitle').textContent = 'Edit Customer';
+  document.getElementById('fName').value = currentCust.name || '';
+  document.getElementById('fCompany').value = currentCust.company || '';
+  document.getElementById('fEmail').value = currentCust.email || '';
+  document.getElementById('fPhone').value = currentCust.phone || '';
+  document.getElementById('fAddr').value = currentCust.billing_address || '';
+  document.getElementById('fLead').value = currentCust.lead_source || '';
+  document.getElementById('fPref').value = currentCust.preferred_contact || 'email';
+  document.getElementById('fNotes').value = currentCust.notes || '';
+  document.getElementById('fTax').checked = !!currentCust.tax_exempt;
+  document.getElementById('custErr').style.display = 'none';
+  document.getElementById('custModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('custModal').classList.remove('show'); }
+
+async function saveCust() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { showErr('Name is required.'); return; }
+  const btn = document.getElementById('saveCustBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const payload = {
+    name, company: document.getElementById('fCompany').value.trim(),
+    email: document.getElementById('fEmail').value.trim(),
+    phone: document.getElementById('fPhone').value.trim(),
+    billing_address: document.getElementById('fAddr').value.trim(),
+    lead_source: document.getElementById('fLead').value,
+    preferred_contact: document.getElementById('fPref').value,
+    notes: document.getElementById('fNotes').value.trim(),
+    tax_exempt: document.getElementById('fTax').checked
+  };
+  let data;
+  if (editMode) {
+    data = await API(`/customers/${currentCust.id}`, { method:'PUT', body: JSON.stringify(payload) });
+  } else {
+    data = await API('/customers', { method:'POST', body: JSON.stringify(payload) });
+  }
+  btn.disabled = false; btn.textContent = 'Save Customer';
+  if (data.error) { showErr(data.error); return; }
+  closeModal();
+  toast('Customer saved!');
+  await loadCustomers();
+  if (data.customer) selectCust(data.customer.id);
+}
+
+async function deleteCust() {
+  if (!currentCust) return;
+  if (!confirm(`Delete ${currentCust.name}? This cannot be undone.`)) return;
+  await API(`/customers/${currentCust.id}`, { method:'DELETE' });
+  currentCust = null;
+  document.getElementById('emptyPanel').style.display = 'flex';
+  document.getElementById('custDetail').style.display = 'none';
+  toast('Customer deleted.');
+  loadCustomers();
+}
+
+function newJobForCust() {
+  if (!currentCust) return;
+  location.href = `/admin/jobs.html?new=1&cid=${currentCust.id}&cname=${encodeURIComponent(currentCust.name)}`;
+}
+
+function newInvoiceForCust() {
+  if (!currentCust) return;
+  location.href = `/admin/invoices.html?new=1&cid=${currentCust.id}&cname=${encodeURIComponent(currentCust.name)}`;
+}
+
+function editNotes() { openEditModal(); setTimeout(()=>{ document.getElementById('fNotes').focus(); document.querySelectorAll('.tab-btn')[0].click(); }, 100); }
+
+function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(() => loadCustomers(document.getElementById('search').value), 300); }
+function showErr(msg) { const el = document.getElementById('custErr'); el.textContent = msg; el.style.display='block'; }
+function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'; }
+function toast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+loadCustomers();
+</script>
+</body>
+</html>

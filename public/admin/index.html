@@ -502,13 +502,18 @@ button{font-family:inherit;cursor:pointer;}
   <header class="admin-header">
     <div class="brand">
       <img src="../images/11r-logo-new.png" alt="11R Print"/>
-      <span class="sys-tag">Proof System</span>
+      <span class="sys-tag">Admin</span>
     </div>
-    <button class="btn-logout" id="logout-btn">Log Out</button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <a href="/admin/crm.html" style="padding:6px 12px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);transition:all .2s;" onmouseover="this.style.color='var(--gb)';this.style.borderColor='rgba(32,255,123,.35)';" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--line)';">CRM</a>
+      <a href="/admin/jobs.html" style="padding:6px 12px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);transition:all .2s;" onmouseover="this.style.color='var(--gb)';this.style.borderColor='rgba(32,255,123,.35)';" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--line)';">Jobs</a>
+      <a href="/admin/invoices.html" style="padding:6px 12px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);transition:all .2s;" onmouseover="this.style.color='var(--gb)';this.style.borderColor='rgba(32,255,123,.35)';" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--line)';">Invoices</a>
+      <button class="btn-logout" id="logout-btn">Log Out</button>
+    </div>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn active" data-tab="dashboard">Proofs</button>
     <button class="tab-btn" data-tab="new-proof">New Proof</button>
     <button class="tab-btn" data-tab="orders">Customer Orders</button>
     <button class="tab-btn" data-tab="quotes">Quote Requests</button>

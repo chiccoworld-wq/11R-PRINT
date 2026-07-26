@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Invoices</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{--black:#050706;--charcoal:#0d0f0e;--charcoal-2:#141918;--green:#058f45;--gb:#20ff7b;--white:#f5f7f4;--off:#dce7df;--muted:#7a8a7e;--line:rgba(255,255,255,.1);--danger:#ff4d4d;--yel:#fff03a;--cyan:#00d5ff;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+.admin-nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(5,7,6,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);}
+.nav-brand img{height:32px;filter:drop-shadow(0 0 8px rgba(32,255,123,.2));}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:all .2s;}
+.nav-link:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.nav-link.active{color:var(--gb);background:rgba(32,255,123,.08);}
+.btn-logout{background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+.layout{display:flex;height:calc(100vh - 60px);overflow:hidden;}
+.sidebar{width:360px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-top{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+.btn-new{background:var(--gb);color:#001708;border:none;border-radius:10px;padding:10px 18px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%;}
+.btn-new:hover{background:#00eb6e;}
+.filter-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);}
+.filter-tabs::-webkit-scrollbar{display:none;}
+.ft{background:none;border:none;padding:10px 14px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.ft:hover{color:var(--white);}
+.ft.active{color:var(--gb);border-bottom-color:var(--gb);}
+.inv-list{flex:1;overflow-y:auto;padding:8px;}
+.inv-row{padding:14px 12px;border-radius:12px;cursor:pointer;border:1px solid transparent;margin-bottom:4px;transition:background .15s;}
+.inv-row:hover{background:rgba(255,255,255,.04);}
+.inv-row.active{background:rgba(32,255,123,.06);border-color:rgba(32,255,123,.2);}
+.inv-num{font-size:13px;font-weight:900;margin-bottom:3px;}
+.inv-cust{font-size:12px;color:var(--muted);}
+.inv-meta{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.inv-total{font-size:14px;font-weight:900;color:var(--gb);}
+.inv-bal{font-size:11px;color:var(--muted);}
+.status-pill{padding:3px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-left:auto;}
+.sp-draft{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line);}
+.sp-sent{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-deposit_due,.sp-deposit-due{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.2);}
+.sp-deposit_paid,.sp-deposit-paid{background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-partially_paid,.sp-partially-paid{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-paid{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-overdue{background:rgba(255,77,77,.1);color:var(--danger);border:1px solid rgba(255,77,77,.2);}
+.sp-void{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--line);opacity:.6;}
+.panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.panel-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);}
+.panel-empty h3{font-size:18px;font-weight:900;text-transform:uppercase;color:var(--white);}
+.panel-header{padding:20px 28px;border-bottom:1px solid var(--line);}
+.ph-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.inv-num-big{font-size:22px;font-weight:900;letter-spacing:-.03em;}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-sm{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid var(--line);background:transparent;color:var(--muted);}
+.btn-sm:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+.btn-sm.green{border-color:rgba(32,255,123,.3);color:var(--gb);}
+.btn-sm.green:hover{background:rgba(32,255,123,.1);}
+.btn-sm.amber{border-color:rgba(255,240,58,.3);color:var(--yel);}
+.btn-sm.amber:hover{background:rgba(255,240,58,.08);}
+.btn-sm.red{border-color:rgba(255,77,77,.3);color:var(--danger);}
+.btn-sm.red:hover{background:rgba(255,77,77,.1);}
+.panel-body{flex:1;overflow-y:auto;padding:24px 28px;}
+.section-label{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+.items-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.items-table th{font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);}
+.items-table td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.items-table td:last-child{text-align:right;}
+.items-table .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;transition:color .2s;}
+.items-table .del-btn:hover{color:var(--danger);}
+.totals-block{background:var(--charcoal-2);border-radius:12px;padding:16px;margin-bottom:24px;}
+.total-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}
+.total-row .label{color:var(--muted);}
+.total-row.main{font-size:17px;font-weight:900;border-top:1px solid var(--line);padding-top:10px;margin-top:4px;}
+.total-row.deposit .value{color:var(--gb);}
+.add-item-row{display:grid;grid-template-columns:1fr 80px 100px auto;gap:8px;margin-bottom:12px;}
+.add-item-inp{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--white);padding:9px 11px;font-size:13px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
+.add-item-inp:focus{border-color:var(--gb);}
+.add-item-inp::placeholder{color:rgba(255,255,255,.2);}
+.btn-add-item{padding:9px 14px;border-radius:8px;background:rgba(32,255,123,.1);border:1px solid rgba(32,255,123,.25);color:var(--gb);font-size:11px;font-weight:900;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-add-item:hover{background:rgba(32,255,123,.2);}
+.payment-row{background:var(--charcoal);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.pay-num{font-size:12px;font-weight:900;color:var(--gb);flex-shrink:0;}
+.pay-info{flex:1;font-size:12px;color:var(--muted);}
+.pay-amt{font-size:15px;font-weight:900;}
+.receipt-link{font-size:11px;color:var(--gb);text-decoration:underline;cursor:pointer;background:none;border:none;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-bg.show{display:flex;}
+.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;padding:32px;}
+.modal-sm{max-width:420px;}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;transition:color .2s;}
+.btn-close:hover{color:var(--white);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field input,.field select,.field textarea{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-size:14px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
+.field input:focus,.field select:focus{border-color:var(--gb);}
+.field input::placeholder{color:rgba(255,255,255,.22);}
+.field select option{background:var(--charcoal);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-primary{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .25s;margin-top:8px;}
+.btn-primary:hover{background:#00eb6e;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.modal-items-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+.modal-items-table th{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);}
+.modal-items-table td{padding:6px 8px;font-size:13px;}
+.modal-items-table input{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;color:var(--white);padding:7px 8px;font-size:12px;width:100%;outline:none;font-family:inherit;}
+.modal-items-table input:focus{border-color:var(--gb);}
+.modal-items-table .del-row{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;}
+.modal-items-table .del-row:hover{color:var(--danger);}
+.btn-add-row{background:rgba(32,255,123,.08);border:1px solid rgba(32,255,123,.2);color:var(--gb);border-radius:8px;padding:8px 14px;font-size:11px;font-weight:900;text-transform:uppercase;cursor:pointer;margin-bottom:14px;transition:all .2s;}
+.btn-add-row:hover{background:rgba(32,255,123,.16);}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;transition:transform .3s,opacity .3s;opacity:0;z-index:9999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.err-box{padding:10px 14px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;margin-top:8px;}
+.inv-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.sum-card{background:var(--charcoal-2);border-radius:10px;padding:14px;}
+.sum-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.sum-val{font-size:20px;font-weight:900;}
+.sum-val.green{color:var(--gb);}
+.sum-val.yellow{color:var(--yel);}
+@media(max-width:768px){
+  .layout{flex-direction:column;height:auto;overflow:visible;}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:280px;}
+  .panel{height:auto;overflow:visible;}
+  .panel-body{overflow:visible;}
+  .nav-links{gap:2px;}.nav-link{padding:5px 10px;font-size:10px;}
+  .add-item-row{grid-template-columns:1fr 60px 80px auto;}
+  .inv-summary{grid-template-columns:1fr 1fr;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="admin-nav">
+  <div class="nav-brand"><img src="../images/11r-logo-new.png" alt="11R Print"/></div>
+  <div class="nav-links">
+    <a href="/admin/" class="nav-link">Proofs</a>
+    <a href="/admin/crm.html" class="nav-link">CRM</a>
+    <a href="/admin/jobs.html" class="nav-link">Jobs</a>
+    <a href="/admin/invoices.html" class="nav-link active">Invoices</a>
+  </div>
+  <button class="btn-logout" onclick="logout()">Sign Out</button>
+</nav>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <button class="btn-new" onclick="openNewInv()">+ New Invoice</button>
+    </div>
+    <div class="filter-tabs">
+      <button class="ft active" data-status="" onclick="setFilter('',this)">All</button>
+      <button class="ft" data-status="draft" onclick="setFilter('draft',this)">Draft</button>
+      <button class="ft" data-status="sent" onclick="setFilter('sent',this)">Sent</button>
+      <button class="ft" data-status="deposit_paid" onclick="setFilter('deposit_paid',this)">Deposit</button>
+      <button class="ft" data-status="paid" onclick="setFilter('paid',this)">Paid</button>
+      <button class="ft" data-status="overdue" onclick="setFilter('overdue',this)">Overdue</button>
+    </div>
+    <div class="inv-list" id="invList">
+      <div style="padding:24px;color:var(--muted);text-align:center;">Loading…</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-empty" id="emptyPanel">
+      <h3>Select an Invoice</h3>
+      <p>Choose from the list or create a new one.</p>
+    </div>
+    <div id="invDetail" style="display:none;flex-direction:column;height:100%;">
+      <div class="panel-header">
+        <div class="ph-row">
+          <div class="inv-num-big" id="dInvNum"></div>
+          <span class="status-pill" id="dStatus"></span>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px;" id="dCustName"></div>
+        <div class="ph-actions" id="invActions"></div>
+      </div>
+      <div class="panel-body" id="invBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- New Invoice Modal -->
+<div class="modal-bg" id="newInvModal">
+  <div class="modal">
+    <div class="modal-title">New Invoice <button class="btn-close" onclick="closeModal('newInvModal')">✕</button></div>
+    <div class="field">
+      <label>Customer *</label>
+      <select id="niCust"><option value="">Loading customers…</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Job (optional)</label><select id="niJob"><option value="">— None —</option></select></div>
+      <div class="field"><label>Due Date</label><input type="date" id="niDue"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Deposit Type</label>
+        <select id="niDepType" onchange="updateDepLabel()">
+          <option value="percent">Percentage</option>
+          <option value="fixed">Fixed Amount</option>
+        </select>
+      </div>
+      <div class="field"><label id="niDepLabel">Deposit %</label><input id="niDep" type="number" value="50" min="0" step="0.01" placeholder="50"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Tax Rate %</label><input id="niTax" type="number" value="0" min="0" max="100" step="0.01" placeholder="0"/></div>
+      <div class="field"></div>
+    </div>
+    <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gb);margin-bottom:12px;display:flex;align-items:center;gap:8px;">Line Items <span style="flex:1;height:1px;background:var(--line);display:block;"></span></div>
+    <table class="modal-items-table" id="niItemsTable">
+      <thead><tr><th style="width:50%">Description</th><th style="width:12%">Qty</th><th style="width:18%">Unit Price</th><th style="width:14%">Amount</th><th style="width:6%"></th></tr></thead>
+      <tbody id="niItems"></tbody>
+    </table>
+    <button class="btn-add-row" onclick="addLineItem()">+ Add Line</button>
+    <div class="field"><label>Notes (shown on invoice)</label><textarea id="niNotes" rows="2" placeholder="Production time, terms, special instructions…"></textarea></div>
+    <div class="field"><label>Internal Notes (admin only)</label><textarea id="niInternal" rows="2" placeholder="Private notes…"></textarea></div>
+    <button class="btn-primary" id="createInvBtn" onclick="createInvoice()">Create Invoice</button>
+    <div class="err-box" id="newInvErr"></div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-bg" id="payModal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Record Payment <button class="btn-close" onclick="closeModal('payModal')">✕</button></div>
+    <div class="field"><label>Amount *</label><input id="payAmt" type="number" step="0.01" min="0.01" placeholder="0.00" style="font-size:22px;font-weight:900;color:var(--gb);"/></div>
+    <div class="field-row">
+      <div class="field"><label>Method</label>
+        <select id="payMethod">
+          <option value="cash">Cash</option>
+          <option value="zelle">Zelle</option>
+          <option value="venmo">Venmo</option>
+          <option value="check">Check</option>
+          <option value="card">Card</option>
+          <option value="stripe">Stripe</option>
+          <option value="ach">ACH</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Payment Type</label>
+        <select id="payType">
+          <option value="deposit">Deposit</option>
+          <option value="partial">Partial</option>
+          <option value="final">Final Payment</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="payDate"/></div>
+      <div class="field"><label>Reference #</label><input id="payRef" placeholder="Check #, Zelle ID…"/></div>
+    </div>
+    <div class="field"><label>Notes</label><input id="payNotes" placeholder="Optional note…"/></div>
+    <div id="payBal" style="background:var(--charcoal-2);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:13px;color:var(--muted);"></div>
+    <button class="btn-primary" id="recordPayBtn" onclick="recordPayment()">Record Payment & Generate Receipt</button>
+    <div class="err-box" id="payErr"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = sessionStorage.getItem('11r_admin_key');
+if (!KEY) location.href = '/admin/';
+
+const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
+  headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+  ...opts
+}).then(r => r.json());
+
+let invoices = [], currentInv = null, currentFilter = '', niItems = [], customers = [], currentInvData = null;
+
+async function loadInvoices() {
+  const qs = currentFilter ? `?status=${currentFilter}` : '';
+  const data = await API(`/invoices${qs}`);
+  invoices = data.invoices || [];
+  renderList();
+  const hash = location.hash.replace('#','');
+  if (hash) { const found = invoices.find(i=>i.id===hash); if(found) selectInv(found.id); }
+}
+
+function renderList() {
+  const el = document.getElementById('invList');
+  if (!invoices.length) { el.innerHTML = '<div style="padding:24px;color:var(--muted);text-align:center;">No invoices.</div>'; return; }
+  el.innerHTML = invoices.map(i => {
+    const cname = i.customers?.name || '—';
+    return `<div class="inv-row${currentInv?.id===i.id?' active':''}" onclick="selectInv('${i.id}')">
+      <div class="inv-num">${esc(i.invoice_number)}</div>
+      <div class="inv-cust">${esc(cname)}${i.customers?.company?' — '+esc(i.customers.company):''}</div>
+      <div class="inv-meta">
+        <span class="inv-total">$${parseFloat(i.total).toFixed(2)}</span>
+        <span class="inv-bal">Bal $${parseFloat(i.balance_due).toFixed(2)}</span>
+        <span class="status-pill sp-${i.status}">${i.status.replace(/_/g,' ')}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function selectInv(id) {
+  const data = await API(`/invoices/${id}`);
+  currentInv = data.invoice;
+  currentInvData = data;
+  history.replaceState(null,'',`#${id}`);
+  renderDetail(data.invoice, data.items||[], data.payments||[]);
+  renderList();
+}
+
+function renderDetail(inv, items, payments) {
+  document.getElementById('emptyPanel').style.display = 'none';
+  document.getElementById('invDetail').style.display = 'flex';
+  document.getElementById('dInvNum').textContent = inv.invoice_number;
+  const sp = document.getElementById('dStatus');
+  sp.className = `status-pill sp-${inv.status}`;
+  sp.textContent = inv.status.replace(/_/g,' ');
+  const cust = inv.customers;
+  document.getElementById('dCustName').textContent = cust ? `${cust.name}${cust.company?' — '+cust.company:''}` : '—';
+
+  const actions = document.getElementById('invActions');
+  const canPay = !['paid','void'].includes(inv.status) && parseFloat(inv.balance_due) > 0;
+  const canSend = ['draft','overdue'].includes(inv.status) && cust?.email;
+  actions.innerHTML = `
+    ${canPay ? `<button class="btn-sm green" onclick="openPayModal()">💰 Record Payment</button>` : ''}
+    ${canSend ? `<button class="btn-sm" onclick="sendInvoice()">📧 Send Invoice</button>` : ''}
+    <a href="/admin/invoice-print.html?id=${inv.id}" target="_blank"><button class="btn-sm">🖨️ Print</button></a>
+    ${inv.status!=='void'?`<button class="btn-sm red" onclick="voidInvoice()">Void</button>`:''}
+  `;
+
+  const body = document.getElementById('invBody');
+  const depPct = inv.deposit_type === 'percent' ? `(${inv.deposit_value}%)` : '(fixed)';
+  body.innerHTML = `
+    <div class="inv-summary">
+      <div class="sum-card"><div class="sum-label">Total</div><div class="sum-val green">$${parseFloat(inv.total).toFixed(2)}</div></div>
+      <div class="sum-card"><div class="sum-label">Balance Due</div><div class="sum-val ${parseFloat(inv.balance_due)>0?'yellow':'green'}">$${parseFloat(inv.balance_due).toFixed(2)}</div></div>
+      <div class="sum-card"><div class="sum-label">Deposit Required ${depPct}</div><div class="sum-val">$${parseFloat(inv.deposit_required).toFixed(2)}</div></div>
+      <div class="sum-card"><div class="sum-label">Paid</div><div class="sum-val">$${parseFloat(inv.amount_paid).toFixed(2)}</div></div>
+    </div>
+
+    <div class="section-label">Line Items</div>
+    <table class="items-table">
+      <thead><tr><th>Description</th><th>Qty</th><th>Price</th><th>Amount</th><th></th></tr></thead>
+      <tbody>
+        ${items.map(it=>`<tr>
+          <td>${esc(it.description)}</td>
+          <td>${it.quantity}</td>
+          <td>$${parseFloat(it.unit_price).toFixed(2)}</td>
+          <td>$${parseFloat(it.amount).toFixed(2)}</td>
+          <td>${inv.status!=='void'?`<button class="del-btn" onclick="delItem('${it.id}')">×</button>`:''}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    ${inv.status!=='void'?`<div class="add-item-row">
+      <input class="add-item-inp" id="aiDesc" placeholder="Description"/>
+      <input class="add-item-inp" id="aiQty" type="number" value="1" min="1" placeholder="Qty"/>
+      <input class="add-item-inp" id="aiPrice" type="number" step="0.01" min="0" placeholder="$0.00"/>
+      <button class="btn-add-item" onclick="addItem()">+ Add</button>
+    </div>`:''}
+
+    <div class="totals-block">
+      <div class="total-row"><span class="label">Subtotal</span><span class="value">$${parseFloat(inv.subtotal).toFixed(2)}</span></div>
+      ${inv.tax_rate>0?`<div class="total-row"><span class="label">Tax (${(inv.tax_rate*100).toFixed(1)}%)</span><span class="value">$${parseFloat(inv.tax_amount).toFixed(2)}</span></div>`:''}
+      <div class="total-row main"><span class="label">Total</span><span class="value">$${parseFloat(inv.total).toFixed(2)}</span></div>
+    </div>
+
+    ${inv.notes?`<div class="section-label" style="margin-top:16px;">Invoice Notes</div><div style="background:var(--charcoal);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:13px;color:var(--off);line-height:1.6;margin-bottom:20px;">${esc(inv.notes)}</div>`:''}
+
+    <div class="section-label" style="margin-top:8px;">Payment History</div>
+    ${payments.length ? payments.map(p=>`
+      <div class="payment-row">
+        <span class="pay-num">${esc(p.payment_number)}</span>
+        <div class="pay-info">${p.method} · ${new Date(p.paid_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}${p.reference?' · #'+esc(p.reference):''}</div>
+        <span class="pay-amt">$${parseFloat(p.amount).toFixed(2)}</span>
+        ${p.receipt_id?`<button class="receipt-link" onclick="viewReceipt('${p.receipt_id}')">Receipt</button>`:''}
+      </div>`).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0;">No payments recorded.</div>'}
+  `;
+}
+
+async function addItem() {
+  if (!currentInv) return;
+  const desc = document.getElementById('aiDesc').value.trim();
+  const qty = parseFloat(document.getElementById('aiQty').value)||1;
+  const price = parseFloat(document.getElementById('aiPrice').value)||0;
+  if (!desc) { toast('Enter a description'); return; }
+  await API(`/invoices/${currentInv.id}/items`, { method:'POST', body: JSON.stringify({ description:desc, quantity:qty, unit_price:price }) });
+  toast('Item added');
+  selectInv(currentInv.id);
+}
+
+async function delItem(itemId) {
+  if (!confirm('Remove this line item?')) return;
+  await API(`/invoice-items/${itemId}`, { method:'DELETE' });
+  toast('Item removed');
+  selectInv(currentInv.id);
+}
+
+async function sendInvoice() {
+  if (!currentInv) return;
+  if (!confirm('Send invoice email to customer?')) return;
+  const data = await API(`/invoices/${currentInv.id}`, { method:'PUT', body: JSON.stringify({ status:'sent' }) });
+  if (data.error) { toast('Error: '+data.error); return; }
+  toast('Invoice sent!');
+  loadInvoices();
+  selectInv(currentInv.id);
+}
+
+async function voidInvoice() {
+  if (!currentInv) return;
+  if (!confirm('Void this invoice? This cannot be undone.')) return;
+  await API(`/invoices/${currentInv.id}`, { method:'DELETE' });
+  toast('Invoice voided.');
+  loadInvoices();
+  document.getElementById('emptyPanel').style.display = 'flex';
+  document.getElementById('invDetail').style.display = 'none';
+  currentInv = null;
+}
+
+function openPayModal() {
+  if (!currentInv) return;
+  const bal = parseFloat(currentInv.balance_due);
+  document.getElementById('payAmt').value = bal.toFixed(2);
+  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('payRef').value = '';
+  document.getElementById('payNotes').value = '';
+  document.getElementById('payErr').style.display = 'none';
+  document.getElementById('payBal').innerHTML = `Balance due: <strong style="color:var(--gb)">$${bal.toFixed(2)}</strong> · Deposit required: <strong>$${parseFloat(currentInv.deposit_required).toFixed(2)}</strong>`;
+  document.getElementById('payModal').classList.add('show');
+}
+
+async function recordPayment() {
+  const amt = parseFloat(document.getElementById('payAmt').value);
+  if (!amt || amt <= 0) { showPayErr('Enter a valid amount'); return; }
+  const btn = document.getElementById('recordPayBtn');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  const data = await API(`/invoices/${currentInv.id}/payments`, {
+    method: 'POST',
+    body: JSON.stringify({
+      amount: amt,
+      method: document.getElementById('payMethod').value,
+      payment_type: document.getElementById('payType').value,
+      paid_at: document.getElementById('payDate').value + 'T12:00:00.000Z',
+      reference: document.getElementById('payRef').value,
+      notes: document.getElementById('payNotes').value
+    })
+  });
+  btn.disabled = false; btn.textContent = 'Record Payment & Generate Receipt';
+  if (data.error) { showPayErr(data.error); return; }
+  closeModal('payModal');
+  toast(`Payment recorded! Receipt: ${data.receipt?.receipt_number}`);
+  loadInvoices();
+  selectInv(currentInv.id);
+}
+
+function viewReceipt(id) { window.open(`/admin/receipt-print.html?id=${id}`, '_blank'); }
+
+function setFilter(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.ft').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadInvoices();
+}
+
+// New Invoice modal
+let niItemRows = [];
+function addLineItem() {
+  niItemRows.push({ desc:'', qty:1, price:0 });
+  renderNIItems();
+}
+function renderNIItems() {
+  const tbody = document.getElementById('niItems');
+  tbody.innerHTML = niItemRows.map((r,i)=>`<tr>
+    <td><input value="${esc(r.desc)}" oninput="niItemRows[${i}].desc=this.value" placeholder="Description"/></td>
+    <td><input type="number" value="${r.qty}" min="1" oninput="niItemRows[${i}].qty=parseFloat(this.value)||1;calcNI()"/></td>
+    <td><input type="number" step="0.01" value="${r.price}" oninput="niItemRows[${i}].price=parseFloat(this.value)||0;calcNI()"/></td>
+    <td style="text-align:right;font-size:13px;">$${((r.qty||1)*(r.price||0)).toFixed(2)}</td>
+    <td><button class="del-row" onclick="niItemRows.splice(${i},1);renderNIItems()">×</button></td>
+  </tr>`).join('');
+}
+function calcNI() { renderNIItems(); }
+function updateDepLabel() { document.getElementById('niDepLabel').textContent = document.getElementById('niDepType').value==='percent'?'Deposit %':'Deposit $'; }
+
+async function openNewInv() {
+  niItemRows = [];
+  renderNIItems();
+  addLineItem();
+  document.getElementById('niNotes').value = '';
+  document.getElementById('niInternal').value = '';
+  document.getElementById('niDue').value = '';
+  document.getElementById('niTax').value = '0';
+  document.getElementById('niDep').value = '50';
+  document.getElementById('niDepType').value = 'percent';
+  document.getElementById('newInvErr').style.display = 'none';
+  // Load customers
+  if (!customers.length) {
+    const d = await API('/customers');
+    customers = d.customers || [];
+  }
+  const sel = document.getElementById('niCust');
+  sel.innerHTML = '<option value="">— Select customer —</option>' + customers.map(c=>`<option value="${c.id}">${esc(c.name)}${c.company?' — '+esc(c.company):''}</option>`).join('');
+  // Check for pre-selected customer from URL
+  const params = new URLSearchParams(location.search);
+  const cid = params.get('cid');
+  if (cid) sel.value = cid;
+  // Load jobs for selected customer
+  sel.onchange = () => loadJobsForCustomer(sel.value);
+  if (cid) loadJobsForCustomer(cid);
+  document.getElementById('newInvModal').classList.add('show');
+}
+
+async function loadJobsForCustomer(cid) {
+  const jsel = document.getElementById('niJob');
+  jsel.innerHTML = '<option value="">— None —</option>';
+  if (!cid) return;
+  const d = await API(`/jobs?customer_id=${cid}`);
+  (d.jobs||[]).forEach(j => { const o = document.createElement('option'); o.value = j.id; o.textContent = `${j.job_number} — ${j.title}`; jsel.appendChild(o); });
+}
+
+async function createInvoice() {
+  const cust = document.getElementById('niCust').value;
+  if (!cust) { showNewInvErr('Select a customer'); return; }
+  const items = niItemRows.filter(r=>r.desc.trim());
+  const btn = document.getElementById('createInvBtn');
+  btn.disabled = true; btn.textContent = 'Creating…';
+  const data = await API('/invoices', { method:'POST', body: JSON.stringify({
+    customer_id: cust,
+    job_id: document.getElementById('niJob').value || null,
+    items,
+    tax_rate: (parseFloat(document.getElementById('niTax').value)||0)/100,
+    deposit_type: document.getElementById('niDepType').value,
+    deposit_value: parseFloat(document.getElementById('niDep').value)||50,
+    due_date: document.getElementById('niDue').value || null,
+    notes: document.getElementById('niNotes').value.trim(),
+    internal_notes: document.getElementById('niInternal').value.trim()
+  })});
+  btn.disabled = false; btn.textContent = 'Create Invoice';
+  if (data.error) { showNewInvErr(data.error); return; }
+  closeModal('newInvModal');
+  toast('Invoice created!');
+  history.pushState(null,'','/admin/invoices.html');
+  await loadInvoices();
+  selectInv(data.invoice.id);
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function showPayErr(msg) { const e=document.getElementById('payErr'); e.textContent=msg; e.style.display='block'; }
+function showNewInvErr(msg) { const e=document.getElementById('newInvErr'); e.textContent=msg; e.style.display='block'; }
+function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
+
+// Auto-open new if ?new=1 in URL
+const urlP = new URLSearchParams(location.search);
+if (urlP.get('new') === '1') { window.addEventListener('load', ()=>openNewInv()); }
+
+loadInvoices();
+</script>
+</body>
+</html>

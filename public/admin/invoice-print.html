@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Invoice</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#111;}
+.page{max-width:720px;margin:0 auto;background:#fff;padding:48px;}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid #111;}
+.brand-name{font-size:15px;font-weight:900;letter-spacing:.03em;margin:8px 0 2px;}
+.brand img{height:48px;width:auto;}
+.brand-info{font-size:11px;color:#888;line-height:1.7;}
+.doc-info{text-align:right;}
+.doc-title{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+.doc-num{font-size:15px;font-weight:bold;color:#058f45;}
+.doc-sub{font-size:12px;color:#888;margin-top:3px;}
+.status-badge{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border:1px solid #ddd;color:#555;background:#fafafa;}
+.section{margin-bottom:28px;}
+.section-title{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #eee;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px;}
+.field-label{font-size:10px;color:#aaa;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.field-value{font-size:14px;color:#111;}
+table.items{width:100%;border-collapse:collapse;margin-bottom:20px;}
+table.items thead th{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#888;padding:8px 10px;text-align:left;border-bottom:2px solid #111;}
+table.items thead th:last-child{text-align:right;}
+table.items tbody td{padding:10px 10px;font-size:13px;border-bottom:1px solid #f0f0f0;}
+table.items tbody td:last-child{text-align:right;font-weight:bold;}
+table.items tbody td:nth-child(2),table.items tbody td:nth-child(3){text-align:right;}
+.totals{margin-left:auto;width:280px;}
+.total-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;}
+.total-row .label{color:#888;}
+.total-row.deposit .value{color:#058f45;font-weight:bold;}
+.total-row.grand{font-size:17px;font-weight:900;border-top:2px solid #111;padding-top:10px;margin-top:4px;}
+.notes-box{background:#f9f9f9;border-left:3px solid #058f45;padding:14px 16px;font-size:13px;color:#555;line-height:1.6;border-radius:0 6px 6px 0;margin-bottom:20px;}
+.footer{margin-top:40px;padding-top:20px;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center;line-height:1.8;}
+.print-btn{display:block;margin:20px auto;padding:12px 32px;background:#050706;color:#20ff7b;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.loading{text-align:center;padding:60px;color:#888;font-size:15px;}
+.error{text-align:center;padding:60px;color:#cc0000;}
+@media print{
+  body{background:#fff;}
+  .page{padding:20px;max-width:100%;}
+  .print-btn,.no-print{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">Loading invoice…</div>
+<div id="errorDiv" class="error" style="display:none;"></div>
+<div id="invPage" class="page" style="display:none;"></div>
+<button class="print-btn no-print" id="printBtn" style="display:none;" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+const KEY = sessionStorage.getItem('11r_admin_key');
+
+async function load() {
+  if (!id) { showError('No invoice ID.'); return; }
+  const headers = { 'Content-Type':'application/json' };
+  if (KEY) headers['x-admin-key'] = KEY;
+  const r = await fetch(`/.netlify/functions/api/invoices/${id}`, { headers });
+  const data = await r.json();
+  if (data.error || !data.invoice) { showError('Invoice not found.'); return; }
+  render(data.invoice, data.items||[], data.payments||[]);
+}
+
+function render(inv, items, payments) {
+  const cust = inv.customers || {};
+  document.title = `Invoice ${inv.invoice_number} — 11R Print`;
+  const statusColors = { draft:'#888', sent:'#1565c0', deposit_paid:'#058f45', paid:'#058f45', overdue:'#c00', void:'#aaa' };
+  const statusColor = statusColors[inv.status] || '#555';
+  const page = document.getElementById('invPage');
+  page.innerHTML = `
+    <div class="header">
+      <div class="brand">
+        <img src="../images/11r-logo-new.png" alt="11R Print" onerror="this.style.display='none'"/>
+        <div class="brand-name">11R PRINT</div>
+        <div class="brand-info">orders@11rprint.com<br>11rprint.com</div>
+      </div>
+      <div class="doc-info">
+        <div class="doc-title">Invoice</div>
+        <div class="doc-num">${esc(inv.invoice_number)}</div>
+        <div class="doc-sub">Issued: ${fmt(inv.created_at)}</div>
+        ${inv.due_date?`<div class="doc-sub">Due: ${fmt(inv.due_date)}</div>`:''}
+        <div class="status-badge" style="color:${statusColor};border-color:${statusColor}20;">${inv.status.replace(/_/g,' ').toUpperCase()}</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Bill To</div>
+        <div class="field-value" style="font-weight:bold;font-size:15px;margin-bottom:3px;">${esc(cust.name||'—')}</div>
+        ${cust.company?`<div class="field-value" style="color:#555;margin-bottom:3px;">${esc(cust.company)}</div>`:''}
+        ${cust.email?`<div class="field-value" style="font-size:13px;color:#888;">${esc(cust.email)}</div>`:''}
+        ${cust.billing_address?`<div class="field-value" style="font-size:12px;color:#888;margin-top:4px;white-space:pre-line;">${esc(cust.billing_address)}</div>`:''}
+      </div>
+      <div>
+        <div class="section-title">Payment Due</div>
+        <div style="font-size:28px;font-weight:900;color:#058f45;margin:8px 0 4px;">$${parseFloat(inv.balance_due).toFixed(2)}</div>
+        <div class="field-label">Deposit Required</div>
+        <div class="field-value">$${parseFloat(inv.deposit_required).toFixed(2)}</div>
+        ${inv.terms?`<div style="margin-top:10px;font-size:12px;color:#888;line-height:1.5;">${esc(inv.terms)}</div>`:''}
+      </div>
+    </div>
+
+    <div class="section">
+      <table class="items">
+        <thead><tr><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit Price</th><th>Amount</th></tr></thead>
+        <tbody>${items.map(it=>`<tr>
+          <td>${esc(it.description)}</td>
+          <td style="text-align:right">${it.quantity}</td>
+          <td style="text-align:right">$${parseFloat(it.unit_price).toFixed(2)}</td>
+          <td>$${parseFloat(it.amount).toFixed(2)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+      <div class="totals">
+        <div class="total-row"><span class="label">Subtotal</span><span>$${parseFloat(inv.subtotal).toFixed(2)}</span></div>
+        ${inv.tax_rate>0?`<div class="total-row"><span class="label">Tax (${(inv.tax_rate*100).toFixed(1)}%)</span><span>$${parseFloat(inv.tax_amount).toFixed(2)}</span></div>`:''}
+        ${parseFloat(inv.amount_paid)>0?`<div class="total-row"><span class="label">Paid</span><span style="color:#058f45;">-$${parseFloat(inv.amount_paid).toFixed(2)}</span></div>`:''}
+        <div class="total-row grand"><span class="label">Total Due</span><span>$${parseFloat(inv.balance_due).toFixed(2)}</span></div>
+      </div>
+    </div>
+
+    ${inv.notes?`<div class="notes-box">${esc(inv.notes)}</div>`:''}
+
+    ${payments.length?`<div class="section">
+      <div class="section-title">Payment History</div>
+      <table class="items">
+        <thead><tr><th>Payment #</th><th>Date</th><th>Method</th><th>Amount</th></tr></thead>
+        <tbody>${payments.map(p=>`<tr>
+          <td>${esc(p.payment_number)}</td>
+          <td>${fmt(p.paid_at)}</td>
+          <td style="text-transform:capitalize;">${p.method}</td>
+          <td>$${parseFloat(p.amount).toFixed(2)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`:''}
+
+    <div class="footer">
+      11R Print · Built With Passion. Printed With Purpose.<br>
+      orders@11rprint.com · 11rprint.com · @11RPRINT<br>
+      <span style="font-size:10px;margin-top:4px;display:block;">Invoice ${esc(inv.invoice_number)}</span>
+    </div>
+  `;
+  document.getElementById('loading').style.display = 'none';
+  page.style.display = 'block';
+  document.getElementById('printBtn').style.display = 'block';
+}
+
+function showError(msg) { document.getElementById('loading').style.display='none'; const e=document.getElementById('errorDiv'); e.textContent=msg; e.style.display='block'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—'; }
+load();
+</script>
+</body>
+</html>
