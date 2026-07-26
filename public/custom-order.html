@@ -648,7 +648,10 @@
             totalScreens = selColors + selBackColors;
           }
 
-          var screenSetup  = totalScreens * SCREEN_FEE;
+          // $15/screen when qty >= 20 and 3+ colors, otherwise $20
+          var effectiveFee = (qty >= 20 && totalScreens >= 3) ? 15 : SCREEN_FEE;
+
+          var screenSetup  = totalScreens * effectiveFee;
           var garmentTotal = garmentCost * qty;
           var frontTotal   = printL1 * qty;
           var backTotal    = printL2 * qty;
@@ -657,7 +660,8 @@
 
           var garmentRawName = garment.options[garment.selectedIndex].text.split('·')[0].trim();
           var colorWord  = function(n) { return n + ' Color' + (n > 1 ? 's' : ''); };
-          var screenLabel = totalScreens + ' Screen' + (totalScreens > 1 ? 's' : '') + ' · $' + SCREEN_FEE + '.00 ea.';
+          var discountTag = (qty >= 20 && totalScreens >= 3) ? ' ✦ Volume Rate' : '';
+          var screenLabel = totalScreens + ' Screen' + (totalScreens > 1 ? 's' : '') + ' · $' + effectiveFee + '.00 ea.' + discountTag;
 
           // Location label for front row
           var frontLocLabel = selLocMode === 'back' ? 'Back Print' : 'Front Print';
