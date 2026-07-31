@@ -3628,28 +3628,22 @@ textarea.qmodal-input { min-height: 112px; resize: vertical; }
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  border: 1px solid var(--line);
+  gap: 16px;
 }
 .ink-card {
   background: var(--charcoal-2);
+  border: 1px solid rgba(255,255,255,.1);
+  border-top: 2px solid rgba(32,255,123,.4);
   padding: 40px 28px 36px;
   position: relative;
   overflow: hidden;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
-.ink-card:hover { background: #161b1a; }
-.ink-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--green-bright);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.35s ease;
+.ink-card:hover {
+  background: #161b1a;
+  border-top-color: var(--green-bright);
+  border-color: rgba(255,255,255,.18);
 }
-.ink-card:hover::after { transform: scaleX(1); }
 .ink-dot {
   width: 10px; height: 10px;
   border-radius: 50%;
@@ -3680,12 +3674,25 @@ textarea.qmodal-input { min-height: 112px; resize: vertical; }
 }
 
 @media (max-width: 900px) {
-  .ink-grid { grid-template-columns: repeat(2, 1fr); }
+  .ink-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 @media (max-width: 540px) {
-  .ink-section { padding: 72px 5%; }
-  .ink-grid { grid-template-columns: 1fr; }
-  .ink-card { padding: 32px 20px; }
+  .ink-section { padding: 64px 5%; }
+  .ink-grid { grid-template-columns: 1fr; gap: 10px; }
+  .ink-card {
+    padding: 28px 20px;
+    border-top: 1px solid rgba(255,255,255,.1);
+    border-left: 3px solid var(--green-bright);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    align-items: start;
+    column-gap: 16px;
+  }
+  .ink-dot { display: none; }
+  .ink-card h3 { grid-column: 1; grid-row: 1; margin-bottom: 8px; }
+  .ink-card p  { grid-column: 1 / -1; grid-row: 2; margin-bottom: 16px; }
+  .ink-tag     { grid-column: 2; grid-row: 1; }
 }
 
 /* ==================== PRINT METHODS ==================== */
@@ -3792,4 +3799,73 @@ textarea.qmodal-input { min-height: 112px; resize: vertical; }
   .faq-section { padding: 72px 5%; }
   .faq-item summary { font-size: 14px; padding: 20px 0; }
   .faq-item > p { font-size: 13px; }
+}
+
+/* ==================== MOBILE OVERHAUL ==================== */
+/* Tighten section padding on mobile across all sections */
+@media (max-width: 600px) {
+  /* Global section padding reduction */
+  .services-section,
+  .work-preview-section,
+  .statement-section,
+  .process-section,
+  .methods-section,
+  .faq-section { padding-top: 64px; padding-bottom: 64px; }
+
+  .ink-section { padding-top: 64px; padding-bottom: 64px; }
+
+  /* Quote section */
+  .quote-section { padding: 64px 5%; }
+  .quote-features { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Services section */
+  .services-header h2 { font-size: clamp(24px, 7vw, 36px); }
+  .services-grid { grid-template-columns: 1fr; gap: 0; }
+  .service-card { padding: 32px 20px; border-right: none; }
+
+  /* Work preview */
+  .work-preview-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .work-cards { grid-template-columns: 1fr; }
+
+  /* Statement section */
+  .statement-inner { gap: 20px; }
+  .statement-quote { font-size: clamp(18px, 5vw, 24px); }
+  .statement-body { font-size: 14px; }
+
+  /* Process steps */
+  .process-header h2 { font-size: clamp(24px, 7vw, 36px); }
+  .process-steps { gap: 0; }
+  .process-step { padding: 28px 0; border-bottom: 1px solid var(--line); }
+
+  /* Methods section */
+  .methods-header h2 { font-size: clamp(24px, 7vw, 36px); }
+
+  /* FAQ */
+  .faq-header h2 { font-size: clamp(24px, 7vw, 36px); }
+
+  /* Quote form */
+  .form-row { grid-template-columns: 1fr; }
+  .quote-copy h2 { font-size: clamp(26px, 7vw, 40px); }
+
+  /* Video section on mobile — reduce height */
+  .video-section { min-height: 75vh; }
+  .video-content { padding: 40px 5% 60px; }
+  .video-content h2 { font-size: clamp(26px, 7vw, 40px); }
+  .video-right { margin-left: 0; padding-right: 5%; }
+}
+
+/* Hero mobile improvements */
+@media (max-width: 540px) {
+  .hero-inner { padding: 100px 5% 60px; }
+  .hero-sub { gap: 10px; }
+  .hero-descriptor { font-size: 15px; }
+  .hero-note { font-size: 13px; }
+  .hero-actions { flex-direction: column; gap: 12px; }
+  .hero-actions .btn { text-align: center; width: 100%; max-width: 280px; }
+}
+
+/* Marquee — smaller on mobile */
+@media (max-width: 540px) {
+  .marquee-track { gap: 20px; }
+  .marquee-track span { font-size: 10px; }
 }
