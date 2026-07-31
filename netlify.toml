@@ -1,12 +1,7 @@
 [build]
-  command = "npm run build"
+  command = "echo 'Deployed via GitHub Actions'"
   publish = "public"
-
-[build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS = "--ignore-scripts --legacy-peer-deps"
-  PUPPETEER_SKIP_DOWNLOAD = "true"
-  CHROMIUM_SKIP_DOWNLOAD = "true"
+  ignore = "exit 0"
 
 [functions]
   directory = "netlify/functions"
