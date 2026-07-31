@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "public"
 
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--ignore-scripts --legacy-peer-deps"
+  PUPPETEER_SKIP_DOWNLOAD = "true"
+  CHROMIUM_SKIP_DOWNLOAD = "true"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
