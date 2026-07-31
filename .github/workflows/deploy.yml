@@ -10,10 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy public/ to Netlify
-        run: |
-          npm install -g netlify-cli
-          netlify deploy --dir=public --prod --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts --legacy-peer-deps
+
+      - name: Deploy to Netlify
+        run: npx netlify-cli deploy --dir=public --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
