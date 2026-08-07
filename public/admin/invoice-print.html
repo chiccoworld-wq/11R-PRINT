@@ -55,7 +55,7 @@ table.items tbody td:nth-child(2),table.items tbody td:nth-child(3){text-align:r
 <script>
 const params = new URLSearchParams(location.search);
 const id = params.get('id');
-const KEY = sessionStorage.getItem('11r_admin_key');
+const KEY = localStorage.getItem('11r_ak');
 
 async function load() {
   if (!id) { showError('No invoice ID.'); return; }
@@ -76,9 +76,9 @@ function render(inv, items, payments) {
   page.innerHTML = `
     <div class="header">
       <div class="brand">
-        <img src="../images/11r-logo-new.png" alt="11R Print" onerror="this.style.display='none'"/>
-        <div class="brand-name">11R PRINT</div>
-        <div class="brand-info">orders@11rprint.com<br>11rprint.com</div>
+        <img src="../images/11r-logo-new.png" alt="11R Print" style="height:56px;width:auto;" onerror="this.style.display='none'"/>
+        <div class="brand-name" style="margin-top:10px;">11R PRINT</div>
+        <div class="brand-info">Screen Printed Apparel<br>orders@11rprint.com · 11rprint.com</div>
       </div>
       <div class="doc-info">
         <div class="doc-title">Invoice</div>

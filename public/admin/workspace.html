@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>11R Print — Customer Workspace</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+:root{--black:#050706;--charcoal:#0d0f0e;--charcoal-2:#141918;--green:#058f45;--gb:#20ff7b;--white:#f5f7f4;--off:#dce7df;--muted:#7a8a7e;--line:rgba(255,255,255,.1);--danger:#ff4d4d;--yel:#fff03a;--cyan:#00d5ff;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:0 20px;height:52px;background:rgba(5,7,6,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);}
+.btn-back{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:6px 10px;border-radius:8px;transition:all .2s;}
+.btn-back:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.topbar-label{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.topbar-spacer{flex:1;}
+.btn-logout{background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+
+/* ── CUSTOMER HEADER ── */
+.ws-header{padding:20px 20px 0;border-bottom:1px solid var(--line);}
+.ws-eyebrow{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.ws-name{font-size:28px;font-weight:900;letter-spacing:-.03em;margin-bottom:4px;}
+.ws-contact{font-size:13px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.ws-contact a{color:var(--gb);}
+.ws-balance{display:inline-block;background:rgba(255,240,58,.08);border:1px solid rgba(255,240,58,.25);border-radius:8px;padding:4px 14px;font-size:12px;font-weight:900;color:var(--yel);margin-bottom:16px;}
+.ws-balance.clear{background:rgba(32,255,123,.06);border-color:rgba(32,255,123,.2);color:var(--gb);}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 20px;border-bottom:1px solid var(--line);}
+.stat-tile{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;}
+.stat-tile:hover{border-color:rgba(32,255,123,.3);}
+.stat-label{font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.stat-val{font-size:24px;font-weight:900;color:var(--gb);}
+
+/* ── BODY ── */
+.ws-body{display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 280px);}
+.ws-main{padding:20px;border-right:1px solid var(--line);}
+.ws-side{padding:20px;}
+
+/* ── SECTION HEADS ── */
+.section-head{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.section-head::after{content:'';flex:1;height:1px;background:var(--line);}
+.section-head span{white-space:nowrap;}
+
+/* ── RECORD CARDS ── */
+.rec-card{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s,background .15s;}
+.rec-card:hover{border-color:rgba(32,255,123,.3);background:rgba(32,255,123,.03);}
+.rc-main{flex:1;min-width:0;}
+.rc-title{font-size:13px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.rc-amount{font-size:15px;font-weight:900;color:var(--gb);flex-shrink:0;text-align:right;}
+.rc-bal{font-size:10px;color:var(--muted);}
+.empty-list{padding:24px;color:var(--muted);font-size:13px;border:1px dashed rgba(255,255,255,.08);border-radius:12px;text-align:center;margin-bottom:16px;}
+
+/* ── STATUS PILLS ── */
+.sp{padding:3px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
+.sp-new{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.25);}
+.sp-quoted{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.25);}
+.sp-approved,.sp-deposit_paid{background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.25);}
+.sp-in_production{background:rgba(5,143,69,.15);color:#6effb0;border:1px solid rgba(5,143,69,.3);}
+.sp-qc{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-complete,.sp-paid{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-draft{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line);}
+.sp-sent{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-overdue{background:rgba(255,77,77,.1);color:var(--danger);border:1px solid rgba(255,77,77,.2);}
+.sp-void,.sp-cancelled{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--line);opacity:.6;}
+.sp-deposit_due{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.2);}
+.sp-partially_paid{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+
+/* ── ACTIONS ── */
+.actions-block{background:var(--charcoal);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;}
+.actions-label{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.btn-action{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none;margin-bottom:8px;}
+.btn-action:last-child{margin-bottom:0;}
+.btn-action.primary{background:var(--gb);color:#001708;}
+.btn-action.primary:hover{background:#00eb6e;}
+.btn-action.secondary{background:rgba(255,255,255,.05);color:var(--white);border:1px solid var(--line);}
+.btn-action.secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
+.btn-action.danger{background:rgba(255,77,77,.08);color:var(--danger);border:1px solid rgba(255,77,77,.2);}
+.btn-action.danger:hover{background:rgba(255,77,77,.15);}
+.btn-action.amber{background:rgba(255,240,58,.08);color:var(--yel);border:1px solid rgba(255,240,58,.2);}
+.btn-action.amber:hover{background:rgba(255,240,58,.15);}
+
+/* ── EMAIL PREVIEWS ── */
+.email-preview-btn{display:block;width:100%;padding:10px 14px;margin-bottom:6px;border-radius:10px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:rgba(32,255,123,.06);border:1px solid rgba(32,255,123,.15);color:var(--gb);cursor:pointer;transition:all .2s;text-align:left;}
+.email-preview-btn:hover{background:rgba(32,255,123,.14);border-color:rgba(32,255,123,.35);}
+.email-preview-btn.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+/* ── INFO TABLE ── */
+.info-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.info-table tr td:first-child{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 0;width:40%;}
+.info-table tr td:last-child{font-size:13px;padding:8px 0 8px 12px;color:var(--white);}
+.info-table tr{border-bottom:1px solid rgba(255,255,255,.04);}
+.info-table tr:last-child{border-bottom:none;}
+
+/* ── NOTES ── */
+.notes-box{background:var(--charcoal);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:13px;color:var(--off);line-height:1.6;white-space:pre-wrap;min-height:60px;}
+
+/* ── EMAIL MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);}
+.modal-bg.show{display:flex;}
+.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:28px;}
+.modal-title{font-size:16px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;transition:color .2s;}
+.btn-close:hover{color:var(--white);}
+.email-preview{background:var(--charcoal-2);border:1px solid var(--line);border-radius:12px;padding:20px;font-size:13px;line-height:1.7;color:var(--off);margin-bottom:16px;white-space:pre-wrap;}
+.email-subject{font-size:12px;font-weight:900;color:var(--gb);margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field input,.field textarea,.field select{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-size:14px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
+.field input:focus,.field textarea:focus{border-color:var(--gb);}
+.field textarea{min-height:80px;resize:vertical;}
+.btn-send{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:13px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
+.btn-send:hover{background:#00eb6e;}
+.btn-send:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ── MODAL FORM ── */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-primary{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .25s;margin-top:8px;}
+.btn-primary:hover{background:#00eb6e;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.err-box{padding:10px 14px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;margin-top:8px;}
+.modal-items-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+.modal-items-table th{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);}
+.modal-items-table td{padding:6px 8px;font-size:13px;}
+.modal-items-table input{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;color:var(--white);padding:7px 8px;font-size:12px;width:100%;outline:none;font-family:inherit;}
+.modal-items-table input:focus{border-color:var(--gb);}
+.modal-items-table .del-row{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;}
+.modal-items-table .del-row:hover{color:var(--danger);}
+.btn-add-row{background:rgba(32,255,123,.08);border:1px solid rgba(32,255,123,.2);color:var(--gb);border-radius:8px;padding:8px 14px;font-size:11px;font-weight:900;text-transform:uppercase;cursor:pointer;margin-bottom:14px;transition:all .2s;}
+.btn-add-row:hover{background:rgba(32,255,123,.16);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;transition:transform .3s,opacity .3s;opacity:0;z-index:9999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.error{background:var(--danger);color:var(--white);}
+
+/* ── EDIT PANEL (slide in) ── */
+.edit-sheet{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.edit-sheet.show{display:flex;}
+.sheet-body{background:var(--charcoal);border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:28px 28px 40px;}
+.sheet-handle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 20px;}
+
+@media(max-width:768px){
+  .ws-body{grid-template-columns:1fr;}
+  .ws-side{border-top:1px solid var(--line);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .ws-header{padding:16px 16px 0;}
+  .ws-main,.ws-side{padding:16px;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="btn-back" onclick="goBack()">← Back to CRM</button>
+  <span class="topbar-label">Customer Workspace</span>
+  <div class="topbar-spacer"></div>
+  <button class="btn-logout" onclick="logout()">Sign Out</button>
+</div>
+
+<!-- Customer header -->
+<div class="ws-header" id="wsHeader">
+  <div class="ws-eyebrow">Customer Workspace</div>
+  <div class="ws-name" id="wsName">Loading…</div>
+  <div class="ws-contact" id="wsContact"></div>
+  <div id="wsBalance"></div>
+</div>
+
+<!-- Stats tiles -->
+<div class="stats-row">
+  <div class="stat-tile" onclick="scrollTo('#sec-jobs')">
+    <div class="stat-label">Jobs</div>
+    <div class="stat-val" id="statJobs">—</div>
+  </div>
+  <div class="stat-tile" onclick="scrollTo('#sec-invoices')">
+    <div class="stat-label">Invoices</div>
+    <div class="stat-val" id="statInvoices">—</div>
+  </div>
+  <div class="stat-tile" onclick="scrollTo('#sec-receipts')">
+    <div class="stat-label">Receipts</div>
+    <div class="stat-val" id="statReceipts">—</div>
+  </div>
+  <div class="stat-tile" onclick="scrollTo('#sec-notes')">
+    <div class="stat-label">Notes</div>
+    <div class="stat-val" id="statNotes">—</div>
+  </div>
+</div>
+
+<!-- Body -->
+<div class="ws-body">
+  <!-- Main column: jobs, invoices, receipts -->
+  <div class="ws-main">
+    <div id="sec-jobs" style="margin-bottom:32px;">
+      <div class="section-head" style="margin-bottom:12px;">
+        <span>Jobs / Production Orders</span>
+        <button class="btn-back" style="text-transform:none;font-size:11px;color:var(--gb);border:1px solid rgba(32,255,123,.25);border-radius:8px;padding:5px 12px;" onclick="openNewJobModal()">+ New Job</button>
+      </div>
+      <div id="jobsSection"><div class="empty-list">Loading…</div></div>
+    </div>
+
+    <div id="sec-invoices" style="margin-bottom:32px;">
+      <div class="section-head" style="margin-bottom:12px;">
+        <span>Invoices</span>
+        <button class="btn-back" style="text-transform:none;font-size:11px;color:var(--gb);border:1px solid rgba(32,255,123,.25);border-radius:8px;padding:5px 12px;" onclick="openNewInvModal()">+ Invoice</button>
+      </div>
+      <div id="invoicesSection"><div class="empty-list">Loading…</div></div>
+    </div>
+
+    <div id="sec-receipts" style="margin-bottom:32px;">
+      <div class="section-head"><span>Receipts</span></div>
+      <div id="receiptsSection"><div class="empty-list">Loading…</div></div>
+    </div>
+
+    <div id="sec-notes" style="margin-bottom:32px;">
+      <div class="section-head"><span>Customer Info</span></div>
+      <table class="info-table" id="infoTable"></table>
+      <div class="section-head" style="margin-top:16px;"><span>Internal Notes</span></div>
+      <div class="notes-box" id="notesBox">—</div>
+    </div>
+  </div>
+
+  <!-- Sidebar: actions + email templates -->
+  <div class="ws-side">
+    <div class="actions-block" style="margin-bottom:16px;">
+      <div class="actions-label">Customer Actions</div>
+      <button class="btn-action primary" onclick="openNewInvModal()">+ Invoice</button>
+      <button class="btn-action secondary" onclick="openNewJobModal()">+ New Job</button>
+      <button class="btn-action secondary" onclick="openEditCustomer()">Edit Profile</button>
+      <button class="btn-action danger" onclick="deleteCustomer()">Delete Customer</button>
+    </div>
+
+    <div class="actions-block">
+      <div class="actions-label">Email Templates</div>
+      <button class="email-preview-btn" id="btnQuoteFollowup" onclick="openEmailPreview('quote_followup')">Preview Quote Follow-Up</button>
+      <button class="email-preview-btn" id="btnDepositRequest" onclick="openEmailPreview('deposit_request')">Preview Deposit Request</button>
+      <button class="email-preview-btn" id="btnProofApproval" onclick="openEmailPreview('proof_approval')">Preview Proof Approval</button>
+      <button class="email-preview-btn" id="btnPickupReady" onclick="openEmailPreview('pickup_ready')">Preview Pickup Ready</button>
+      <button class="email-preview-btn" id="btnPastDue" onclick="openEmailPreview('past_due')">Preview Past-Due Reminder</button>
+      <button class="email-preview-btn" id="btnOrderConfirm" onclick="openEmailPreview('order_confirm')">Preview Order Confirmation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Email Preview Modal -->
+<div class="modal-bg" id="emailModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="emailModalTitle">Email Preview</span>
+      <button class="btn-close" onclick="closeModal('emailModal')">✕</button>
+    </div>
+    <div class="email-subject" id="emailSubject"></div>
+    <div class="email-preview" id="emailBody"></div>
+    <div class="field">
+      <label>Send To</label>
+      <input id="emailTo" type="email" placeholder="customer@email.com"/>
+    </div>
+    <div class="field">
+      <label>Additional Note (optional)</label>
+      <textarea id="emailNote" rows="3" placeholder="Add a personal note to this email…"></textarea>
+    </div>
+    <button class="btn-send" id="emailSendBtn" onclick="sendEmail()">Send Email</button>
+  </div>
+</div>
+
+<!-- New Job Modal -->
+<div class="modal-bg" id="jobModal">
+  <div class="modal">
+    <div class="modal-title">New Job <button class="btn-close" onclick="closeModal('jobModal')">✕</button></div>
+    <div class="field"><label>Job Title *</label><input id="jTitle" placeholder="e.g. Summer Run Safety Shirts"/></div>
+    <div class="field-row">
+      <div class="field"><label>Due Date</label><input type="date" id="jDue"/></div>
+      <div class="field"><label>Quantity</label><input type="number" id="jQty" placeholder="100" min="1"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Garment Style</label><input id="jStyle" placeholder="Gildan 5000, N3165…"/></div>
+      <div class="field"><label>Garment Color</label><input id="jColor" placeholder="Black, Safety Orange…"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Ink Colors</label><input id="jInk" placeholder="2 color front"/></div>
+      <div class="field"><label>Print Locations</label><input id="jLoc" placeholder="Left chest, full back"/></div>
+    </div>
+    <div class="field"><label>Job Notes</label><textarea id="jNotes" rows="2" placeholder="Customer-visible notes…"></textarea></div>
+    <div class="field"><label>Internal Notes</label><textarea id="jInternal" rows="2" placeholder="Private production notes…"></textarea></div>
+    <div class="err-box" id="jobErr"></div>
+    <button class="btn-primary" id="saveJobBtn" onclick="saveNewJob()">Create Job</button>
+  </div>
+</div>
+
+<!-- New Invoice Modal -->
+<div class="modal-bg" id="invModal">
+  <div class="modal">
+    <div class="modal-title">New Invoice <button class="btn-close" onclick="closeModal('invModal')">✕</button></div>
+    <div class="field-row">
+      <div class="field"><label>Job (optional)</label><select id="niJob"><option value="">— None —</option></select></div>
+      <div class="field"><label>Due Date</label><input type="date" id="niDue"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Deposit Type</label>
+        <select id="niDepType" onchange="updateDepLabel()">
+          <option value="percent">Percentage</option>
+          <option value="fixed">Fixed Amount</option>
+        </select>
+      </div>
+      <div class="field"><label id="niDepLabel">Deposit %</label><input id="niDep" type="number" value="50" min="0" step="0.01"/></div>
+    </div>
+    <div class="field"><label>Tax Rate %</label><input id="niTax" type="number" value="0" min="0" max="100" step="0.01" style="max-width:120px;"/></div>
+    <div style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gb);margin-bottom:10px;display:flex;align-items:center;gap:8px;">Line Items <span style="flex:1;height:1px;background:var(--line);display:block;"></span></div>
+    <table class="modal-items-table">
+      <thead><tr><th style="width:50%">Description</th><th>Qty</th><th>Unit Price</th><th>Amount</th><th></th></tr></thead>
+      <tbody id="niItems"></tbody>
+    </table>
+    <button class="btn-add-row" onclick="addLineItem()">+ Add Line</button>
+    <div class="field"><label>Notes (shown on invoice)</label><textarea id="niNotes" rows="2" placeholder="Production time, terms…"></textarea></div>
+    <div class="err-box" id="invErr"></div>
+    <button class="btn-primary" id="createInvBtn" onclick="createInvoice()">Create Invoice</button>
+  </div>
+</div>
+
+<!-- Edit Customer Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-title">Edit Customer <button class="btn-close" onclick="closeModal('editModal')">✕</button></div>
+    <div class="field-row">
+      <div class="field"><label>Name *</label><input id="eName" placeholder="Full name"/></div>
+      <div class="field"><label>Company</label><input id="eCompany" placeholder="Business name"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Email</label><input id="eEmail" type="email" placeholder="email@example.com"/></div>
+      <div class="field"><label>Phone</label><input id="ePhone" placeholder="(555) 000-0000"/></div>
+    </div>
+    <div class="field"><label>Billing Address</label><textarea id="eAddr" rows="2" placeholder="123 Main St, City, FL 00000"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Lead Source</label>
+        <select id="eLead">
+          <option value="">— Select —</option>
+          <option value="website">Website</option>
+          <option value="instagram">Instagram</option>
+          <option value="referral">Referral</option>
+          <option value="walk-in">Walk-in</option>
+          <option value="returning">Returning Customer</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Preferred Contact</label>
+        <select id="ePref">
+          <option value="email">Email</option>
+          <option value="text">Text</option>
+          <option value="call">Phone Call</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Internal Notes</label><textarea id="eNotes" rows="3" placeholder="Private notes…"></textarea></div>
+    <div class="field" style="flex-direction:row;align-items:center;gap:10px;">
+      <input type="checkbox" id="eTax" style="width:auto;accent-color:var(--gb);"/>
+      <label for="eTax" style="font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">Tax Exempt</label>
+    </div>
+    <div class="err-box" id="editErr"></div>
+    <button class="btn-primary" id="saveEditBtn" onclick="saveCustomer()">Save Changes</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = localStorage.getItem('11r_ak');
+if (!KEY) location.href = '/admin/';
+
+const params = new URLSearchParams(location.search);
+const CUST_ID = params.get('id');
+if (!CUST_ID) location.href = '/admin/crm.html';
+
+const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
+  headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+  ...opts
+}).then(r => r.json());
+
+let cust = null, jobs = [], invoices = [], receipts = [];
+let niItemRows = [];
+let activeEmailType = null;
+
+// ── LOAD ──────────────────────────────────────────────────────────────────────
+
+async function load() {
+  if (!CUST_ID) return;
+  const data = await API(`/customers/${CUST_ID}`);
+  if (data.error) { toast('Failed to load customer', true); return; }
+  cust = data.customer;
+  jobs = data.jobs || [];
+  invoices = data.invoices || [];
+  receipts = data.receipts || [];
+  renderAll();
+}
+
+function renderAll() {
+  document.title = `${cust.name} — 11R Print Workspace`;
+  document.getElementById('wsName').textContent = cust.name;
+
+  // Contact
+  let contactHtml = '';
+  if (cust.email) contactHtml += `<a href="mailto:${esc(cust.email)}">${esc(cust.email)}</a>`;
+  if (cust.phone) contactHtml += `<span>${esc(cust.phone)}</span>`;
+  if (cust.company) contactHtml += `<span>${esc(cust.company)}</span>`;
+  document.getElementById('wsContact').innerHTML = contactHtml || '<span style="color:var(--muted)">No contact info</span>';
+
+  // Balance
+  const bal = invoices.reduce((s, i) => s + parseFloat(i.balance_due||0), 0);
+  const balEl = document.getElementById('wsBalance');
+  if (bal > 0) {
+    balEl.innerHTML = `<div class="ws-balance">Balance Due: $${bal.toFixed(2)}</div>`;
+  } else {
+    balEl.innerHTML = `<div class="ws-balance clear">Balance: $0.00 — Clear</div>`;
+  }
+
+  // Stats
+  document.getElementById('statJobs').textContent = jobs.length;
+  document.getElementById('statInvoices').textContent = invoices.length;
+  document.getElementById('statReceipts').textContent = receipts.length;
+  document.getElementById('statNotes').textContent = cust.notes ? '✓' : '—';
+
+  // Sections
+  renderJobs();
+  renderInvoices();
+  renderReceipts();
+  renderInfo();
+
+  // Email button states (need email)
+  const hasEmail = !!cust.email;
+  document.querySelectorAll('.email-preview-btn').forEach(btn => {
+    if (!hasEmail) btn.classList.add('disabled');
+    else btn.classList.remove('disabled');
+  });
+}
+
+function renderJobs() {
+  const el = document.getElementById('jobsSection');
+  if (!jobs.length) { el.innerHTML = '<div class="empty-list">No jobs yet. Click + New Job to create one.</div>'; return; }
+  el.innerHTML = jobs.map(j => `
+    <div class="rec-card" onclick="location.href='/admin/jobs.html#${j.id}'">
+      <div class="rc-main">
+        <div class="rc-title">${esc(j.title)}</div>
+        <div class="rc-sub">${esc(j.job_number)}${j.due_date?' · Due '+fmt(j.due_date):''}${j.quantity?' · '+j.quantity+' pcs':''}</div>
+      </div>
+      <span class="sp sp-${j.status}">${(j.status||'').replace(/_/g,' ')}</span>
+    </div>`).join('');
+}
+
+function renderInvoices() {
+  const el = document.getElementById('invoicesSection');
+  if (!invoices.length) { el.innerHTML = '<div class="empty-list">No invoices yet. Click + Invoice to create one.</div>'; return; }
+  el.innerHTML = invoices.map(i => `
+    <div class="rec-card" onclick="location.href='/admin/invoices.html#${i.id}'">
+      <div class="rc-main">
+        <div class="rc-title">${esc(i.invoice_number)}</div>
+        <div class="rc-sub">${fmt(i.created_at)}${i.due_date?' · Due '+fmt(i.due_date):''}${parseFloat(i.balance_due||0)>0?' · Bal $'+parseFloat(i.balance_due).toFixed(2):''}</div>
+      </div>
+      <div style="text-align:right;margin-right:8px;">
+        <div class="rc-amount">$${parseFloat(i.total||0).toFixed(2)}</div>
+      </div>
+      <span class="sp sp-${i.status}">${(i.status||'').replace(/_/g,' ')}</span>
+    </div>`).join('');
+}
+
+function renderReceipts() {
+  const el = document.getElementById('receiptsSection');
+  if (!receipts.length) { el.innerHTML = '<div class="empty-list">No receipts yet.</div>'; return; }
+  el.innerHTML = receipts.map(r => {
+    const s = r.snapshot||{};
+    return `<div class="rec-card" onclick="window.open('/admin/receipt-print.html?id=${r.id}','_blank')">
+      <div class="rc-main">
+        <div class="rc-title">${esc(r.receipt_number)}</div>
+        <div class="rc-sub">${fmt(r.created_at)}${s.method?' · '+esc(s.method):''}${s.payment_type?' · '+esc(s.payment_type):''}</div>
+      </div>
+      <div class="rc-amount">$${parseFloat(s.amount||0).toFixed(2)}</div>
+      <span class="sp sp-sent">Sent</span>
+    </div>`;
+  }).join('');
+}
+
+function renderInfo() {
+  document.getElementById('infoTable').innerHTML = `
+    <tr><td>Lead Source</td><td>${esc(cust.lead_source||'—')}</td></tr>
+    <tr><td>Preferred Contact</td><td>${esc(cust.preferred_contact||'—')}</td></tr>
+    <tr><td>Billing Address</td><td style="white-space:pre-line;">${esc(cust.billing_address||'—')}</td></tr>
+    <tr><td>Tax Exempt</td><td>${cust.tax_exempt?'Yes':'No'}</td></tr>
+    <tr><td>Customer Since</td><td>${new Date(cust.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</td></tr>
+  `;
+  document.getElementById('notesBox').textContent = cust.notes || 'No internal notes.';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+
+function goBack() { location.href = '/admin/crm.html'; }
+function scrollTo(id) { const el = document.querySelector(id); if(el) el.scrollIntoView({behavior:'smooth'}); }
+
+// ── NEW JOB ───────────────────────────────────────────────────────────────────
+
+function openNewJobModal() {
+  ['jTitle','jDue','jQty','jStyle','jColor','jInk','jLoc','jNotes','jInternal'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('jobErr').style.display = 'none';
+  document.getElementById('saveJobBtn').disabled = false;
+  document.getElementById('saveJobBtn').textContent = 'Create Job';
+  document.getElementById('jobModal').classList.add('show');
+}
+
+async function saveNewJob() {
+  const title = (document.getElementById('jTitle').value||'').trim();
+  if (!title) { showErr('jobErr','Title is required.'); return; }
+  const btn = document.getElementById('saveJobBtn');
+  btn.disabled = true; btn.textContent = 'Creating…';
+  const locsRaw = (document.getElementById('jLoc').value||'').trim();
+  const payload = {
+    customer_id: CUST_ID, title,
+    due_date: document.getElementById('jDue').value || null,
+    quantity: parseInt(document.getElementById('jQty').value)||null,
+    garment_style: document.getElementById('jStyle').value.trim(),
+    garment_color: document.getElementById('jColor').value.trim(),
+    ink_colors: document.getElementById('jInk').value.trim(),
+    print_locations: locsRaw ? locsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    notes: document.getElementById('jNotes').value.trim(),
+    internal_notes: document.getElementById('jInternal').value.trim()
+  };
+  const data = await API('/jobs', { method:'POST', body: JSON.stringify(payload) });
+  btn.disabled = false; btn.textContent = 'Create Job';
+  if (data.error) { showErr('jobErr', data.error); return; }
+  closeModal('jobModal');
+  toast('Job created!');
+  await load();
+}
+
+// ── NEW INVOICE ───────────────────────────────────────────────────────────────
+
+function openNewInvModal() {
+  niItemRows = [];
+  addLineItem();
+  ['niNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('niDue').value = '';
+  document.getElementById('niTax').value = '0';
+  document.getElementById('niDep').value = '50';
+  document.getElementById('niDepType').value = 'percent';
+  document.getElementById('invErr').style.display = 'none';
+  // Load jobs for this customer
+  const jsel = document.getElementById('niJob');
+  jsel.innerHTML = '<option value="">— None —</option>' + jobs.map(j=>`<option value="${j.id}">${esc(j.job_number)} — ${esc(j.title)}</option>`).join('');
+  document.getElementById('createInvBtn').disabled = false;
+  document.getElementById('createInvBtn').textContent = 'Create Invoice';
+  document.getElementById('invModal').classList.add('show');
+}
+
+function addLineItem() {
+  niItemRows.push({ desc:'', qty:1, price:0 });
+  renderNIItems();
+}
+function renderNIItems() {
+  const tbody = document.getElementById('niItems');
+  tbody.innerHTML = niItemRows.map((r,i)=>`<tr>
+    <td><input value="${esc(r.desc)}" onchange="niItemRows[${i}].desc=this.value" placeholder="Description"/></td>
+    <td><input type="text" inputmode="numeric" value="${r.qty}" oninput="niItemRows[${i}].qty=parseFloat(this.value)||1;niAmt(${i})"/></td>
+    <td><input type="text" inputmode="decimal" value="${r.price}" oninput="niItemRows[${i}].price=parseFloat(this.value)||0;niAmt(${i})"/></td>
+    <td style="text-align:right;font-size:13px;" id="niAmt_${i}">$${((r.qty||1)*(r.price||0)).toFixed(2)}</td>
+    <td><button class="del-row" onclick="niItemRows.splice(${i},1);renderNIItems()">×</button></td>
+  </tr>`).join('');
+}
+function niAmt(i){ const r=niItemRows[i]; const el=document.getElementById('niAmt_'+i); if(el) el.textContent='$'+((r.qty||1)*(r.price||0)).toFixed(2); }
+function updateDepLabel(){ document.getElementById('niDepLabel').textContent=document.getElementById('niDepType').value==='percent'?'Deposit %':'Deposit $'; }
+
+async function createInvoice() {
+  const btn = document.getElementById('createInvBtn');
+  const items = niItemRows.filter(r=>r.desc.trim());
+  btn.disabled = true; btn.textContent = 'Creating…';
+  const data = await API('/invoices', { method:'POST', body: JSON.stringify({
+    customer_id: CUST_ID,
+    job_id: document.getElementById('niJob').value || null,
+    items,
+    tax_rate: (parseFloat(document.getElementById('niTax').value)||0)/100,
+    deposit_type: document.getElementById('niDepType').value,
+    deposit_value: parseFloat(document.getElementById('niDep').value)||50,
+    due_date: document.getElementById('niDue').value || null,
+    notes: document.getElementById('niNotes').value.trim()
+  })});
+  btn.disabled = false; btn.textContent = 'Create Invoice';
+  if (data.error) { showErr('invErr', data.error); return; }
+  closeModal('invModal');
+  toast('Invoice created!');
+  location.href = `/admin/invoices.html#${data.invoice.id}`;
+}
+
+// ── EDIT CUSTOMER ─────────────────────────────────────────────────────────────
+
+function openEditCustomer() {
+  if (!cust) return;
+  document.getElementById('eName').value = cust.name || '';
+  document.getElementById('eCompany').value = cust.company || '';
+  document.getElementById('eEmail').value = cust.email || '';
+  document.getElementById('ePhone').value = cust.phone || '';
+  document.getElementById('eAddr').value = cust.billing_address || '';
+  document.getElementById('eLead').value = cust.lead_source || '';
+  document.getElementById('ePref').value = cust.preferred_contact || 'email';
+  document.getElementById('eNotes').value = cust.notes || '';
+  document.getElementById('eTax').checked = !!cust.tax_exempt;
+  document.getElementById('editErr').style.display = 'none';
+  document.getElementById('saveEditBtn').disabled = false;
+  document.getElementById('saveEditBtn').textContent = 'Save Changes';
+  document.getElementById('editModal').classList.add('show');
+}
+
+async function saveCustomer() {
+  const name = (document.getElementById('eName').value||'').trim();
+  if (!name) { showErr('editErr','Name is required.'); return; }
+  const btn = document.getElementById('saveEditBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const payload = {
+    name, company: document.getElementById('eCompany').value.trim(),
+    email: document.getElementById('eEmail').value.trim(),
+    phone: document.getElementById('ePhone').value.trim(),
+    billing_address: document.getElementById('eAddr').value.trim(),
+    lead_source: document.getElementById('eLead').value,
+    preferred_contact: document.getElementById('ePref').value,
+    notes: document.getElementById('eNotes').value.trim(),
+    tax_exempt: document.getElementById('eTax').checked
+  };
+  const data = await API(`/customers/${CUST_ID}`, { method:'PUT', body: JSON.stringify(payload) });
+  btn.disabled = false; btn.textContent = 'Save Changes';
+  if (data.error) { showErr('editErr', data.error); return; }
+  cust = { ...cust, ...payload };
+  closeModal('editModal');
+  toast('Customer updated!');
+  renderAll();
+}
+
+async function deleteCustomer() {
+  if (!cust) return;
+  if (!confirm(`Delete ${cust.name}? All their jobs and records will remain but the customer profile will be removed. This cannot be undone.`)) return;
+  const data = await API(`/customers/${CUST_ID}`, { method:'DELETE' });
+  if (data.error) { toast('Error: '+data.error, true); return; }
+  toast('Customer deleted.');
+  setTimeout(() => location.href='/admin/crm.html', 1200);
+}
+
+// ── EMAIL TEMPLATES ───────────────────────────────────────────────────────────
+
+function emailTemplates(type) {
+  const name = cust?.name || 'there';
+  const email = cust?.email || '';
+  const openInv = invoices.find(i=>!['paid','void'].includes(i.status));
+  const invNum = openInv ? openInv.invoice_number : 'INV-XXXX';
+  const invTotal = openInv ? `$${parseFloat(openInv.total||0).toFixed(2)}` : '$0.00';
+  const dep = openInv ? `$${parseFloat(openInv.deposit_required||0).toFixed(2)}` : '$0.00';
+  const openJob = jobs.find(j=>!['complete','cancelled'].includes(j.status));
+  const jobTitle = openJob?.title || 'your order';
+
+  const templates = {
+    quote_followup: {
+      title: 'Quote Follow-Up',
+      subject: `Following up on your quote — 11R Print`,
+      body: `Hi ${name},\n\nI wanted to follow up on the quote we sent over for ${jobTitle}. Have you had a chance to review it?\n\nWe're ready to move forward whenever you are. If you have any questions about pricing, artwork, or timeline — just let me know.\n\nLooking forward to working with you!\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    },
+    deposit_request: {
+      title: 'Deposit Request',
+      subject: `Deposit needed to start your order — 11R Print`,
+      body: `Hi ${name},\n\nYour order is approved and we're ready to get started! To lock in your production slot, we just need the deposit of ${dep} (Invoice ${invNum}, Total: ${invTotal}).\n\nYou can send payment via Zelle, Venmo, or Cash. Once received, we'll begin immediately.\n\nThank you!\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    },
+    proof_approval: {
+      title: 'Proof Approval',
+      subject: `Your artwork proof is ready — 11R Print`,
+      body: `Hi ${name},\n\nYour artwork proof for ${jobTitle} is ready for your review. Please take a moment to check it carefully — colors, spelling, sizes, and placement.\n\nOnce you approve, we'll move straight into production.\n\nReply with APPROVED or let us know if anything needs adjusting.\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    },
+    pickup_ready: {
+      title: 'Pickup Ready',
+      subject: `Your order is ready for pickup! — 11R Print`,
+      body: `Hi ${name},\n\nGreat news — your order for ${jobTitle} is complete and ready for pickup!\n\nPlease reach out to schedule a convenient time. We can't wait for you to see it!\n\nThank you for your business.\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    },
+    past_due: {
+      title: 'Past-Due Reminder',
+      subject: `Invoice ${invNum} — Payment reminder — 11R Print`,
+      body: `Hi ${name},\n\nThis is a friendly reminder that Invoice ${invNum} for ${invTotal} has a remaining balance due.\n\nIf you've already sent payment, please disregard this message. Otherwise, please reach out and we can work something out.\n\nThank you!\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    },
+    order_confirm: {
+      title: 'Order Confirmation',
+      subject: `Order confirmed — 11R Print`,
+      body: `Hi ${name},\n\nThank you! Your order for ${jobTitle} is confirmed and in our system.\n\nWe'll keep you updated every step of the way — artwork, production, and pickup. If you have any questions, don't hesitate to reach out.\n\nBuilt With Passion. Printed With Purpose.\n\n— 11R Print\norders@11rprint.com | 11rprint.com`
+    }
+  };
+  return templates[type] || null;
+}
+
+function openEmailPreview(type) {
+  const tpl = emailTemplates(type);
+  if (!tpl) return;
+  activeEmailType = type;
+  document.getElementById('emailModalTitle').textContent = tpl.title;
+  document.getElementById('emailSubject').textContent = 'Subject: ' + tpl.subject;
+  document.getElementById('emailBody').textContent = tpl.body;
+  document.getElementById('emailTo').value = cust?.email || '';
+  document.getElementById('emailNote').value = '';
+  document.getElementById('emailSendBtn').disabled = false;
+  document.getElementById('emailSendBtn').textContent = 'Send Email';
+  document.getElementById('emailModal').classList.add('show');
+}
+
+async function sendEmail() {
+  const to = (document.getElementById('emailTo').value||'').trim();
+  if (!to || !to.includes('@')) { toast('Enter a valid email address', true); return; }
+  const tpl = emailTemplates(activeEmailType);
+  if (!tpl) return;
+  const note = document.getElementById('emailNote').value.trim();
+  const btn = document.getElementById('emailSendBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  const body = note ? `${tpl.body}\n\n---\n${note}` : tpl.body;
+  try {
+    const data = await API('/send-email', {
+      method: 'POST',
+      body: JSON.stringify({ to, subject: tpl.subject, text: body, customer_id: CUST_ID })
+    });
+    if (data.error) { toast('Send failed: '+data.error, true); btn.disabled=false; btn.textContent='Send Email'; return; }
+    closeModal('emailModal');
+    toast('Email sent!');
+  } catch(e) {
+    toast('Failed to send', true);
+    btn.disabled = false; btn.textContent = 'Send Email';
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function showErr(elId, msg) { const el=document.getElementById(elId); el.textContent=msg; el.style.display='block'; }
+function logout() { localStorage.removeItem('11r_ak'); location.href='/admin/'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(d) { return d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'; }
+function toast(msg, isError=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast${isError?' error':''} show`;
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// Close modals on background click
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if(e.target===bg) bg.classList.remove('show'); });
+});
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-bg.show').forEach(m=>m.classList.remove('show')); });
+
+load().then(() => {
+  const hash = location.hash;
+  if (hash === '#jobs') openNewJobModal();
+  else if (hash === '#invoices') openNewInvModal();
+});
+</script>
+</body>
+</html>

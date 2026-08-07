@@ -5,10 +5,16 @@
     "@pdfme/schemas": "^6.1.10",
     "@sparticuz/chromium": "^119.0.0",
     "@supabase/supabase-js": "^2.49.0",
-    "puppeteer-core": "^19.0.0"
+    "puppeteer-core": "^19.0.0",
+    "@prisma/client": "^6.2.1",
+    "prisma": "^6.2.1"
   },
   "scripts": {
-    "build": "echo 'Build complete — serving public/ directly'",
-    "start": "node server.mjs"
+    "build": "echo 'Build complete \u2014 serving public/ directly'",
+    "start": "node server.mjs",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "backup:db": "bash scripts/backup-db.sh"
   }
 }

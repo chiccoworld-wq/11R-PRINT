@@ -176,8 +176,93 @@ export const handler = async (event) => {
     return { statusCode: 502, headers: cors, body: JSON.stringify({ error: 'Email failed', detail: err }) };
   }
 
-  // Send customer confirmation (fire-and-forget — don't block success if it fails)
-  if (d.email) {
+  // Send the quote data to n8n when configured. n8n handles:
+  // - customer confirmation email
+  // - quote log / sheet / CRM row
+  // - Telegram/internal notifications
+  const n8nWebhookUrl = process.env.N8N_INSTANT_QUOTE_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
+  let n8nSent = false;
+
+  if (n8nWebhookUrl) {
+    const n8nHeaders = { 'Content-Type': 'application/json' };
+    if (process.env.N8N_WEBHOOK_SECRET) {
+      n8nHeaders['X-11R-Webhook-Secret'] = process.env.N8N_WEBHOOK_SECRET;
+    }
+
+    const n8nPayload = {
+      event: 'instant_quote_submitted',
+      source: '11rprint.com/custom-order',
+      submittedAt: new Date().toISOString(),
+      rawQuote: d,
+      nexus: {
+        intakeUrl: process.env.NEXUS_INSTANT_QUOTE_URL || 'https://nexus.11rprint.com/api/public/instant-quote',
+        intakeSecret: process.env.NEXUS_INTAKE_SECRET || '',
+      },
+      customer: {
+        fullName: d.fullName || '',
+        firstName,
+        businessName: d.businessName || '',
+        email: d.email || '',
+        phone: d.phone || '',
+        preferredContactMethod: contactLabel[d.contactMethod] || d.contactMethod || '',
+      },
+      order: {
+        garmentName: d.garmentName || '',
+        quantity: d.qty || '',
+        printLocation: d.printLocation || '',
+        inkColors: d.inkColors || '',
+        artworkStatus: artworkLabels[d.artworkStatus] || d.artworkStatus || '',
+        estimatedTotal: d.estimatedTotal || '',
+        dateNeeded: d.dateNeeded || '',
+        delivery: d.delivery === 'shipping' ? 'Shipping' : 'Local Pickup',
+        zipCode: d.zipCode || '',
+        notes: d.notes || '',
+        fileName: d.fileName || '',
+        fileUrl: d.fileUrl || '',
+      },
+      emails: {
+        from: '11R Print <orders@11rprint.com>',
+        replyTo: 'orders@11rprint.com',
+        internalTo: 'orders@11rprint.com',
+        customerSubject: 'We received your quote request — 11R Print',
+      },
+    };
+
+    try {
+      const n8nRes = await fetch(n8nWebhookUrl, {
+        method: 'POST',
+        headers: n8nHeaders,
+        body: JSON.stringify(n8nPayload),
+      });
+      n8nSent = n8nRes.ok;
+      if (!n8nRes.ok) {
+        console.error('n8n instant quote webhook error:', n8nRes.status, await n8nRes.text());
+      }
+    } catch (err) {
+      console.error('n8n instant quote webhook failed:', err);
+    }
+  }
+
+  // Fallback only: n8n is the primary path into the private Nexus web app CRM.
+  // If n8n accepted the webhook, do not also post directly or the quote appears twice.
+  const nexusIntakeUrl = process.env.NEXUS_INSTANT_QUOTE_URL || 'https://nexus.11rprint.com/api/public/instant-quote';
+  let nexusSent = n8nSent;
+  if (!n8nSent && nexusIntakeUrl) {
+    const nexusHeaders = { 'Content-Type': 'application/json' };
+    if (process.env.NEXUS_INTAKE_SECRET) nexusHeaders['X-11R-Nexus-Secret'] = process.env.NEXUS_INTAKE_SECRET;
+    try {
+      const nexusRes = await fetch(nexusIntakeUrl, { method: 'POST', headers: nexusHeaders, body: JSON.stringify(d) });
+      nexusSent = nexusRes.ok;
+      if (!nexusRes.ok) console.error('Nexus instant quote intake error:', nexusRes.status, await nexusRes.text());
+    } catch (err) {
+      console.error('Nexus instant quote intake failed:', err);
+    }
+  }
+
+  // Customer confirmation fallback. If n8n succeeds, avoid duplicate emails.
+  // Set SEND_CUSTOMER_CONFIRMATION_DIRECT=true to always send directly from this function too.
+  const shouldSendDirectCustomerEmail = d.email && (process.env.SEND_CUSTOMER_CONFIRMATION_DIRECT === 'true' || !n8nSent);
+  if (shouldSendDirectCustomerEmail) {
     fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers,
@@ -190,5 +275,5 @@ export const handler = async (event) => {
     }).catch(err => console.error('Customer email error:', err));
   }
 
-  return { statusCode: 200, headers: cors, body: JSON.stringify({ ok: true }) };
+  return { statusCode: 200, headers: cors, body: JSON.stringify({ ok: true, n8nSent, nexusSent }) };
 };

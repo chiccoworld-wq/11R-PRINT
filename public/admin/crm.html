@@ -10,16 +10,16 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--black);color:var(--white);line-height:1.5;overflow-x:hidden;}
 a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;}
+/* ── NAV ── */
 .admin-nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(5,7,6,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);}
-.nav-brand{display:flex;align-items:center;gap:10px;}
 .nav-brand img{height:32px;filter:drop-shadow(0 0 8px rgba(32,255,123,.2));}
 .nav-links{display:flex;gap:4px;}
 .nav-link{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:all .2s;}
 .nav-link:hover{color:var(--white);background:rgba(255,255,255,.06);}
 .nav-link.active{color:var(--gb);background:rgba(32,255,123,.08);}
-.nav-right{display:flex;align-items:center;gap:10px;}
 .btn-logout{background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all .2s;}
 .btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+/* ── LAYOUT ── */
 .layout{display:flex;height:calc(100vh - 60px);overflow:hidden;}
 .sidebar{width:340px;flex-shrink:0;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
 .sidebar-top{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
@@ -35,13 +35,14 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 .cust-item.active{background:rgba(32,255,123,.06);border-color:rgba(32,255,123,.2);}
 .cust-name{font-size:14px;font-weight:900;letter-spacing:-.01em;margin-bottom:3px;}
 .cust-sub{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
-.cust-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.2);margin-left:auto;flex-shrink:0;}
+/* ── CUSTOMER DETAIL PANEL ── */
 .panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--black);}
 .panel-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);}
 .panel-empty h3{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;color:var(--white);}
 .panel-header{padding:20px 28px 0;border-bottom:1px solid var(--line);}
-.panel-name{font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:4px;}
-.panel-company{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.panel-name{font-size:22px;font-weight:900;letter-spacing:-.03em;margin-bottom:2px;}
+.panel-company{font-size:13px;color:var(--muted);}
+.panel-balance{font-size:13px;color:var(--gb);font-weight:900;margin-top:2px;margin-bottom:12px;}
 .panel-actions{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:0;}
 .btn-sm{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid var(--line);background:transparent;color:var(--muted);}
 .btn-sm:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
@@ -49,21 +50,28 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 .btn-sm.green:hover{background:rgba(32,255,123,.1);border-color:var(--gb);}
 .btn-sm.red{border-color:rgba(255,77,77,.3);color:var(--danger);}
 .btn-sm.red:hover{background:rgba(255,77,77,.1);}
-.panel-tabs{display:flex;gap:0;padding:0 28px;background:var(--charcoal);}
-.tab-btn{background:none;border:none;padding:14px 18px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.btn-sm.amber{border-color:rgba(255,240,58,.3);color:var(--yel);}
+.btn-sm.amber:hover{background:rgba(255,240,58,.08);}
+.panel-tabs{display:flex;gap:0;padding:0 28px;background:var(--charcoal);border-bottom:1px solid var(--line);}
+.tab-btn{background:none;border:none;padding:14px 16px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;white-space:nowrap;}
 .tab-btn:hover{color:var(--white);}
 .tab-btn.active{color:var(--gb);border-bottom-color:var(--gb);}
 .panel-body{flex:1;overflow-y:auto;padding:24px 28px;}
+/* ── INFO GRID ── */
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
 .info-field{display:flex;flex-direction:column;gap:4px;}
 .info-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
 .info-value{font-size:14px;color:var(--white);}
 .info-value a{color:var(--gb);}
 .notes-box{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:16px;font-size:13px;color:var(--off);line-height:1.6;white-space:pre-wrap;min-height:80px;}
-.job-card,.inv-card{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:border-color .2s;cursor:pointer;}
-.job-card:hover,.inv-card:hover{border-color:rgba(32,255,123,.25);}
-.job-title{font-size:13px;font-weight:900;flex:1;}
-.job-num{font-size:11px;color:var(--muted);margin-top:2px;}
+/* ── RECORD CARDS ── */
+.rec-card{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:border-color .2s,background .15s;cursor:pointer;}
+.rec-card:hover{border-color:rgba(32,255,123,.25);background:rgba(32,255,123,.03);}
+.rc-main{flex:1;min-width:0;}
+.rc-title{font-size:13px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rc-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.rc-amount{font-size:15px;font-weight:900;color:var(--gb);flex-shrink:0;}
+.rc-bal{font-size:10px;color:var(--muted);margin-top:2px;text-align:right;}
 .status-pill{padding:3px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
 .sp-new{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.25);}
 .sp-quoted{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.25);}
@@ -75,16 +83,46 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 .sp-sent{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
 .sp-overdue{background:rgba(255,77,77,.1);color:var(--danger);border:1px solid rgba(255,77,77,.2);}
 .sp-void,.sp-cancelled{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--line);opacity:.6;}
-.inv-amount{font-size:15px;font-weight:900;color:var(--gb);}
-.inv-bal{font-size:11px;color:var(--muted);margin-top:2px;}
+.sp-deposit_due,.sp-deposit-due{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.2);}
+.sp-partially_paid{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
 .section-head{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
-.empty-list{text-align:center;padding:32px;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:12px;}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);display:none;}
-.modal-bg.show{display:flex;}
-.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:32px;}
-.modal-title{font-size:18px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
-.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;transition:color .2s;}
-.btn-close:hover{color:var(--white);}
+.empty-list{text-align:center;padding:28px;color:var(--muted);font-size:13px;border:1px dashed rgba(255,255,255,.08);border-radius:12px;}
+/* ── RECORD DETAIL OVERLAY ── */
+.rec-overlay{position:fixed;inset:0;background:var(--black);z-index:400;display:none;flex-direction:column;overflow:hidden;}
+.rec-overlay.visible{display:flex;}
+.ro-header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);flex-shrink:0;min-height:64px;}
+.ro-back{display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--muted);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:6px 10px;border-radius:8px;transition:all .2s;flex-shrink:0;}
+.ro-back:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.ro-meta{flex:1;min-width:0;}
+.ro-eyebrow{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.ro-title{font-size:18px;font-weight:900;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ro-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+.ro-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.ro-body{flex:1;overflow-y:auto;padding:24px;max-width:720px;width:100%;margin:0 auto;}
+/* ── RECORD DETAIL CONTENT ── */
+.ro-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.ro-field{display:flex;flex-direction:column;gap:4px;}
+.ro-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.ro-value{font-size:14px;color:var(--white);}
+.ro-divider{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:20px 0 12px;display:flex;align-items:center;gap:10px;}
+.ro-divider::after{content:'';flex:1;height:1px;background:var(--line);}
+.ro-notice{border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;line-height:1.5;}
+.ro-notice.yellow{background:rgba(255,240,58,.05);border:1px solid rgba(255,240,58,.2);color:var(--yel);}
+.ro-notice.blue{background:rgba(0,213,255,.05);border:1px solid rgba(0,213,255,.2);color:var(--cyan);}
+.ro-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.ro-table th{font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);}
+.ro-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.ro-table td:last-child{text-align:right;}
+.ro-totals{background:var(--charcoal-2);border-radius:12px;padding:16px;margin-bottom:20px;}
+.ro-total-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}
+.ro-total-row .lbl{color:var(--muted);}
+.ro-total-row.main{font-size:17px;font-weight:900;border-top:1px solid var(--line);padding-top:10px;margin-top:4px;}
+.ro-pay-card{background:var(--charcoal);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.ro-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.ro-sum-card{background:var(--charcoal-2);border-radius:10px;padding:14px;}
+.ro-sum-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.ro-sum-val{font-size:20px;font-weight:900;}
+/* ── EDIT FORM (inside overlay) ── */
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
 .field label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
 .field input,.field textarea,.field select{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--white);padding:11px 13px;font-size:14px;outline:none;font-family:inherit;width:100%;transition:border-color .2s;}
@@ -93,37 +131,62 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 .field textarea{min-height:80px;resize:vertical;}
 .field select option{background:var(--charcoal);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.err-box{padding:10px 14px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;margin-top:8px;}
+.btn-save{background:var(--gb);color:#001708;border:none;border-radius:10px;padding:13px 24px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
+.btn-save:hover{background:#00eb6e;}
+.btn-save:disabled{opacity:.5;cursor:not-allowed;}
+.edit-actions{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--line);margin-top:20px;}
+/* ── CUSTOMER MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-bg.show{display:flex;}
+.modal{background:var(--charcoal);border:1px solid var(--line);border-radius:20px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:32px;}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.btn-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;transition:color .2s;}
+.btn-close:hover{color:var(--white);}
 .btn-primary{width:100%;background:var(--gb);color:#001708;border:none;border-radius:10px;padding:14px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:all .25s;margin-top:8px;}
 .btn-primary:hover{background:#00eb6e;}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+/* ── TOAST ── */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gb);color:#001708;padding:10px 22px;border-radius:999px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;transition:transform .3s,opacity .3s;opacity:0;z-index:9999;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+/* ── ARTWORK GRID ── */
+.art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:4px;}
+.art-tile{background:var(--charcoal);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer;transition:border-color .2s;}
+.art-tile:hover{border-color:rgba(32,255,123,.3);}
+.art-img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--charcoal-2);}
+.art-file-icon{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:36px;background:var(--charcoal-2);}
+.art-info{padding:8px 10px;}
+.art-name{font-size:10px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.art-del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;color:var(--danger);font-size:14px;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;}
+.art-tile:hover .art-del{opacity:1;}
+/* ── MOBILE ── */
 @media(max-width:768px){
-  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:260px;}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:240px;}
   .layout{flex-direction:column;height:auto;overflow:visible;}
   .panel{height:auto;overflow:visible;}
   .panel-body{overflow:visible;}
   .nav-links{gap:2px;}.nav-link{padding:5px 10px;font-size:10px;}
   .info-grid{grid-template-columns:1fr;}
   .field-row{grid-template-columns:1fr;}
+  .ro-grid{grid-template-columns:1fr;}
+  .ro-summary{grid-template-columns:1fr 1fr;}
+  .ro-header{padding:12px 16px;}
+  .ro-body{padding:16px;}
+  .ro-actions .btn-sm:nth-child(n+3){display:none;}
 }
 </style>
 </head>
 <body>
 
 <nav class="admin-nav">
-  <div class="nav-brand">
-    <img src="../images/11r-logo-new.png" alt="11R Print"/>
-  </div>
+  <div class="nav-brand"><img src="../images/11r-logo-new.png" alt="11R Print"/></div>
   <div class="nav-links">
     <a href="/admin/" class="nav-link">Proofs</a>
     <a href="/admin/crm.html" class="nav-link active">CRM</a>
     <a href="/admin/jobs.html" class="nav-link">Jobs</a>
     <a href="/admin/invoices.html" class="nav-link">Invoices</a>
   </div>
-  <div class="nav-right">
-    <button class="btn-logout" onclick="logout()">Sign Out</button>
-  </div>
+  <div><button class="btn-logout" onclick="logout()">Sign Out</button></div>
 </nav>
 
 <div class="layout">
@@ -135,9 +198,7 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
       </div>
       <button class="btn-new" onclick="openNewModal()">+ New Customer</button>
     </div>
-    <div class="cust-list" id="custList">
-      <div class="empty-list">Loading…</div>
-    </div>
+    <div class="cust-list" id="custList"><div class="empty-list">Loading…</div></div>
   </div>
 
   <div class="panel" id="panel">
@@ -149,17 +210,21 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
       <div class="panel-header">
         <div class="panel-name" id="dName"></div>
         <div class="panel-company" id="dCompany"></div>
-        <div class="panel-actions" style="display:flex;gap:8px;padding-bottom:14px;">
+        <div class="panel-balance" id="dBalance"></div>
+        <div class="panel-actions" style="padding-bottom:14px;">
+          <button class="btn-sm green" onclick="openWorkspace()">Workspace ↗</button>
           <button class="btn-sm green" onclick="openEditModal()">Edit</button>
           <button class="btn-sm" onclick="newJobForCust()">+ Job</button>
           <button class="btn-sm" onclick="newInvoiceForCust()">+ Invoice</button>
           <button class="btn-sm red" onclick="deleteCust()">Delete</button>
         </div>
       </div>
-      <div class="panel-tabs" style="border-bottom:1px solid var(--line);">
+      <div class="panel-tabs">
         <button class="tab-btn active" onclick="showTab('info',this)">Info</button>
         <button class="tab-btn" onclick="showTab('jobs',this)">Jobs</button>
         <button class="tab-btn" onclick="showTab('invoices',this)">Invoices</button>
+        <button class="tab-btn" onclick="showTab('receipts',this)">Receipts</button>
+        <button class="tab-btn" onclick="showTab('artwork',this)">Artwork</button>
         <button class="tab-btn" onclick="showTab('notes',this)">Notes</button>
       </div>
       <div class="panel-body">
@@ -182,6 +247,21 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
           <div class="section-head"><span>Invoices</span><button class="btn-sm green" onclick="newInvoiceForCust()">+ New Invoice</button></div>
           <div id="invList"></div>
         </div>
+        <div id="tab-receipts" style="display:none;">
+          <div class="section-head"><span>Receipts</span></div>
+          <div id="rcptList"></div>
+        </div>
+        <div id="tab-artwork" style="display:none;">
+          <div class="section-head">
+            <span>Artwork & Files</span>
+            <label class="btn-sm green" style="cursor:pointer;">
+              + Upload
+              <input type="file" id="artworkFileInput" style="display:none;" multiple accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip" onchange="handleArtworkUpload(this)"/>
+            </label>
+          </div>
+          <div id="artUploadProgress" style="display:none;margin-bottom:12px;padding:10px 14px;background:rgba(32,255,123,.05);border:1px solid rgba(32,255,123,.15);border-radius:10px;font-size:12px;color:var(--gb);"></div>
+          <div id="artworkGrid"></div>
+        </div>
         <div id="tab-notes" style="display:none;">
           <div class="section-head">Internal Notes</div>
           <div class="notes-box" id="dNotes">—</div>
@@ -192,7 +272,23 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
   </div>
 </div>
 
-<!-- New/Edit Customer Modal -->
+<!-- ── RECORD DETAIL OVERLAY ── -->
+<div class="rec-overlay" id="recOverlay">
+  <div class="ro-header">
+    <button class="ro-back" onclick="closeRecord()">← Back</button>
+    <div class="ro-meta">
+      <div class="ro-eyebrow" id="roType">RECORD</div>
+      <div class="ro-title" id="roTitle">—</div>
+      <div class="ro-sub" id="roSub"></div>
+    </div>
+    <div class="ro-actions" id="roActions"></div>
+  </div>
+  <div class="ro-body" id="roBody">
+    <div style="color:var(--muted);padding:24px;">Loading…</div>
+  </div>
+</div>
+
+<!-- ── Customer Edit/Create Modal ── -->
 <div class="modal-bg" id="custModal">
   <div class="modal">
     <div class="modal-title">
@@ -230,18 +326,18 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
     </div>
     <div class="field"><label>Internal Notes</label><textarea id="fNotes" placeholder="Private notes, follow-up reminders…"></textarea></div>
     <div class="field" style="flex-direction:row;align-items:center;gap:10px;margin-top:4px;">
-      <input type="checkbox" id="fTax" style="width:auto;accent-color:var(--gb);"/><label for="fTax" style="font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">Tax Exempt</label>
+      <input type="checkbox" id="fTax" style="width:auto;accent-color:var(--gb);"/>
+      <label for="fTax" style="font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">Tax Exempt</label>
     </div>
     <button class="btn-primary" id="saveCustBtn" onclick="saveCust()">Save Customer</button>
     <div id="custErr" style="margin-top:10px;padding:10px;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.2);border-radius:8px;font-size:13px;color:#ff8080;display:none;"></div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY = sessionStorage.getItem('11r_admin_key');
+const KEY = localStorage.getItem('11r_ak');
 if (!KEY) location.href = '/admin/';
 
 const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
@@ -250,6 +346,9 @@ const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
 }).then(r => r.json());
 
 let customers = [], currentCust = null, editMode = false, searchTimer = null;
+let custReceipts = [];
+
+// ─── CUSTOMER LIST ───────────────────────────────────────────────────────────
 
 async function loadCustomers(q='') {
   const qs = q ? `?q=${encodeURIComponent(q)}` : '';
@@ -263,7 +362,7 @@ function renderList() {
   if (!customers.length) { el.innerHTML = '<div class="empty-list">No customers yet.</div>'; return; }
   el.innerHTML = customers.map(c => `
     <div class="cust-item${currentCust?.id === c.id ? ' active' : ''}" onclick="selectCust('${c.id}')">
-      <div class="cust-name">${esc(c.name)}${c.company ? ` <span style="color:var(--muted);font-weight:400;">— ${esc(c.company)}</span>` : ''}</div>
+      <div class="cust-name">${esc(c.name)}${c.company?` <span style="color:var(--muted);font-weight:400;">— ${esc(c.company)}</span>`:''}</div>
       <div class="cust-sub">
         ${c.email ? `<span>${esc(c.email)}</span>` : ''}
         ${c.phone ? `<span>${esc(c.phone)}</span>` : ''}
@@ -274,16 +373,31 @@ function renderList() {
 async function selectCust(id) {
   const data = await API(`/customers/${id}`);
   currentCust = data.customer;
-  renderDetail(data.customer, data.jobs||[], data.invoices||[]);
+  custReceipts = data.receipts || [];
+  renderDetail(data.customer, data.jobs||[], data.invoices||[], custReceipts);
   renderList();
 }
 
-function renderDetail(c, jobs, invoices) {
+// ─── CUSTOMER DETAIL ─────────────────────────────────────────────────────────
+
+function renderDetail(c, jobs, invoices, receipts) {
   document.getElementById('emptyPanel').style.display = 'none';
   const det = document.getElementById('custDetail');
   det.style.display = 'flex';
+
   document.getElementById('dName').textContent = c.name;
   document.getElementById('dCompany').textContent = c.company || '';
+
+  // Balance
+  const bal = invoices.reduce((s, i) => s + parseFloat(i.balance_due||0), 0);
+  const balEl = document.getElementById('dBalance');
+  if (bal > 0) {
+    balEl.textContent = `Balance: $${bal.toFixed(2)}`;
+    balEl.style.color = 'var(--yel)';
+  } else {
+    balEl.textContent = '';
+  }
+
   document.getElementById('dEmail').innerHTML = c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '—';
   document.getElementById('dPhone').innerHTML = c.phone ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : '—';
   document.getElementById('dLead').textContent = c.lead_source || '—';
@@ -297,20 +411,46 @@ function renderDetail(c, jobs, invoices) {
   const jl = document.getElementById('jobList');
   if (!jobs.length) { jl.innerHTML = '<div class="empty-list">No jobs yet.</div>'; }
   else jl.innerHTML = jobs.map(j => `
-    <div class="job-card" onclick="location.href='/admin/jobs.html#${j.id}'">
-      <div style="flex:1"><div class="job-title">${esc(j.title)}</div><div class="job-num">${esc(j.job_number)}${j.due_date?' · Due '+fmt(j.due_date):''}</div></div>
-      <span class="status-pill sp-${j.status}">${j.status.replace('_',' ')}</span>
+    <div class="rec-card" onclick="openRecord('job','${j.id}')">
+      <div class="rc-main">
+        <div class="rc-title">${esc(j.title)}</div>
+        <div class="rc-sub">${esc(j.job_number)}${j.due_date?' · Due '+fmt(j.due_date):''}${j.quantity?' · '+j.quantity+' pcs':''}</div>
+      </div>
+      <span class="status-pill sp-${j.status}">${(j.status||'').replace(/_/g,' ')}</span>
     </div>`).join('');
 
   // Invoices tab
   const il = document.getElementById('invList');
   if (!invoices.length) { il.innerHTML = '<div class="empty-list">No invoices yet.</div>'; }
   else il.innerHTML = invoices.map(i => `
-    <div class="inv-card" onclick="location.href='/admin/invoices.html#${i.id}'">
-      <div style="flex:1"><div class="job-title">${esc(i.invoice_number)}</div><div class="job-num">${fmt(i.created_at)}</div></div>
-      <div style="text-align:right"><div class="inv-amount">$${parseFloat(i.total).toFixed(2)}</div><div class="inv-bal">Bal: $${parseFloat(i.balance_due).toFixed(2)}</div></div>
-      <span class="status-pill sp-${i.status}">${i.status.replace('_',' ')}</span>
+    <div class="rec-card" onclick="openRecord('invoice','${i.id}')">
+      <div class="rc-main">
+        <div class="rc-title">${esc(i.invoice_number)}</div>
+        <div class="rc-sub">${fmt(i.created_at)}${i.due_date?' · Due '+fmt(i.due_date):''}${parseFloat(i.balance_due||0)>0?' · Bal $'+parseFloat(i.balance_due).toFixed(2):''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="rc-amount">$${parseFloat(i.total||0).toFixed(2)}</div>
+      </div>
+      <span class="status-pill sp-${i.status}">${(i.status||'').replace(/_/g,' ')}</span>
     </div>`).join('');
+
+  // Receipts tab
+  const rl = document.getElementById('rcptList');
+  if (!receipts.length) { rl.innerHTML = '<div class="empty-list">No receipts yet.</div>'; }
+  else rl.innerHTML = receipts.map(r => {
+    const snap = r.snapshot || {};
+    return `<div class="rec-card" onclick="openRecord('receipt','${r.id}')">
+      <div class="rc-main">
+        <div class="rc-title">${esc(r.receipt_number)}</div>
+        <div class="rc-sub">${fmt(r.created_at)}${snap.method?' · '+esc(snap.method):''}${r.emailed_at?' · Emailed':''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="rc-amount">$${parseFloat(snap.amount||0).toFixed(2)}</div>
+        <div class="rc-bal">${snap.payment_type||''}</div>
+      </div>
+      <span class="status-pill sp-sent">Sent</span>
+    </div>`;
+  }).join('');
 }
 
 function showTab(name, btn) {
@@ -318,7 +458,453 @@ function showTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-'+name).style.display = 'block';
   btn.classList.add('active');
+  if (name === 'artwork' && currentCust) loadArtwork(currentCust.id);
 }
+
+// ─── RECORD DETAIL OVERLAY ───────────────────────────────────────────────────
+
+let activeRecord = null;
+let recEditMode = false;
+
+async function openRecord(type, id) {
+  activeRecord = { type, id, data: null };
+  recEditMode = false;
+  document.getElementById('recOverlay').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('roType').textContent = type.toUpperCase();
+  document.getElementById('roTitle').textContent = '—';
+  document.getElementById('roSub').textContent = '';
+  document.getElementById('roActions').innerHTML = '';
+  document.getElementById('roBody').innerHTML = '<div style="color:var(--muted);padding:24px;">Loading…</div>';
+
+  try {
+    if (type === 'job') {
+      const d = await API(`/jobs/${id}`);
+      if (d.error) { roError(d.error); return; }
+      activeRecord.data = d.job;
+      renderJobView(d.job);
+    } else if (type === 'invoice') {
+      const d = await API(`/invoices/${id}`);
+      if (d.error) { roError(d.error); return; }
+      activeRecord.data = d.invoice;
+      activeRecord.items = d.items || [];
+      activeRecord.payments = d.payments || [];
+      renderInvoiceView(d.invoice, d.items||[], d.payments||[]);
+    } else if (type === 'receipt') {
+      const d = await API(`/receipts/${id}`);
+      if (d.error) { roError(d.error); return; }
+      activeRecord.data = d.receipt;
+      renderReceiptView(d.receipt);
+    }
+  } catch(e) {
+    roError('Failed to load. Check connection.');
+  }
+}
+
+function closeRecord() {
+  document.getElementById('recOverlay').classList.remove('visible');
+  document.body.style.overflow = '';
+  activeRecord = null;
+  recEditMode = false;
+}
+
+function roError(msg) {
+  document.getElementById('roBody').innerHTML = `<div style="color:var(--danger);padding:24px;">${esc(msg)}</div>`;
+}
+
+// ── JOB VIEW ──
+
+function renderJobView(j) {
+  document.getElementById('roType').textContent = 'JOB';
+  document.getElementById('roTitle').textContent = j.title;
+  document.getElementById('roSub').textContent = `${j.job_number} · ${(j.status||'').replace(/_/g,' ')}`;
+  document.getElementById('roActions').innerHTML = `
+    <button class="btn-sm green" onclick="openJobEdit()">Edit</button>
+    <button class="btn-sm red" onclick="deleteRec()">Delete</button>
+    <a href="/admin/jobs.html#${j.id}" target="_blank" style="display:none" id="jobExLink"><button class="btn-sm">Jobs ↗</button></a>
+  `;
+  recEditMode = false;
+  document.getElementById('roBody').innerHTML = `
+    <div class="ro-grid">
+      <div class="ro-field"><span class="ro-label">Status</span>
+        <span class="ro-value"><span class="status-pill sp-${j.status}">${(j.status||'').replace(/_/g,' ')}</span></span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Customer</span>
+        <span class="ro-value">${esc(j.customers?.name||'—')}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Quantity</span>
+        <span class="ro-value">${j.quantity ? j.quantity+' pcs' : '—'}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Due Date</span>
+        <span class="ro-value">${j.due_date ? fmt(j.due_date) : '—'}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Garment Style</span>
+        <span class="ro-value">${esc(j.garment_style||'—')}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Garment Color</span>
+        <span class="ro-value">${esc(j.garment_color||'—')}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Ink Colors</span>
+        <span class="ro-value">${esc(j.ink_colors||'—')}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Print Locations</span>
+        <span class="ro-value">${Array.isArray(j.print_locations)?j.print_locations.join(', '):(j.print_locations||'—')}</span>
+      </div>
+      <div class="ro-field"><span class="ro-label">Created</span>
+        <span class="ro-value">${fmt(j.created_at)}</span>
+      </div>
+    </div>
+    ${j.notes?`<div class="ro-divider">Job Notes</div><div class="notes-box">${esc(j.notes)}</div>`:''}
+    ${j.internal_notes?`<div class="ro-divider">Internal Notes</div><div class="notes-box" style="border-color:rgba(255,240,58,.15);color:var(--yel);">${esc(j.internal_notes)}</div>`:''}
+    ${j.artwork_url?`<div class="ro-divider">Artwork</div><a href="${esc(j.artwork_url)}" target="_blank" style="color:var(--gb);font-size:13px;text-decoration:underline;">View Artwork File ↗</a>`:''}
+  `;
+}
+
+// ── JOB EDIT ──
+
+function openJobEdit() {
+  const j = activeRecord?.data;
+  if (!j) return;
+  recEditMode = true;
+  document.getElementById('roActions').innerHTML = '';
+  document.getElementById('roSub').textContent = 'Editing…';
+  document.getElementById('roBody').innerHTML = `
+    <div class="field"><label>Job Title *</label><input id="ejTitle" value="${esc(j.title||'')}"/></div>
+    <div class="field-row">
+      <div class="field"><label>Status</label>
+        <select id="ejStatus">
+          <option value="new"${j.status==='new'?' selected':''}>New</option>
+          <option value="quoted"${j.status==='quoted'?' selected':''}>Quoted</option>
+          <option value="approved"${j.status==='approved'?' selected':''}>Approved</option>
+          <option value="deposit_paid"${j.status==='deposit_paid'?' selected':''}>Deposit Paid</option>
+          <option value="in_production"${j.status==='in_production'?' selected':''}>In Production</option>
+          <option value="qc"${j.status==='qc'?' selected':''}>QC</option>
+          <option value="complete"${j.status==='complete'?' selected':''}>Complete</option>
+          <option value="cancelled"${j.status==='cancelled'?' selected':''}>Cancelled</option>
+        </select>
+      </div>
+      <div class="field"><label>Due Date</label><input type="date" id="ejDue" value="${j.due_date||''}"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Quantity</label><input type="number" id="ejQty" value="${j.quantity||''}"/></div>
+      <div class="field"><label>Garment Style</label><input id="ejStyle" value="${esc(j.garment_style||'')}"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Garment Color</label><input id="ejColor" value="${esc(j.garment_color||'')}"/></div>
+      <div class="field"><label>Ink Colors</label><input id="ejInk" value="${esc(j.ink_colors||'')}"/></div>
+    </div>
+    <div class="field"><label>Print Locations</label><input id="ejLoc" placeholder="Left chest, full back" value="${esc(Array.isArray(j.print_locations)?j.print_locations.join(', '):(j.print_locations||''))}"/></div>
+    <div class="field"><label>Job Notes</label><textarea id="ejNotes">${esc(j.notes||'')}</textarea></div>
+    <div class="field"><label>Internal Notes</label><textarea id="ejInternal">${esc(j.internal_notes||'')}</textarea></div>
+    <div class="err-box" id="ejErr"></div>
+    <div class="edit-actions">
+      <button class="btn-save" id="ejSaveBtn" onclick="saveJobEdit()">Save Changes</button>
+      <button class="btn-sm" onclick="renderJobView(activeRecord.data)">Cancel</button>
+    </div>
+  `;
+}
+
+async function saveJobEdit() {
+  const title = (document.getElementById('ejTitle')?.value||'').trim();
+  if (!title) { showEditErr('ejErr','Title is required.'); return; }
+  const btn = document.getElementById('ejSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const locsRaw = (document.getElementById('ejLoc')?.value||'').trim();
+  const payload = {
+    title,
+    status: document.getElementById('ejStatus').value,
+    due_date: document.getElementById('ejDue').value || null,
+    quantity: parseInt(document.getElementById('ejQty').value)||null,
+    garment_style: document.getElementById('ejStyle').value.trim(),
+    garment_color: document.getElementById('ejColor').value.trim(),
+    ink_colors: document.getElementById('ejInk').value.trim(),
+    print_locations: locsRaw ? locsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    notes: document.getElementById('ejNotes').value.trim(),
+    internal_notes: document.getElementById('ejInternal').value.trim()
+  };
+  const data = await API(`/jobs/${activeRecord.id}`, { method:'PUT', body: JSON.stringify(payload) });
+  btn.disabled = false; btn.textContent = 'Save Changes';
+  if (data.error) { showEditErr('ejErr', data.error); return; }
+  activeRecord.data = { ...activeRecord.data, ...payload, ...data.job };
+  recEditMode = false;
+  toast('Job saved.');
+  renderJobView(activeRecord.data);
+  if (currentCust) selectCust(currentCust.id);
+}
+
+// ── INVOICE VIEW ──
+
+function renderInvoiceView(inv, items, payments) {
+  document.getElementById('roType').textContent = 'INVOICE';
+  document.getElementById('roTitle').textContent = inv.invoice_number;
+  document.getElementById('roSub').textContent = `${inv.customers?.name||''} · ${(inv.status||'').replace(/_/g,' ')}`;
+  recEditMode = false;
+
+  const isDraft = inv.status === 'draft';
+  const isVoid = inv.status === 'void';
+  const isPaid = inv.status === 'paid';
+  const isSent = !isDraft;
+
+  let acts = '';
+  if (isDraft) {
+    acts += `<button class="btn-sm green" onclick="openInvoiceEdit()">Edit</button>
+             <button class="btn-sm red" onclick="deleteRec()">Delete</button>`;
+  } else if (!isVoid && !isPaid) {
+    acts += `<button class="btn-sm amber" onclick="voidRec()">Void</button>`;
+  }
+  acts += `<a href="/admin/invoices.html#${inv.id}" target="_blank"><button class="btn-sm">Full View ↗</button></a>`;
+  document.getElementById('roActions').innerHTML = acts;
+
+  const depPct = inv.deposit_type === 'percent' ? `(${inv.deposit_value}%)` : '(fixed)';
+  const sentNotice = isSent ? `<div class="ro-notice yellow"><span>This invoice has been sent to the customer. To record a payment, use Full View ↗.</span></div>` : '';
+
+  document.getElementById('roBody').innerHTML = `
+    ${sentNotice}
+    <div class="ro-summary">
+      <div class="ro-sum-card"><div class="ro-sum-label">Total</div><div class="ro-sum-val" style="color:var(--gb);">$${parseFloat(inv.total||0).toFixed(2)}</div></div>
+      <div class="ro-sum-card"><div class="ro-sum-label">Balance Due</div><div class="ro-sum-val" style="color:${parseFloat(inv.balance_due||0)>0?'var(--yel)':'var(--gb)'};">$${parseFloat(inv.balance_due||0).toFixed(2)}</div></div>
+      <div class="ro-sum-card"><div class="ro-sum-label">Deposit Required ${depPct}</div><div class="ro-sum-val">$${parseFloat(inv.deposit_required||0).toFixed(2)}</div></div>
+      <div class="ro-sum-card"><div class="ro-sum-label">Paid</div><div class="ro-sum-val">$${parseFloat(inv.amount_paid||0).toFixed(2)}</div></div>
+    </div>
+    <div class="ro-grid" style="margin-bottom:20px;">
+      <div class="ro-field"><span class="ro-label">Invoice #</span><span class="ro-value">${esc(inv.invoice_number)}</span></div>
+      <div class="ro-field"><span class="ro-label">Status</span><span class="ro-value"><span class="status-pill sp-${inv.status}">${(inv.status||'').replace(/_/g,' ')}</span></span></div>
+      <div class="ro-field"><span class="ro-label">Created</span><span class="ro-value">${fmt(inv.created_at)}</span></div>
+      <div class="ro-field"><span class="ro-label">Due Date</span><span class="ro-value">${inv.due_date?fmt(inv.due_date):'—'}</span></div>
+    </div>
+    <div class="ro-divider">Line Items</div>
+    <table class="ro-table">
+      <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Amount</th></tr></thead>
+      <tbody>
+        ${items.map(it=>`<tr>
+          <td>${esc(it.description)}</td>
+          <td>${it.quantity}</td>
+          <td>$${parseFloat(it.unit_price||0).toFixed(2)}</td>
+          <td>$${parseFloat(it.amount||0).toFixed(2)}</td>
+        </tr>`).join('')}
+        ${!items.length?'<tr><td colspan="4" style="color:var(--muted);padding:16px;text-align:center;">No line items</td></tr>':''}
+      </tbody>
+    </table>
+    <div class="ro-totals">
+      <div class="ro-total-row"><span class="lbl">Subtotal</span><span>$${parseFloat(inv.subtotal||0).toFixed(2)}</span></div>
+      ${(inv.tax_rate||0)>0?`<div class="ro-total-row"><span class="lbl">Tax (${((inv.tax_rate||0)*100).toFixed(1)}%)</span><span>$${parseFloat(inv.tax_amount||0).toFixed(2)}</span></div>`:''}
+      <div class="ro-total-row main"><span class="lbl">Total</span><span>$${parseFloat(inv.total||0).toFixed(2)}</span></div>
+    </div>
+    ${inv.notes?`<div class="ro-divider">Invoice Notes</div><div class="notes-box" style="margin-bottom:20px;">${esc(inv.notes)}</div>`:''}
+    <div class="ro-divider">Payment History</div>
+    ${payments.length ? payments.map(p=>`
+      <div class="ro-pay-card">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:900;color:var(--gb);">${esc(p.payment_number||'')}</div>
+          <div style="font-size:11px;color:var(--muted);">${p.method||''} · ${fmt(p.paid_at)}${p.reference?' · Ref: '+esc(p.reference):''}</div>
+          <div style="font-size:11px;color:var(--muted);">${p.payment_type||''}</div>
+        </div>
+        <span style="font-size:15px;font-weight:900;">$${parseFloat(p.amount||0).toFixed(2)}</span>
+        ${p.receipt_id?`<button class="btn-sm" onclick="openRecord('receipt','${p.receipt_id}')">Receipt</button>`:''}
+      </div>`).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0;">No payments recorded.</div>'}
+  `;
+}
+
+// ── INVOICE EDIT (draft only) ──
+
+function openInvoiceEdit() {
+  const inv = activeRecord?.data;
+  if (!inv || inv.status !== 'draft') return;
+  recEditMode = true;
+  document.getElementById('roSub').textContent = 'Editing…';
+  document.getElementById('roActions').innerHTML = '';
+  document.getElementById('roBody').innerHTML = `
+    <div style="margin-bottom:16px;font-size:13px;color:var(--muted);">You can edit notes and due date here. To manage line items, use <a href="/admin/invoices.html#${inv.id}" target="_blank" style="color:var(--gb);">Full Invoice View ↗</a></div>
+    <div class="field"><label>Due Date</label><input type="date" id="eiDue" value="${inv.due_date||''}"/></div>
+    <div class="field"><label>Notes (shown on invoice)</label><textarea id="eiNotes">${esc(inv.notes||'')}</textarea></div>
+    <div class="field"><label>Internal Notes (admin only)</label><textarea id="eiInternal">${esc(inv.internal_notes||'')}</textarea></div>
+    <div class="err-box" id="eiErr"></div>
+    <div class="edit-actions">
+      <button class="btn-save" id="eiSaveBtn" onclick="saveInvoiceEdit()">Save Changes</button>
+      <button class="btn-sm" onclick="renderInvoiceView(activeRecord.data, activeRecord.items||[], activeRecord.payments||[])">Cancel</button>
+    </div>
+  `;
+}
+
+async function saveInvoiceEdit() {
+  const btn = document.getElementById('eiSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const payload = {
+    due_date: document.getElementById('eiDue').value || null,
+    notes: document.getElementById('eiNotes').value.trim(),
+    internal_notes: document.getElementById('eiInternal').value.trim()
+  };
+  const data = await API(`/invoices/${activeRecord.id}`, { method:'PUT', body: JSON.stringify(payload) });
+  btn.disabled = false; btn.textContent = 'Save Changes';
+  if (data.error) { showEditErr('eiErr', data.error); return; }
+  activeRecord.data = { ...activeRecord.data, ...payload };
+  recEditMode = false;
+  toast('Invoice updated.');
+  renderInvoiceView(activeRecord.data, activeRecord.items||[], activeRecord.payments||[]);
+  if (currentCust) selectCust(currentCust.id);
+}
+
+// ── RECEIPT VIEW ──
+
+function renderReceiptView(receipt) {
+  document.getElementById('roType').textContent = 'RECEIPT';
+  document.getElementById('roTitle').textContent = receipt.receipt_number;
+  const snap = receipt.snapshot || {};
+  document.getElementById('roSub').textContent = `${snap.customer?.name||''} · ${fmt(receipt.created_at)}`;
+  document.getElementById('roActions').innerHTML = `
+    <a href="/admin/receipt-print.html?id=${receipt.id}" target="_blank"><button class="btn-sm">Print ↗</button></a>
+    <button class="btn-sm red" onclick="deleteReceipt('${receipt.id}','${esc(receipt.receipt_number)}')">Delete</button>
+  `;
+  recEditMode = false;
+
+  const inv = snap.invoice || {};
+  const customer = snap.customer || {};
+
+  document.getElementById('roBody').innerHTML = `
+    <div class="ro-notice blue">
+      This receipt was emailed to the customer${receipt.emailed_at ? ' on ' + fmt(receipt.emailed_at) : ''}. It is read-only.
+    </div>
+    <div class="ro-summary">
+      <div class="ro-sum-card"><div class="ro-sum-label">Amount Paid</div><div class="ro-sum-val" style="color:var(--gb);">$${parseFloat(snap.amount||0).toFixed(2)}</div></div>
+      <div class="ro-sum-card"><div class="ro-sum-label">Balance After</div><div class="ro-sum-val">$${parseFloat(inv.new_balance||0).toFixed(2)}</div></div>
+    </div>
+    <div class="ro-grid">
+      <div class="ro-field"><span class="ro-label">Receipt #</span><span class="ro-value">${esc(receipt.receipt_number)}</span></div>
+      <div class="ro-field"><span class="ro-label">Payment Type</span><span class="ro-value">${esc(snap.payment_type||'—')}</span></div>
+      <div class="ro-field"><span class="ro-label">Method</span><span class="ro-value">${esc(snap.method||'—')}</span></div>
+      <div class="ro-field"><span class="ro-label">Date</span><span class="ro-value">${fmt(receipt.created_at)}</span></div>
+      <div class="ro-field"><span class="ro-label">Invoice</span><span class="ro-value">${esc(snap.invoice_number||'—')}</span></div>
+      <div class="ro-field"><span class="ro-label">Customer</span><span class="ro-value">${esc(customer.name||'—')}</span></div>
+    </div>
+    ${inv.total?`<div class="ro-divider">Invoice Snapshot</div>
+    <div class="ro-totals">
+      <div class="ro-total-row"><span class="lbl">Invoice Total</span><span>$${parseFloat(inv.total||0).toFixed(2)}</span></div>
+      <div class="ro-total-row"><span class="lbl">Previously Paid</span><span>$${parseFloat(inv.prior_paid||0).toFixed(2)}</span></div>
+      <div class="ro-total-row"><span class="lbl">This Payment</span><span>$${parseFloat(inv.this_payment||0).toFixed(2)}</span></div>
+      <div class="ro-total-row main"><span class="lbl">Remaining Balance</span><span style="color:${parseFloat(inv.new_balance||0)===0?'var(--gb)':'var(--yel)'};">$${parseFloat(inv.new_balance||0).toFixed(2)}</span></div>
+    </div>`:''}
+  `;
+}
+
+// ── DELETE / VOID ──
+
+async function deleteRec() {
+  if (!activeRecord) return;
+  const { type, id, data } = activeRecord;
+  const label = type === 'job' ? `"${data?.title||'this job'}"` : data?.invoice_number||'this invoice';
+  if (!confirm(`Delete ${type} ${label}? This cannot be undone.`)) return;
+
+  let resp;
+  if (type === 'job') resp = await API(`/jobs/${id}`, { method:'DELETE' });
+  else if (type === 'invoice') resp = await API(`/invoices/${id}`, { method:'DELETE' });
+
+  if (resp?.error) { toast('Error: '+resp.error); return; }
+  closeRecord();
+  toast(`${type.charAt(0).toUpperCase()+type.slice(1)} deleted.`);
+  if (currentCust) selectCust(currentCust.id);
+}
+
+async function voidRec() {
+  if (!activeRecord?.data) return;
+  if (!confirm(`Void invoice ${activeRecord.data.invoice_number}? This cannot be undone.`)) return;
+  const resp = await API(`/invoices/${activeRecord.id}`, { method:'DELETE' });
+  if (resp?.error) { toast('Error: '+resp.error); return; }
+  closeRecord();
+  toast('Invoice voided.');
+  if (currentCust) selectCust(currentCust.id);
+}
+
+async function deleteReceipt(id, num) {
+  if (!confirm(`Delete receipt ${num}? This cannot be undone.`)) return;
+  const resp = await API(`/receipts/${id}`, { method:'DELETE' });
+  if (resp?.error) { toast('Error: '+resp.error); return; }
+  closeRecord();
+  toast('Receipt deleted.');
+  if (currentCust) selectCust(currentCust.id);
+}
+
+// ── ARTWORK ──
+
+let artworkFiles = [];
+
+async function loadArtwork(custId) {
+  const grid = document.getElementById('artworkGrid');
+  grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">Loading…</div>';
+  const data = await API(`/customers/${custId}/artwork`);
+  artworkFiles = data.files || [];
+  renderArtworkGrid();
+}
+
+function renderArtworkGrid() {
+  const grid = document.getElementById('artworkGrid');
+  if (!artworkFiles.length) {
+    grid.innerHTML = '<div class="empty-list">No files uploaded yet. Use + Upload to add artwork.</div>';
+    return;
+  }
+  const imgExts = ['jpg','jpeg','png','gif','webp','svg'];
+  grid.innerHTML = '<div class="art-grid">' + artworkFiles.map(f => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const isImg = imgExts.includes(ext);
+    const icon = ext === 'pdf' ? '📄' : ext === 'zip' ? '🗜' : ext === 'ai' || ext === 'eps' ? '🎨' : ext === 'psd' ? '🖼' : '📎';
+    const inner = isImg
+      ? `<img class="art-img" src="${esc(f.publicUrl)}" loading="lazy" alt="${esc(f.name)}" onclick="viewArtwork('${esc(f.publicUrl)}','${esc(f.name)}')" />`
+      : `<div class="art-file-icon" onclick="viewArtwork('${esc(f.publicUrl)}','${esc(f.name)}')">${icon}</div>`;
+    return `<div class="art-tile">
+      ${inner}
+      <div class="art-info"><div class="art-name" title="${esc(f.name)}">${esc(f.name)}</div></div>
+      <button class="art-del" title="Delete" onclick="deleteArtwork('${esc(f.key)}','${esc(f.name)}',event)">🗑</button>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function viewArtwork(url, name) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp','svg','pdf'].includes(ext)) {
+    window.open(url, '_blank');
+  } else {
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.target = '_blank';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+}
+
+async function deleteArtwork(key, name, e) {
+  e.stopPropagation();
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  const resp = await API(`/customers/${currentCust.id}/artwork`, { method:'DELETE', body: JSON.stringify({ key }) });
+  if (resp?.error) { toast('Error: '+resp.error); return; }
+  artworkFiles = artworkFiles.filter(f => f.key !== key);
+  renderArtworkGrid();
+  toast('File deleted.');
+}
+
+async function handleArtworkUpload(input) {
+  if (!currentCust || !input.files.length) return;
+  const prog = document.getElementById('artUploadProgress');
+  prog.style.display = 'block';
+  let done = 0;
+  const total = input.files.length;
+  for (const file of Array.from(input.files)) {
+    prog.textContent = `Uploading ${file.name}… (${done}/${total})`;
+    try {
+      const urlData = await API(`/customers/${currentCust.id}/artwork-url`, {
+        method: 'POST', body: JSON.stringify({ filename: file.name })
+      });
+      if (urlData.error) { toast('Upload error: '+urlData.error); continue; }
+      await fetch(urlData.signedUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type || 'application/octet-stream' } });
+      artworkFiles.unshift({ name: file.name, key: urlData.key, publicUrl: urlData.publicUrl, created_at: new Date().toISOString() });
+      done++;
+    } catch(err) {
+      toast('Upload failed: '+file.name);
+    }
+  }
+  prog.style.display = 'none';
+  input.value = '';
+  renderArtworkGrid();
+  if (done > 0) toast(`${done} file${done>1?'s':''} uploaded.`);
+}
+
+// ─── CUSTOMER MODAL ───────────────────────────────────────────────────────────
 
 function openNewModal() {
   editMode = false;
@@ -352,7 +938,7 @@ function closeModal() { document.getElementById('custModal').classList.remove('s
 
 async function saveCust() {
   const name = document.getElementById('fName').value.trim();
-  if (!name) { showErr('Name is required.'); return; }
+  if (!name) { showCustErr('Name is required.'); return; }
   const btn = document.getElementById('saveCustBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
   const payload = {
@@ -366,13 +952,10 @@ async function saveCust() {
     tax_exempt: document.getElementById('fTax').checked
   };
   let data;
-  if (editMode) {
-    data = await API(`/customers/${currentCust.id}`, { method:'PUT', body: JSON.stringify(payload) });
-  } else {
-    data = await API('/customers', { method:'POST', body: JSON.stringify(payload) });
-  }
+  if (editMode) data = await API(`/customers/${currentCust.id}`, { method:'PUT', body: JSON.stringify(payload) });
+  else data = await API('/customers', { method:'POST', body: JSON.stringify(payload) });
   btn.disabled = false; btn.textContent = 'Save Customer';
-  if (data.error) { showErr(data.error); return; }
+  if (data.error) { showCustErr(data.error); return; }
   closeModal();
   toast('Customer saved!');
   await loadCustomers();
@@ -390,27 +973,38 @@ async function deleteCust() {
   loadCustomers();
 }
 
+function openWorkspace() {
+  if (!currentCust) return;
+  location.href = `/admin/workspace.html?id=${currentCust.id}`;
+}
+
 function newJobForCust() {
   if (!currentCust) return;
-  location.href = `/admin/jobs.html?new=1&cid=${currentCust.id}&cname=${encodeURIComponent(currentCust.name)}`;
+  location.href = `/admin/workspace.html?id=${currentCust.id}#jobs`;
 }
 
 function newInvoiceForCust() {
   if (!currentCust) return;
-  location.href = `/admin/invoices.html?new=1&cid=${currentCust.id}&cname=${encodeURIComponent(currentCust.name)}`;
+  location.href = `/admin/workspace.html?id=${currentCust.id}#invoices`;
 }
 
-function editNotes() { openEditModal(); setTimeout(()=>{ document.getElementById('fNotes').focus(); document.querySelectorAll('.tab-btn')[0].click(); }, 100); }
+function editNotes() { openEditModal(); setTimeout(()=>{ document.getElementById('fNotes').focus(); }, 100); }
+
+// ─── UTILITIES ────────────────────────────────────────────────────────────────
 
 function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(() => loadCustomers(document.getElementById('search').value), 300); }
-function showErr(msg) { const el = document.getElementById('custErr'); el.textContent = msg; el.style.display='block'; }
-function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function showCustErr(msg) { const el = document.getElementById('custErr'); el.textContent = msg; el.style.display='block'; }
+function showEditErr(id, msg) { const el = document.getElementById(id); if(el){el.textContent=msg; el.style.display='block';} }
+function logout() { localStorage.removeItem('11r_ak'); location.href='/admin/'; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'; }
 function toast(msg) {
   const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2800);
 }
+
+// Close overlay on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && activeRecord) closeRecord(); });
 
 loadCustomers();
 </script>

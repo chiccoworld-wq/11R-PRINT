@@ -43,6 +43,12 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 .sp-quoted{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.25);}
 .sp-approved{background:rgba(32,255,123,.1);color:var(--gb);border:1px solid rgba(32,255,123,.25);}
 .sp-deposit_paid{background:rgba(32,255,123,.15);color:var(--gb);border:1px solid rgba(32,255,123,.3);}
+.sp-sent{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
+.sp-draft{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
+.sp-overdue{background:rgba(255,77,77,.1);color:#ff4d4d;border:1px solid rgba(255,77,77,.2);}
+.sp-paid{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
+.sp-deposit_due{background:rgba(255,240,58,.1);color:var(--yel);border:1px solid rgba(255,240,58,.2);}
+.sp-partially_paid{background:rgba(0,213,255,.1);color:var(--cyan);border:1px solid rgba(0,213,255,.2);}
 .sp-in_production{background:rgba(5,143,69,.15);color:#6effb0;border:1px solid rgba(5,143,69,.3);}
 .sp-qc{background:rgba(0,213,255,.15);color:var(--cyan);border:1px solid rgba(0,213,255,.3);}
 .sp-complete{background:rgba(32,255,123,.08);color:var(--gb);border:1px solid rgba(32,255,123,.2);}
@@ -199,7 +205,7 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY = sessionStorage.getItem('11r_admin_key');
+const KEY = localStorage.getItem('11r_ak');
 if (!KEY) location.href = '/admin/';
 
 const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
@@ -248,13 +254,25 @@ async function selectJob(id) {
   renderList();
 }
 
-function renderDetail(j) {
+async function renderDetail(j) {
   document.getElementById('emptyPanel').style.display = 'none';
   document.getElementById('jobDetail').style.display = 'flex';
   document.getElementById('dTitle').textContent = j.title;
   const cust = j.customers;
   document.getElementById('dSub').textContent = `${j.job_number}${cust?' · '+cust.name:''}${j.due_date?' · Due '+fmt(j.due_date):''}`;
   document.getElementById('statusSel').value = j.status;
+
+  // Load customer invoices and receipts in parallel (if customer exists)
+  let custInvoices = [], custReceipts = [];
+  if (j.customer_id) {
+    const [id, rd] = await Promise.all([
+      API(`/invoices?customer_id=${j.customer_id}`),
+      API(`/receipts?customer_id=${j.customer_id}`).catch(()=>({receipts:[]}))
+    ]);
+    custInvoices = id.invoices || [];
+    custReceipts = rd.receipts || [];
+  }
+
   document.getElementById('jobBody').innerHTML = `
     <div class="detail-grid">
       <div class="detail-field"><span class="detail-label">Customer</span><span class="detail-value">${cust?esc(cust.name)+(cust.company?' — '+esc(cust.company):''):'—'}</span></div>
@@ -269,6 +287,30 @@ function renderDetail(j) {
     ${j.notes?`<div class="section-label">Job Notes</div><div class="notes-box">${esc(j.notes)}</div>`:''}
     ${j.internal_notes?`<div class="section-label">Internal Notes</div><div class="notes-box" style="border-color:rgba(255,240,58,.2);color:var(--yel);">${esc(j.internal_notes)}</div>`:''}
     ${j.artwork_url?`<div class="section-label">Artwork</div><div><a href="${esc(j.artwork_url)}" target="_blank" style="color:var(--gb);font-size:13px;text-decoration:underline;">View Artwork File</a></div>`:''}
+    ${cust && custInvoices.length ? `
+    <div class="section-label" style="margin-top:24px;">This Customer's Invoices</div>
+    ${custInvoices.map(i=>`
+      <div class="job-card" onclick="location.href='/admin/invoices.html#${i.id}'" style="cursor:pointer;">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:900;">${esc(i.invoice_number)}</div>
+          <div style="font-size:11px;color:var(--muted);">${fmt(i.created_at)}${parseFloat(i.balance_due||0)>0?' · Bal $'+parseFloat(i.balance_due).toFixed(2):''}</div>
+        </div>
+        <div style="text-align:right;margin-right:10px;">
+          <div style="font-size:14px;font-weight:900;color:var(--gb);">$${parseFloat(i.total||0).toFixed(2)}</div>
+        </div>
+        <span class="status-pill sp-${i.status}">${(i.status||'').replace(/_/g,' ')}</span>
+      </div>`).join('')}` : ''}
+    ${cust && custReceipts.length ? `
+    <div class="section-label" style="margin-top:20px;">This Customer's Receipts</div>
+    ${custReceipts.map(r=>{const s=r.snapshot||{};return`
+      <div class="job-card" onclick="window.open('/admin/receipt-print.html?id=${r.id}','_blank')" style="cursor:pointer;">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:900;">${esc(r.receipt_number)}</div>
+          <div style="font-size:11px;color:var(--muted);">${fmt(r.created_at)}${s.method?' · '+esc(s.method):''}${s.payment_type?' · '+esc(s.payment_type):''}</div>
+        </div>
+        <div style="font-size:14px;font-weight:900;color:var(--gb);">$${parseFloat(s.amount||0).toFixed(2)}</div>
+        <span class="status-pill sp-sent">Sent</span>
+      </div>`;}).join('')}` : ''}
   `;
 }
 
@@ -374,7 +416,7 @@ async function deleteJob() {
 
 function closeModal() { document.getElementById('jobModal').classList.remove('show'); }
 function showErr(msg) { const e=document.getElementById('jobErr'); e.textContent=msg; e.style.display='block'; }
-function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function logout() { localStorage.removeItem('11r_ak'); location.href='/admin/'; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmt(d) { return d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—'; }
 function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(renderList, 250); }

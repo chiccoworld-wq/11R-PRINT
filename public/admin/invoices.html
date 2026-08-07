@@ -125,9 +125,10 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
   .layout{flex-direction:column;height:auto;overflow:visible;}
   .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:280px;}
   .panel{height:auto;overflow:visible;}
-  .panel-body{overflow:visible;}
+  .panel-body{overflow:visible;overscroll-behavior:contain;}
   .nav-links{gap:2px;}.nav-link{padding:5px 10px;font-size:10px;}
-  .add-item-row{grid-template-columns:1fr 60px 80px auto;}
+  .add-item-row{grid-template-columns:1fr 1fr;gap:8px;}
+  .add-item-row .btn-add-item{grid-column:1/-1;}
   .inv-summary{grid-template-columns:1fr 1fr;}
   .field-row{grid-template-columns:1fr;}
 }
@@ -261,7 +262,7 @@ a{color:inherit;text-decoration:none;}button{font-family:inherit;cursor:pointer;
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY = sessionStorage.getItem('11r_admin_key');
+const KEY = localStorage.getItem('11r_ak');
 if (!KEY) location.href = '/admin/';
 
 const API = (path, opts={}) => fetch(`/.netlify/functions/api${path}`, {
@@ -350,10 +351,10 @@ function renderDetail(inv, items, payments) {
       </tbody>
     </table>
     ${inv.status!=='void'?`<div class="add-item-row">
-      <input class="add-item-inp" id="aiDesc" placeholder="Description"/>
-      <input class="add-item-inp" id="aiQty" type="number" value="1" min="1" placeholder="Qty"/>
-      <input class="add-item-inp" id="aiPrice" type="number" step="0.01" min="0" placeholder="$0.00"/>
-      <button class="btn-add-item" onclick="addItem()">+ Add</button>
+      <input class="add-item-inp" id="aiDesc" placeholder="Description" style="grid-column:1/-1"/>
+      <input class="add-item-inp" id="aiQty" type="text" inputmode="numeric" value="1" placeholder="Qty"/>
+      <input class="add-item-inp" id="aiPrice" type="text" inputmode="decimal" placeholder="$0.00"/>
+      <button class="btn-add-item" onclick="addItem()">+ Add Item</button>
     </div>`:''}
 
     <div class="totals-block">
@@ -468,14 +469,21 @@ function addLineItem() {
 function renderNIItems() {
   const tbody = document.getElementById('niItems');
   tbody.innerHTML = niItemRows.map((r,i)=>`<tr>
-    <td><input value="${esc(r.desc)}" oninput="niItemRows[${i}].desc=this.value" placeholder="Description"/></td>
-    <td><input type="number" value="${r.qty}" min="1" oninput="niItemRows[${i}].qty=parseFloat(this.value)||1;calcNI()"/></td>
-    <td><input type="number" step="0.01" value="${r.price}" oninput="niItemRows[${i}].price=parseFloat(this.value)||0;calcNI()"/></td>
-    <td style="text-align:right;font-size:13px;">$${((r.qty||1)*(r.price||0)).toFixed(2)}</td>
+    <td><input value="${esc(r.desc)}" onchange="niItemRows[${i}].desc=this.value" placeholder="Description"/></td>
+    <td><input type="text" inputmode="numeric" value="${r.qty}"
+      oninput="niItemRows[${i}].qty=parseFloat(this.value)||1;niUpdAmt(${i})"/></td>
+    <td><input type="text" inputmode="decimal" value="${r.price}"
+      oninput="niItemRows[${i}].price=parseFloat(this.value)||0;niUpdAmt(${i})"/></td>
+    <td style="text-align:right;font-size:13px;" id="niAmt_${i}">$${((r.qty||1)*(r.price||0)).toFixed(2)}</td>
     <td><button class="del-row" onclick="niItemRows.splice(${i},1);renderNIItems()">×</button></td>
   </tr>`).join('');
 }
-function calcNI() { renderNIItems(); }
+function niUpdAmt(i) {
+  const r = niItemRows[i];
+  const el = document.getElementById('niAmt_'+i);
+  if (el) el.textContent = '$'+((r.qty||1)*(r.price||0)).toFixed(2);
+}
+function calcNI() {} // kept for safety; no-op — niUpdAmt handles live updates
 function updateDepLabel() { document.getElementById('niDepLabel').textContent = document.getElementById('niDepType').value==='percent'?'Deposit %':'Deposit $'; }
 
 async function openNewInv() {
@@ -543,7 +551,7 @@ async function createInvoice() {
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 function showPayErr(msg) { const e=document.getElementById('payErr'); e.textContent=msg; e.style.display='block'; }
 function showNewInvErr(msg) { const e=document.getElementById('newInvErr'); e.textContent=msg; e.style.display='block'; }
-function logout() { sessionStorage.removeItem('11r_admin_key'); location.href='/admin/'; }
+function logout() { localStorage.removeItem('11r_ak'); location.href='/admin/'; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function toast(msg) { const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
 

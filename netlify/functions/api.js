@@ -109,6 +109,98 @@ function auth(headers) {
   return key === PW() && !!PW();
 }
 
+async function forwardQuoteToNexus(payload, source) {
+  const nexusIntakeUrl = process.env.NEXUS_INSTANT_QUOTE_URL || 'https://nexus.11rprint.com/api/public/instant-quote';
+  if (!nexusIntakeUrl) return false;
+  const headers = { 'Content-Type': 'application/json' };
+  if (process.env.NEXUS_INTAKE_SECRET) headers['X-11R-Nexus-Secret'] = process.env.NEXUS_INTAKE_SECRET;
+  try {
+    const response = await fetch(nexusIntakeUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ ...payload, source }),
+    });
+    if (!response.ok) console.error('Nexus CRM intake error:', response.status, await response.text());
+    return response.ok;
+  } catch (err) {
+    console.error('Nexus CRM intake failed:', err);
+    return false;
+  }
+}
+
+async function forwardHomepageQuoteToN8n(q) {
+  const n8nWebhookUrl = process.env.N8N_INSTANT_QUOTE_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
+  if (!n8nWebhookUrl) return false;
+  const headers = { 'Content-Type': 'application/json' };
+  if (process.env.N8N_WEBHOOK_SECRET) headers['X-11R-Webhook-Secret'] = process.env.N8N_WEBHOOK_SECRET;
+  const firstName = String(q.name || 'there').split(' ')[0];
+  const rawQuote = {
+    fullName: q.name,
+    businessName: q.business || '',
+    email: q.email,
+    phone: q.phone || '',
+    contactMethod: 'email',
+    dateNeeded: q.deadline || '',
+    delivery: 'pickup',
+    zipCode: '',
+    notes: q.message || '',
+    garmentName: 'Custom screen printing',
+    qty: q.quantity || '',
+    printLocation: q.print_locations || '',
+    inkColors: '',
+    artworkStatus: '',
+    estimatedTotal: '',
+    fileUrl: q.artwork_url || '',
+    fileName: q.artwork_filename || '',
+  };
+  const payload = {
+    event: 'quote_submitted',
+    source: '11rprint.com/homepage-quote',
+    submittedAt: new Date().toISOString(),
+    rawQuote,
+    nexus: {
+      intakeUrl: process.env.NEXUS_INSTANT_QUOTE_URL || 'https://nexus.11rprint.com/api/public/instant-quote',
+      intakeSecret: process.env.NEXUS_INTAKE_SECRET || '',
+    },
+    customer: {
+      fullName: q.name || '',
+      firstName,
+      businessName: q.business || '',
+      email: q.email || '',
+      phone: q.phone || '',
+      preferredContactMethod: 'Email',
+    },
+    order: {
+      garmentName: rawQuote.garmentName,
+      quantity: q.quantity || '',
+      printLocation: q.print_locations || '',
+      inkColors: '',
+      artworkStatus: '',
+      estimatedTotal: '',
+      dateNeeded: q.deadline || '',
+      delivery: 'Local Pickup',
+      zipCode: '',
+      notes: q.message || '',
+      fileName: q.artwork_filename || '',
+      fileUrl: q.artwork_url || '',
+    },
+    emails: {
+      from: '11R Print <orders@11rprint.com>',
+      replyTo: 'orders@11rprint.com',
+      internalTo: 'orders@11rprint.com',
+      customerSubject: 'We received your quote request — 11R Print',
+    },
+  };
+  try {
+    const response = await fetch(n8nWebhookUrl, { method: 'POST', headers, body: JSON.stringify(payload) });
+    if (!response.ok) console.error('n8n homepage quote webhook error:', response.status, await response.text());
+    return response.ok;
+  } catch (err) {
+    console.error('n8n homepage quote webhook failed:', err);
+    return false;
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return res(204, {});
 
@@ -597,7 +689,23 @@ exports.handler = async (event) => {
       }).catch(() => {});
     }
 
-    return res(200, { ok: true });
+    const n8nSent = await forwardHomepageQuoteToN8n(q);
+
+    const nexusSent = n8nSent || await forwardQuoteToNexus({
+      ...q,
+      customerName: q.name,
+      customerCompany: q.business,
+      customerEmail: q.email,
+      customerPhone: q.phone,
+      garmentStyle: 'Custom screen printing',
+      garmentColor: q.shirt_color,
+      printLocations: q.print_locations,
+      dueDate: q.deadline,
+      artworkUrl: q.artwork_url,
+      fileName: q.artwork_filename,
+    }, '11rprint.com homepage quote form');
+
+    return res(200, { ok: true, n8nSent, nexusSent });
   }
 
   // GET /quotes — list quote requests (admin)
@@ -675,11 +783,12 @@ exports.handler = async (event) => {
     if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
     const { data, error } = await sb().from('customers').select('*').eq('id', custMatch[1]).single();
     if (error || !data) return res(404, { error: 'Customer not found' });
-    const [jr, ir] = await Promise.all([
+    const [jr, ir, rr] = await Promise.all([
       sb().from('jobs').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false }),
-      sb().from('invoices').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false })
+      sb().from('invoices').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false }),
+      sb().from('receipts').select('*').eq('customer_id', custMatch[1]).order('created_at', { ascending: false })
     ]);
-    return res(200, { customer: data, jobs: jr.data||[], invoices: ir.data||[] });
+    return res(200, { customer: data, jobs: jr.data||[], invoices: ir.data||[], receipts: rr.data||[] });
   }
 
   if (custMatch && method === 'PUT') {
@@ -718,12 +827,14 @@ exports.handler = async (event) => {
     if (!customer_id || !title) return res(400, { error: 'customer_id and title required' });
     const { count: jc } = await sb().from('jobs').select('*', { count: 'exact', head: true });
     const job_number = `JOB-${new Date().getFullYear()}-${String((jc||0)+1).padStart(4,'0')}`;
-    const { data, error } = await sb().from('jobs').insert([{
+    const jobRow = {
       customer_id, job_number, title, status: 'new',
       due_date: due_date||null, garment_style: garment_style||null, garment_color: garment_color||null,
-      quantity: quantity||null, sizes: sizes||{}, print_locations: print_locations||[],
+      quantity: quantity||null, print_locations: print_locations||[],
       ink_colors: ink_colors||null, notes: notes||null, internal_notes: internal_notes||null
-    }]).select().single();
+    };
+    if (sizes !== undefined) jobRow.sizes = sizes;
+    const { data, error } = await sb().from('jobs').insert([jobRow]).select().single();
     if (error) return res(500, { error: error.message });
     return res(200, { job: data });
   }
@@ -806,7 +917,7 @@ exports.handler = async (event) => {
 
   const invMatch = path.match(/^\/invoices\/([a-f0-9-]+)$/);
   if (invMatch && method === 'GET') {
-    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    // public — invoice UUID is unguessable; customers access via email link
     const { data: inv, error } = await sb().from('invoices').select('*,customers(name,company,email,phone,billing_address)').eq('id', invMatch[1]).single();
     if (error || !inv) return res(404, { error: 'Invoice not found' });
     const [ir, pr] = await Promise.all([
@@ -941,6 +1052,17 @@ ${inv.notes?`<p style="background:#f5f5f5;padding:14px;border-radius:8px;font-si
 
   // ── RECEIPTS ─────────────────────────────────────────────────────────────
 
+  // GET /receipts?customer_id=... — list receipts for a customer (admin)
+  if (path === '/receipts' && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const rcptQs = event.queryStringParameters || {};
+    let q = sb().from('receipts').select('*').order('created_at', { ascending: false });
+    if (rcptQs.customer_id) q = q.eq('customer_id', rcptQs.customer_id);
+    const { data, error } = await q;
+    if (error) return res(500, { error: error.message });
+    return res(200, { receipts: data || [] });
+  }
+
   const rcptMatch = path.match(/^\/receipts\/([a-f0-9-]+)$/);
   if (rcptMatch && method === 'GET') {
     if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
@@ -954,6 +1076,77 @@ ${inv.notes?`<p style="background:#f5f5f5;padding:14px;border-radius:8px;font-si
     const { data, error } = await sb().from('receipts').select('receipt_number,snapshot,created_at').eq('id', rcptPub[1]).single();
     if (error || !data) return res(404, { error: 'Receipt not found' });
     return res(200, { receipt: data });
+  }
+
+  if (rcptMatch && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { error } = await sb().from('receipts').delete().eq('id', rcptMatch[1]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
+  }
+
+  // ── SEND EMAIL (generic CRM template emails) ──────────────────────────────
+
+  if (path === '/send-email' && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { to, subject, text, html } = body;
+    if (!to || !subject) return res(400, { error: 'to and subject required' });
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (!RESEND_KEY) return res(500, { error: 'Email not configured' });
+    const emailHtml = html || `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#f9f9f9;">
+<div style="background:#050706;padding:20px 24px;border-radius:10px 10px 0 0;"><img src="https://11rprint.com/images/11r-logo-new.png" alt="11R Print" style="height:32px;"/></div>
+<div style="background:#fff;padding:28px 24px;border-radius:0 0 10px 10px;white-space:pre-line;font-size:14px;color:#333;line-height:1.7;">${(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+<p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px;">11R Print · <a href="https://11rprint.com" style="color:#058f45;">11rprint.com</a></p>
+</body></html>`;
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'Orders@11rprint.com', to, subject, html: emailHtml, text: text||'' })
+    });
+    const emailData = await emailRes.json();
+    if (!emailRes.ok) return res(500, { error: emailData.message || 'Email failed' });
+    return res(200, { ok: true, id: emailData.id });
+  }
+
+  // ── CUSTOMER ARTWORK ──────────────────────────────────────────────────────
+
+  const artUploadMatch = path.match(/^\/customers\/([a-f0-9-]+)\/artwork-url$/);
+  if (artUploadMatch && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { filename } = body;
+    if (!filename) return res(400, { error: 'filename required' });
+    const ext = filename.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'ai', 'eps', 'svg', 'psd', 'zip'].includes(ext))
+      return res(400, { error: 'File type not allowed' });
+    const key = `customer-artwork/${artUploadMatch[1]}/${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${ext}`;
+    const { data, error } = await sb().storage.from('proof-mockups').createSignedUploadUrl(key);
+    if (error) return res(500, { error: error.message });
+    const { data: { publicUrl } } = sb().storage.from('proof-mockups').getPublicUrl(key);
+    return res(200, { signedUrl: data.signedUrl, token: data.token, publicUrl, key });
+  }
+
+  const artListMatch = path.match(/^\/customers\/([a-f0-9-]+)\/artwork$/);
+  if (artListMatch && method === 'GET') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const prefix = `customer-artwork/${artListMatch[1]}/`;
+    const { data, error } = await sb().storage.from('proof-mockups').list(prefix.slice(0, -1), { limit: 200, sortBy: { column: 'created_at', order: 'desc' } });
+    if (error) return res(500, { error: error.message });
+    const files = (data || []).filter(f => f.name !== '.emptyFolderPlaceholder').map(f => {
+      const { data: { publicUrl } } = sb().storage.from('proof-mockups').getPublicUrl(`${prefix}${f.name}`);
+      return { name: f.name, key: `${prefix}${f.name}`, publicUrl, created_at: f.created_at, size: f.metadata?.size };
+    });
+    return res(200, { files });
+  }
+
+  const artDelMatch = path.match(/^\/customers\/([a-f0-9-]+)\/artwork$/);
+  if (artDelMatch && method === 'DELETE') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { key } = body;
+    if (!key) return res(400, { error: 'key required' });
+    if (!key.startsWith(`customer-artwork/${artDelMatch[1]}/`)) return res(403, { error: 'Forbidden' });
+    const { error } = await sb().storage.from('proof-mockups').remove([key]);
+    if (error) return res(500, { error: error.message });
+    return res(200, { ok: true });
   }
 
   // ── DASHBOARD STATS ────────────────────────────────────────────────────────

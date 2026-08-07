@@ -1,7 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const { db } = require('../../lib/db');
 
 function sb() {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  return db();
 }
 
 export const handler = async (event) => {
