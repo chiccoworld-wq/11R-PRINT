@@ -159,17 +159,16 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && pathname.startsWith('/storage/')) {
       const storageKey = decodeURIComponent(pathname.replace(/^\/storage\//, ''));
-      const filePath = safeStoragePath(storageKey);
-      if (!existsSync(filePath) || !statSync(filePath).isFile()) {
+      const publicUrl = safeStoragePath(storageKey);
+      if (!publicUrl) {
         res.statusCode = 404;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         res.end(JSON.stringify({ error: 'File not found' }));
         return;
       }
-      const ext = path.extname(filePath).toLowerCase();
-      res.statusCode = 200;
-      res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
-      res.end(await readFile(filePath));
+      res.statusCode = 302;
+      res.setHeader('Location', publicUrl);
+      res.end();
       return;
     }
 

@@ -864,6 +864,22 @@ exports.handler = async (event) => {
     return res(200, { ok: true });
   }
 
+  // POST /jobs/:id/artwork-url — signed upload URL for job artwork
+  const jobArtMatch = path.match(/^\/jobs\/([a-f0-9-]+)\/artwork-url$/);
+  if (jobArtMatch && method === 'POST') {
+    if (!auth(event.headers)) return res(401, { error: 'Unauthorized' });
+    const { filename } = body;
+    if (!filename) return res(400, { error: 'filename required' });
+    const ext = filename.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'ai', 'eps', 'svg', 'psd', 'zip'].includes(ext))
+      return res(400, { error: 'File type not allowed' });
+    const key = `artwork/${jobArtMatch[1]}/${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${ext}`;
+    const { data, error } = await sb().storage.from('proof-mockups').createSignedUploadUrl(key);
+    if (error) return res(500, { error: error.message });
+    const { data: { publicUrl } } = sb().storage.from('proof-mockups').getPublicUrl(key);
+    return res(200, { signedUrl: data.signedUrl, token: data.token, publicUrl, key });
+  }
+
   // ── INVOICES ─────────────────────────────────────────────────────────────
 
   if (path === '/invoices' && method === 'GET') {
