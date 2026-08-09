@@ -1368,12 +1368,12 @@ ul, ol { list-style: none; }
 
 .home-page .brand-intro-glow {
   position: absolute;
-  inset: 8%;
+  inset: 4%;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(244, 242, 223, 0.34) 0%, rgba(244, 242, 223, 0.12) 38%, transparent 72%),
-    radial-gradient(circle, rgba(39, 95, 59, 0.22) 0%, transparent 58%);
-  filter: blur(18px);
+    radial-gradient(circle, rgba(244, 242, 223, 0.42) 0%, rgba(244, 242, 223, 0.16) 36%, transparent 70%),
+    radial-gradient(circle, rgba(39, 95, 59, 0.28) 0%, transparent 58%);
+  filter: blur(22px);
   pointer-events: none;
   animation: introGlowPulse 3.6s ease-in-out infinite;
 }
@@ -1385,9 +1385,9 @@ ul, ol { list-style: none; }
   height: 100%;
   object-fit: contain;
   filter:
-    drop-shadow(0 0 10px rgba(244, 242, 223, 0.45))
-    drop-shadow(0 0 28px rgba(244, 242, 223, 0.22))
-    drop-shadow(0 0 42px rgba(39, 95, 59, 0.28));
+    drop-shadow(0 0 12px rgba(244, 242, 223, 0.55))
+    drop-shadow(0 0 30px rgba(244, 242, 223, 0.28))
+    drop-shadow(0 0 48px rgba(39, 95, 59, 0.34));
   animation: introLogoGlow 3.6s ease-in-out infinite;
 }
 
@@ -1498,15 +1498,15 @@ ul, ol { list-style: none; }
 @keyframes introLogoGlow {
   0%, 100% {
     filter:
-      drop-shadow(0 0 8px rgba(244, 242, 223, 0.35))
-      drop-shadow(0 0 22px rgba(244, 242, 223, 0.16))
-      drop-shadow(0 0 34px rgba(39, 95, 59, 0.2));
+      drop-shadow(0 0 10px rgba(244, 242, 223, 0.42))
+      drop-shadow(0 0 24px rgba(244, 242, 223, 0.2))
+      drop-shadow(0 0 38px rgba(39, 95, 59, 0.24));
   }
   50% {
     filter:
-      drop-shadow(0 0 14px rgba(244, 242, 223, 0.58))
-      drop-shadow(0 0 36px rgba(244, 242, 223, 0.28))
-      drop-shadow(0 0 52px rgba(39, 95, 59, 0.38));
+      drop-shadow(0 0 16px rgba(244, 242, 223, 0.68))
+      drop-shadow(0 0 40px rgba(244, 242, 223, 0.34))
+      drop-shadow(0 0 58px rgba(39, 95, 59, 0.42));
   }
 }
 
