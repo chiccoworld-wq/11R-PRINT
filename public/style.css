@@ -1576,6 +1576,8 @@ ul, ol { list-style: none; }
 @media (max-width: 820px) {
   .home-page .site-header {
     height: 72px;
+    width: 100%;
+    max-width: 100%;
     padding-inline: 14px 12px;
   }
 
@@ -1647,6 +1649,23 @@ ul, ol { list-style: none; }
 
   .home-page .hero-footer span:first-child {
     display: inline;
+  }
+
+  .home-page .craft-section,
+  .home-page .craft-media,
+  .home-page .craft-video {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .home-page .craft-section {
+    overflow: hidden;
+  }
+
+  .home-page .mobile-overlay {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
