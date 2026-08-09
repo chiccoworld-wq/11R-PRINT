@@ -6,21 +6,25 @@
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>Start Your Custom Order | 11R Print</title>
   <meta name="description" content="Design your custom screen printed apparel. Pick a product, choose a color, upload your artwork, and get an instant quote." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style-legacy.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
-<body class="order-page">
+<body class="order-page theme-page pricing-page">
 
   <!-- HEADER — matches index.html exactly -->
   <header class="site-header" id="site-header">
     <a class="brand" href="index.html" aria-label="11R Print home">
-      <img src="images/11r-logo-new.png" alt="11R Print logo" />
+      <img src="images/11r-logo-black.png" alt="11R Print logo" />
     </a>
     <nav class="nav-links" id="nav-links">
       <a href="work.html" data-decrypt>Work</a>
-      <a href="index.html#services" data-decrypt>Services</a>
-      <a href="index.html#process" data-decrypt>Process</a>
-      <a href="index.html#quote" class="nav-cta" data-decrypt>Get a Quote</a>
-      <a href="custom-order.html" class="nav-order-link active" data-decrypt>Start Order</a>
+      <a href="index.html#services">What we print</a>
+      <a href="index.html#process">How it works</a>
+      <a href="index.html#quote" class="nav-cta">Let's chat</a>
+      <a href="custom-order.html" class="nav-order-link active">Start order</a>
     </nav>
     <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-overlay">
       <span class="mt-bar"></span>
@@ -53,15 +57,34 @@
       <div class="pcalc-inner">
 
         <div class="pcalc-head">
-          <p class="eyebrow">INSTANT ESTIMATE</p>
-          <h2 class="pcalc-title">Build Your Price</h2>
-          <p class="pcalc-sub">Adjust the options — your estimate updates live. No account needed.</p>
+          <div>
+            <p class="eyebrow">Instant estimate</p>
+            <h1 class="pcalc-title">Build your<br><em>print price.</em></h1>
+          </div>
+          <div class="pcalc-head-copy">
+            <p>Choose your garment, quantity, and print details. Your estimate updates live — no account or payment needed.</p>
+            <div class="pcalc-trust">
+              <span>12 piece minimum</span>
+              <span>Live pricing</span>
+              <span>Proof before print</span>
+            </div>
+          </div>
         </div>
+
+        <a class="pcalc-mobile-summary" href="#pcalc-estimate-wrap" aria-label="Jump to your live estimate">
+          <span><small>Per shirt</small><strong id="pcalc-mobile-per">—</strong></span>
+          <span><small>Estimated total</small><strong id="pcalc-mobile-total">—</strong></span>
+          <b>View estimate ↓</b>
+        </a>
 
         <div class="pcalc-layout">
 
           <!-- Controls -->
           <div class="pcalc-controls">
+            <div class="pcalc-step-heading">
+              <span>01</span>
+              <div><strong>Choose your garment</strong><small>Pick the shirt, color, and quantity.</small></div>
+            </div>
 
             <!-- GARMENT CATEGORY -->
             <div class="pcalc-field">
@@ -108,6 +131,11 @@
                 <input type="number" class="pcalc-qty-num" id="pcalc-qty-n" min="12" max="144" value="48" />
               </div>
               <div class="pcalc-range-hint"><span>12 shirts</span><span>144 shirts</span></div>
+            </div>
+
+            <div class="pcalc-step-heading">
+              <span>02</span>
+              <div><strong>Set up your artwork</strong><small>Tell us what you have and where it prints.</small></div>
             </div>
 
             <div class="pcalc-field">
@@ -238,14 +266,13 @@
                 Need 144+? <a href="index.html#quote">Contact us for custom pricing →</a>
               </p>
 
-              <p class="pcalc-blanks-note" style="margin-bottom:18px;">
-                <strong style="display:block;margin-bottom:4px;">Garment Replacement Policy</strong>
-                Garments purchased through 11R Print are covered against production errors caused by our shop. If a shop-supplied garment is damaged or misprinted due to our error, we will replace the garment and reprint it at no additional cost.<br><br>
-                Customer-supplied garments are accepted with a $2.00 handling fee per item and are not covered by our garment replacement policy. If a production error occurs on a customer-supplied garment, 11R Print will reprint the replacement garment at no additional printing charge; however, the customer is responsible for supplying or purchasing the replacement garment.<br><br>
-                Customer-supplied garments may also react differently to heat, ink, pretreatment, and curing. For this reason, 11R Print cannot guarantee results on garments that were not purchased through our shop.
-              </p>
+              <details class="pcalc-policy">
+                <summary>Garment replacement policy</summary>
+                <p>Garments purchased through 11R Print are covered against production errors caused by our shop. If a shop-supplied garment is damaged or misprinted due to our error, we will replace and reprint it at no additional cost.</p>
+                <p>Customer-supplied garments include a $2 handling fee per item and are not covered for garment replacement. If a production error occurs, we will reprint a customer-provided replacement at no printing charge. Results cannot be guaranteed on garments not purchased through our shop.</p>
+              </details>
 
-              <button type="button" class="pcalc-cta" id="pcalc-cta-btn">SEND FOR REVIEW →</button>
+              <button type="button" class="pcalc-cta" id="pcalc-cta-btn">Send estimate for review <span>→</span></button>
             </div>
           </div><!-- /pcalc-output -->
 
@@ -690,6 +717,8 @@
           document.getElementById('pcalc-b-screens').textContent       = fmt(screenSetup);
           document.getElementById('pcalc-row-artwork').style.display   = ARTWORK_FEE > 0 ? 'flex' : 'none';
           document.getElementById('pcalc-b-total').textContent         = fmt(grandTotal);
+          document.getElementById('pcalc-mobile-per').textContent      = fmt(perUnitAllin);
+          document.getElementById('pcalc-mobile-total').textContent    = fmt(grandTotal);
         }
 
         // Quantity sync
@@ -1015,19 +1044,19 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="images/11r-logo-new.png" alt="11R Print logo" />
-        <p class="footer-tagline">Screen Printed. Not Pressed.</p>
+        <img src="images/11r-logo-black.png" alt="11R Print logo" />
+        <p class="footer-tagline">Quality screen prints. Made to last.</p>
       </div>
       <nav class="footer-links">
         <a href="work.html">Work</a>
-        <a href="index.html#services">Services</a>
-        <a href="index.html#process">Process</a>
+        <a href="index.html#services">What we print</a>
+        <a href="index.html#process">How it works</a>
         <a href="index.html#quote">Quote</a>
-        <a href="custom-order.html">Start Order</a>
+        <a href="custom-order.html">Start order</a>
       </nav>
       <div class="footer-copy" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <p class="small">&copy; 2026 11R Print. Custom screen printing. Real ink. Real durability.</p>
-        <a href="admin/index.html" style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.18);transition:color .2s;" onmouseover="this.style.color='#20ff7b'" onmouseout="this.style.color='rgba(255,255,255,.18)'">Admin Login</a>
+        <p class="small">&copy; 2026 11R Print</p>
+        <a href="admin/index.html" class="admin-link">Admin</a>
       </div>
     </div>
   </footer>
@@ -1037,7 +1066,7 @@
     <div class="mobile-overlay-inner">
       <div class="mobile-overlay-header">
         <a class="mo-brand" href="index.html" aria-label="11R Print home">
-          <img src="images/11r-logo-new.png" alt="11R Print" />
+          <img src="images/11r-logo-black.png" alt="11R Print" />
         </a>
         <button class="overlay-close" id="overlay-close" aria-label="Close menu">
           <span></span><span></span>
@@ -1046,14 +1075,13 @@
       <nav class="mobile-overlay-nav" aria-label="Mobile navigation">
         <a href="index.html" class="mobile-link">Home</a>
         <a href="work.html" class="mobile-link">Work</a>
-        <a href="index.html#services" class="mobile-link">Services</a>
-        <a href="index.html#process" class="mobile-link">Process</a>
+        <a href="index.html#services" class="mobile-link">What we print</a>
+        <a href="index.html#process" class="mobile-link">How it works</a>
         <a href="index.html#quote" class="mobile-link">Quote</a>
-        <a href="custom-order.html" class="mobile-link" style="color:var(--green-bright)">Start Order</a>
+        <a href="custom-order.html" class="mobile-link">Start order</a>
       </nav>
       <div class="mobile-overlay-footer">
-        <p class="mo-slogan">Real ink. Zero shortcuts.</p>
-        <a href="index.html#quote" class="btn primary mo-cta">Request a Quote</a>
+        <a href="index.html#quote" class="btn primary mo-cta">Request a quote</a>
       </div>
       <div class="mo-deco" aria-hidden="true">
         <div class="mo-crop mo-tl"></div>
