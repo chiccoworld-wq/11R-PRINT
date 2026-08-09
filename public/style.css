@@ -1683,3 +1683,11 @@ ul, ol { list-style: none; }
     display: none;
   }
 }
+
+@media (max-width: 400px) {
+  .home-page .mockup-copy h2 {
+    font-size: 10vw;
+    line-height: 0.88;
+    letter-spacing: -0.075em;
+  }
+}
