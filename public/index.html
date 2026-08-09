@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/images/11r-logo-black.png" />
   <title>11R Print | Custom Screen Printing</title>
-  <meta name="description" content="11R Print is a custom screen printing shop for businesses, crews, brands, and events. Soft goods printed with care — real ink, real durability." />
+  <meta name="description" content="11R Print creates quality custom screen prints made to last for businesses, crews, brands, and events." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -34,33 +34,62 @@
 
   <main id="top">
 
-    <!-- HERO: one composition — brand, headline, support, CTA, full-bleed image -->
+    <!-- HERO: full-screen type + floating garment visual -->
     <section class="hero" id="hero">
-      <div class="hero-media" aria-hidden="true">
-        <img src="images/lk-front-print.jpg" alt="" class="hero-bg" />
-        <div class="hero-scrim"></div>
-      </div>
+      <div class="hero-grain" aria-hidden="true"></div>
+      <div class="hero-outline" aria-hidden="true">11R</div>
 
-      <div class="hero-inner">
-        <p class="hero-brand">11R Print</p>
-        <h1 class="hero-headline">Custom printed tees, apparel &amp; crew gear.</h1>
-        <p class="hero-support">Quality screen printing with care and precision — for businesses, brands, crews, and events that want soft goods that actually look good.</p>
+      <div class="hero-type">
+        <p class="hero-kicker">Custom screen printing <span>Est. Florida</span></p>
+        <h1 class="hero-headline">
+          <span class="hero-word">Quality</span>
+          <span class="hero-word hero-word-script">Prints.</span>
+          <span class="hero-word hero-word-bottom">Made to <em>Last.</em></span>
+        </h1>
+        <p class="hero-support">Real ink. Clean registration. Apparel built for businesses, brands, crews, and events.</p>
         <div class="hero-actions">
-          <a class="btn primary" href="#quote">Request a quote</a>
+          <a class="btn primary" href="#quote">Start your project</a>
           <a class="btn ghost" href="work.html">See the work</a>
         </div>
       </div>
+
+      <div class="hero-product" aria-hidden="true">
+        <div class="hero-product-shadow"></div>
+        <img src="images/embark no background.png" alt="" />
+        <span class="hero-product-note">Screen printed<br>not pressed</span>
+      </div>
+
+      <div class="hero-footer">
+        <span>11R PRINT / 001</span>
+        <span>Scroll to explore ↓</span>
+      </div>
     </section>
 
-    <!-- Soft promise strip -->
+    <!-- Restored floating professional proof -->
+    <section class="mockup-showcase" aria-label="Professional apparel mockups">
+      <div class="mockup-copy reveal-up">
+        <p class="eyebrow">See it before we print it</p>
+        <h2>Professional<br><span>mockups.</span><br>Zero guesswork.</h2>
+        <p>Every order gets a clean visual proof so you can approve placement, scale, and color before ink ever touches fabric.</p>
+        <a class="text-link" href="#quote">Build your order →</a>
+      </div>
+      <div class="mockup-stage reveal-up" data-delay="150">
+        <div class="mockup-orbit" aria-hidden="true"></div>
+        <div class="mockup-label mockup-label-top">Front / Back</div>
+        <img src="images/EAS LLC ART PROOF copy.png" alt="Professional front and back apparel mockup by 11R Print" class="floating-mockup" />
+        <div class="mockup-label mockup-label-bottom">Approved before production</div>
+      </div>
+    </section>
+
+    <!-- Clear promises -->
     <section class="promise-strip" aria-label="What you get">
       <div class="promise-item reveal-up">
-        <strong>Soft inks &amp; garments</strong>
-        <span>Prints that feel good to wear</span>
+        <strong>Quality prints</strong>
+        <span>Made to last, wash after wash</span>
       </div>
       <div class="promise-item reveal-up" data-delay="100">
-        <strong>Low minimums</strong>
-        <span>Small runs welcome</span>
+        <strong>Professional proofs</strong>
+        <span>Approve every detail first</span>
       </div>
       <div class="promise-item reveal-up" data-delay="200">
         <strong>Reliable turnaround</strong>
@@ -71,9 +100,9 @@
     <!-- Level up / why us -->
     <section class="pitch-section" id="about">
       <div class="pitch-copy reveal-up">
-        <p class="eyebrow">Pressed out</p>
-        <h2>Why settle for average prints?</h2>
-        <p>Level up with 11R and get apparel your team actually wants to wear. We screen print with real ink through mesh — not heat transfers that crack after a few washes.</p>
+        <p class="eyebrow">Real screen printing</p>
+        <h2>Built to represent your name.</h2>
+        <p>Get apparel your team actually wants to wear. We print real ink through mesh — not heat transfers that crack after a few washes.</p>
         <a class="text-link" href="#quote">Let's make it happen →</a>
       </div>
       <div class="pitch-visual reveal-up" data-delay="150">
@@ -85,7 +114,7 @@
     <section id="services" class="services-section">
       <div class="services-intro reveal-up">
         <p class="eyebrow">What we print</p>
-        <h2>Soft goods for shops, crews, and brands.</h2>
+        <h2>Apparel for shops, crews, and brands.</h2>
       </div>
 
       <div class="services-columns reveal-up">
@@ -134,8 +163,8 @@
           <img src="images/lk-closeup.jpg" alt="Close-up of screen printed ink detail" loading="lazy" />
           <span>Ink detail</span>
         </a>
-        <a href="work.html" class="work-tile reveal-up" data-delay="100">
-          <img src="images/eas-finished-shirt.jpg" alt="Finished custom screen printed shirt" loading="lazy" />
+        <a href="work.html" class="work-tile work-tile-product reveal-up" data-delay="100">
+          <img src="images/embark no background.png" alt="Finished custom screen printed shirts" loading="lazy" />
           <span>Finished goods</span>
         </a>
         <a href="work.html" class="work-tile reveal-up" data-delay="150">
@@ -432,7 +461,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <img src="images/11r-logo-black.png" alt="11R Print" />
-        <p>Custom screen printing for soft goods that last.</p>
+        <p>Quality screen prints. Made to last.</p>
       </div>
       <nav class="footer-links">
         <a href="work.html">Work</a>
