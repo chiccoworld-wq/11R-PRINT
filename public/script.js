@@ -10,9 +10,20 @@
   /* ==================== HEADER SCROLL ==================== */
   const header = document.getElementById('site-header');
   if (header) {
-    window.addEventListener('scroll', () => {
-      header.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
+    const brandIntro = document.querySelector('.brand-intro');
+
+    function updateHeaderState() {
+      const overIntro = Boolean(
+        brandIntro &&
+        window.scrollY < brandIntro.offsetHeight - header.offsetHeight
+      );
+      header.classList.toggle('over-intro', overIntro);
+      header.classList.toggle('scrolled', window.scrollY > 40 && !overIntro);
+    }
+
+    window.addEventListener('scroll', updateHeaderState, { passive: true });
+    window.addEventListener('resize', updateHeaderState, { passive: true });
+    updateHeaderState();
   }
 
   /* ==================== MOBILE NAV OVERLAY ==================== */

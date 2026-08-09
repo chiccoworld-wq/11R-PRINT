@@ -1304,6 +1304,24 @@ ul, ol { list-style: none; }
   background: rgba(216, 216, 189, 0.94);
 }
 
+.home-page .site-header.over-intro {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent);
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+}
+
+.home-page .site-header.over-intro .brand-logo-dark {
+  opacity: 0;
+}
+
+.home-page .site-header.over-intro .brand-logo-light {
+  opacity: 1;
+}
+
+.home-page .site-header.over-intro .mt-bar {
+  background: #f4f2df;
+}
+
 /* Full-viewport campaign cover */
 .home-page .brand-intro {
   position: relative;
@@ -1336,26 +1354,21 @@ ul, ol { list-style: none; }
 .home-page .brand-intro-shade {
   z-index: -2;
   background:
-    radial-gradient(circle at center, rgba(0, 0, 0, 0.04) 0 22%, rgba(0, 0, 0, 0.38) 100%),
-    linear-gradient(180deg, rgba(8, 9, 7, 0.26), transparent 28%, rgba(8, 9, 7, 0.32));
+    radial-gradient(circle at center, rgba(0, 0, 0, 0.08) 0 22%, rgba(0, 0, 0, 0.4) 100%),
+    linear-gradient(180deg, rgba(8, 9, 7, 0.32), transparent 28%, rgba(8, 9, 7, 0.48));
 }
 
 .home-page .brand-intro-logo-shell {
-  width: clamp(260px, 34vw, 440px);
-  aspect-ratio: 1;
+  width: clamp(310px, 39vw, 540px);
   display: grid;
   place-items: center;
-  padding: clamp(20px, 3vw, 40px);
-  border: 1px solid rgba(244, 242, 223, 0.46);
-  background: rgba(216, 216, 189, 0.86);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(14px);
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55));
   animation: introLogoIn 1s var(--ease) both;
 }
 
 .home-page .brand-intro-logo {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
 }
 
@@ -1396,6 +1409,7 @@ ul, ol { list-style: none; }
 }
 
 .home-page .brand {
+  position: relative;
   display: grid;
   place-items: center;
   width: 58px;
@@ -1403,10 +1417,15 @@ ul, ol { list-style: none; }
 }
 
 .home-page .brand img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: opacity 0.25s ease;
 }
+
+.home-page .brand-logo-light { opacity: 0; }
 
 .home-page .nav-links a {
   font-size: 0.72rem;
@@ -1686,15 +1705,14 @@ ul, ol { list-style: none; }
   }
 
   .home-page .brand-intro-logo-shell {
-    width: min(72vw, 330px);
-    padding: clamp(18px, 6vw, 30px);
+    width: min(76vw, 350px);
   }
 
   .home-page .hero {
     min-height: auto;
     grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 103px 18px 56px;
+    gap: 0;
+    padding: 92px 18px 38px;
   }
 
   .home-page .hero-type {
@@ -1702,13 +1720,13 @@ ul, ol { list-style: none; }
   }
 
   .home-page .hero-kicker {
-    margin-bottom: 18px;
+    margin-bottom: 13px;
     font-size: 0.62rem;
   }
 
   .home-page .hero-headline {
-    font-size: clamp(4.2rem, 20vw, 7.8rem);
-    line-height: 0.74;
+    font-size: clamp(3.7rem, 17vw, 6.8rem);
+    line-height: 0.76;
   }
 
   .home-page .hero-word-script {
@@ -1716,14 +1734,15 @@ ul, ol { list-style: none; }
   }
 
   .home-page .hero-support {
+    margin-block: 20px 18px;
     max-width: 34ch;
     color: var(--ink-soft);
     text-shadow: none;
   }
 
   .home-page .hero-product {
-    width: min(105vw, 640px);
-    margin: -18px -12vw 5px auto;
+    width: min(103vw, 580px);
+    margin: -4px -8vw 2px auto;
   }
 
   .home-page .hero-product-note {
@@ -1775,7 +1794,7 @@ ul, ol { list-style: none; }
 
 @media (max-width: 560px) {
   .home-page .hero-headline {
-    font-size: clamp(3.7rem, 19vw, 5.4rem);
+    font-size: clamp(3.35rem, 16.5vw, 4.5rem);
   }
 
   .home-page .hero-actions {
@@ -1788,8 +1807,12 @@ ul, ol { list-style: none; }
   }
 
   .home-page .hero-product {
-    width: 112vw;
-    margin-right: -17vw;
+    width: 105vw;
+    margin-right: -10vw;
+  }
+
+  .home-page .hero-product-note {
+    display: none;
   }
 
   .home-page .hero-product-caption {
@@ -1804,6 +1827,17 @@ ul, ol { list-style: none; }
 
   .home-page .hero-footer span:last-child {
     display: none;
+  }
+}
+
+@media (min-width: 361px) and (max-width: 560px) {
+  .home-page .hero-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-page .hero .btn {
+    padding-inline: 13px;
+    font-size: 0.66rem;
   }
 }
 
