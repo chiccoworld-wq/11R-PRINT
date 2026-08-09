@@ -358,7 +358,53 @@ exports.handler = async (event) => {
       .select()
       .single();
     if (error || !data) return res(409, { error: 'Not found or already processed' });
+
+    // Notify admin
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_KEY) {
+      const proofRef = '#' + tokApprove[1].slice(-8).toUpperCase();
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Orders <orders@11rprint.com>',
+          to: 'orders@11rprint.com',
+          subject: `✅ Proof Approved — ${data.customer_name}`,
+          text: `Proof ${proofRef} has been approved.\n\nCustomer: ${data.customer_name}\nSigned by: ${name.trim()}\nTime: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}\n\nYou're clear to start production.`,
+        }),
+      }).catch(() => {});
+    }
+
     return res(200, { ok: true, proof: data });
+  }
+
+  // POST /proofs/:token/request-changes (public)
+  const tokChanges = path.match(/^\/proofs\/([a-f0-9]+)\/request-changes$/);
+  if (tokChanges && method === 'POST') {
+    const { name, message } = body;
+    if (!name || name.trim().length < 2) return res(400, { error: 'Full name required' });
+    if (!message || message.trim().length < 5) return res(400, { error: 'Please describe the changes needed' });
+
+    // Fetch proof for context
+    const { data: proof } = await sb().from('proofs').select('customer_name,token').eq('token', tokChanges[1]).single();
+
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (!RESEND_KEY) return res(500, { error: 'Email not configured' });
+
+    const proofRef = '#' + tokChanges[1].slice(-8).toUpperCase();
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Orders <orders@11rprint.com>',
+        to: 'orders@11rprint.com',
+        subject: `🔁 Changes Requested — ${proof?.customer_name || name.trim()}`,
+        text: `Changes requested on proof ${proofRef}.\n\nCustomer: ${proof?.customer_name || name.trim()}\nSigned by: ${name.trim()}\nTime: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}\n\nRequested changes:\n${message.trim()}`,
+      }),
+    }).catch(() => null);
+
+    if (!emailRes || !emailRes.ok) return res(500, { error: 'Failed to send notification' });
+    return res(200, { ok: true });
   }
 
   // POST /upload-url — signed upload URL (admin)

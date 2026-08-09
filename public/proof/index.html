@@ -988,6 +988,27 @@ function renderApprovalForm(token, customerName, customerEmail) {
       </button>
       <div class="approve-error" id="approve-error"></div>
     </form>
+
+    <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--line);">
+      <div class="section-eyebrow" style="margin-bottom:14px;">Need Changes Instead?</div>
+      <form id="changes-form">
+        <div class="sig-field" style="margin-bottom:14px;">
+          <label class="sig-label" for="chg-name">Your Full Name *</label>
+          <input type="text" id="chg-name" class="sig-input" style="font-style:normal;font-size:15px;" placeholder="Your name…" autocomplete="name"/>
+        </div>
+        <div class="sig-field" style="margin-bottom:14px;">
+          <label class="sig-label" for="chg-msg">Describe the Changes Needed *</label>
+          <textarea id="chg-msg" class="sig-input" style="font-style:normal;font-size:14px;height:90px;resize:vertical;font-family:Arial,sans-serif;" placeholder="What needs to be changed?…"></textarea>
+        </div>
+        <button type="submit" id="chg-btn" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:16px;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--white);cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.2)'">
+          Request Changes
+        </button>
+        <div class="approve-error" id="chg-error"></div>
+      </form>
+      <div id="chg-success" style="display:none;margin-top:16px;padding:18px 20px;background:rgba(32,255,123,.07);border:1px solid rgba(32,255,123,.3);border-radius:14px;font-size:14px;color:var(--gb);text-align:center;">
+        ✓ Your change request was sent to 11R Print. We'll be in touch shortly.
+      </div>
+    </div>
   `;
 
   const check = document.getElementById('approve-check');
@@ -1026,6 +1047,37 @@ function renderApprovalForm(token, customerName, customerEmail) {
 
     const data = await r.json();
     showSuccessState(name, data.proof?.approved_at || new Date().toISOString());
+  });
+
+  document.getElementById('changes-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('chg-name').value.trim();
+    const message = document.getElementById('chg-msg').value.trim();
+    const errEl = document.getElementById('chg-error');
+    const btn = document.getElementById('chg-btn');
+    errEl.classList.remove('show');
+    if (!name || name.length < 2) { errEl.textContent = 'Please enter your name.'; errEl.classList.add('show'); return; }
+    if (!message || message.length < 5) { errEl.textContent = 'Please describe the changes needed.'; errEl.classList.add('show'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const r = await fetch(`${API}/proofs/${token}/request-changes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message }),
+    }).catch(() => null);
+
+    if (!r || !r.ok) {
+      errEl.textContent = 'Failed to send. Please email orders@11rprint.com directly.';
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Request Changes';
+      return;
+    }
+
+    document.getElementById('changes-form').style.display = 'none';
+    document.getElementById('chg-success').style.display = 'block';
   });
 }
 

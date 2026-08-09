@@ -80,9 +80,9 @@ export const handler = async (event) => {
   const printRate   = quantity > 0 ? print   / quantity : 0;
 
   const rows = [
-    ['1', `Garment — ${product}\n${shirt_color}`, qtyStr, fmt(garmentRate), fmt(garment)],
-    ['2', `Screen Print — ${print_location}\n${ink_colors} ink color${ink_colors !== 1 ? 's' : ''}`, qtyStr, fmt(printRate), fmt(print)],
-    ['3', `Setup Fee\nScreen setup · ${ink_colors} color${ink_colors !== 1 ? 's' : ''}`, '1.00', fmt(setup), fmt(setup)],
+    ['1', `Garment — ${product} · ${shirt_color}`, qtyStr, fmt(garmentRate), fmt(garment)],
+    ['2', `Screen Print — ${print_location} · ${ink_colors} color${ink_colors !== 1 ? 's' : ''}`, qtyStr, fmt(printRate), fmt(print)],
+    ['3', `Setup Fee · ${ink_colors} color${ink_colors !== 1 ? 's' : ''}`, '1.00', fmt(setup), fmt(setup)],
   ];
   if (discount > 0) {
     rows.push(['4', `Volume Discount\n${discLabel}`, '1', `-${fmt(discount)}`, `-${fmt(discount)}`]);
@@ -166,8 +166,8 @@ export const handler = async (event) => {
         },
         {
           name: 'co_info', type: 'text',
-          content: 'Florida\nU.S.A.\n+1 (407) 720-8518\norders@11rprint.com',
-          position: { x: 15, y: 86 }, width: 90, height: 28,
+          content: 'Florida, U.S.A.\norders@11rprint.com',
+          position: { x: 15, y: 86 }, width: 90, height: 16,
           fontSize: 10, fontColor: '#555555', backgroundColor: '',
           alignment: 'left', verticalAlignment: 'top',
           lineHeight: 1.7, characterSpacing: 0, fontName: 'NotoSans',
