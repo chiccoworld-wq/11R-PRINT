@@ -1260,7 +1260,13 @@ ul, ol { list-style: none; }
   }
   .hero-footer span:first-child { display: none; }
   .hero-footer { justify-content: flex-end; }
-  .mockup-copy h2 { font-size: clamp(3.4rem, 16vw, 5.6rem); }
+  .mockup-copy h2 {
+    max-width: 100%;
+    font-size: clamp(2.75rem, 12vw, 4.4rem);
+    line-height: .88;
+    letter-spacing: -.055em;
+    overflow-wrap: normal;
+  }
   .mockup-label-top { right: 0; }
   .mockup-label-bottom { left: 0; }
   .work-header {
@@ -1282,9 +1288,30 @@ ul, ol { list-style: none; }
   }
   .hero-kicker span { display: none; }
   .hero-actions .btn { padding-inline: 15px; font-size: .86rem; }
-  .mockup-showcase { padding-inline: 18px; }
-  .mockup-stage { min-height: 82vw; }
-  .floating-mockup { width: 116vw; }
+  .mockup-showcase {
+    padding-inline: 18px;
+    row-gap: 24px;
+  }
+  .mockup-copy,
+  .mockup-copy h2,
+  .mockup-copy > p {
+    width: 100%;
+    max-width: 100%;
+  }
+  .mockup-copy h2 {
+    font-size: clamp(2.15rem, 10.8vw, 2.9rem);
+    line-height: .94;
+    letter-spacing: -.045em;
+  }
+  .mockup-stage {
+    width: 100%;
+    min-height: 82vw;
+    overflow: hidden;
+  }
+  .floating-mockup {
+    width: 100%;
+    max-width: 100%;
+  }
   .mockup-label { font-size: .52rem; padding: 7px 9px; }
   .work-mosaic {
     grid-template-columns: 1fr;
