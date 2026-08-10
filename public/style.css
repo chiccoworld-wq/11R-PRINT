@@ -1935,8 +1935,10 @@ ul, ol { list-style: none; }
   }
 
   .home-page .hero-product {
-    width: min(105vw, 640px);
-    margin: -18px -12vw 5px auto;
+    width: min(88vw, 520px);
+    max-width: 100%;
+    margin: -8px auto 10px;
+    justify-self: center;
   }
 
   .home-page .hero-product-note {
@@ -2001,8 +2003,15 @@ ul, ol { list-style: none; }
   }
 
   .home-page .hero-product {
-    width: 112vw;
-    margin-right: -17vw;
+    width: min(88vw, 400px);
+    max-width: 100%;
+    margin: -4px auto 10px;
+  }
+
+  .home-page .mockup-copy h2 {
+    font-size: clamp(2rem, 8.6vw, 2.7rem);
+    line-height: 0.96;
+    letter-spacing: -0.055em;
   }
 
   .home-page .hero-product-caption {
