@@ -102,6 +102,26 @@
 
   document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
 
+  /* ==================== MUTED VIDEO AUTOPLAY ==================== */
+  const autoplayVideos = document.querySelectorAll('video[autoplay]');
+  if (autoplayVideos.length) {
+    const playVideos = () => {
+      autoplayVideos.forEach(video => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.play().catch(() => {});
+      });
+    };
+
+    playVideos();
+    window.addEventListener('pageshow', playVideos);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) playVideos();
+    });
+    document.addEventListener('touchstart', playVideos, { once: true, passive: true });
+  }
+
 
   /* ==================== MAGNETIC BUTTONS ==================== */
   function isMobile() {
