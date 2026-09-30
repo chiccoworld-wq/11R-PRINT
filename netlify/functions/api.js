@@ -128,6 +128,62 @@ async function forwardQuoteToNexus(payload, source) {
   }
 }
 
+function customOrderNexusPayload(o) {
+  const estimatedTotal = o.estimate?.total != null ? Number(o.estimate.total) : undefined;
+  const artworkAssets = [
+    o.artwork_url ? {
+      url: o.artwork_url,
+      name: o.artwork_filename || 'Uploaded artwork',
+      label: o.print_location && /back/i.test(String(o.print_location)) && !/front/i.test(String(o.print_location)) ? 'Back' : 'Front',
+    } : null,
+    o.mockup_url ? {
+      url: o.mockup_url,
+      name: 'Placed mockup.png',
+      label: 'Mockup',
+      fileType: 'image/png',
+    } : null,
+  ].filter(Boolean);
+
+  return {
+    fullName: o.customer_name,
+    customerName: o.customer_name,
+    businessName: o.customer_company || '',
+    customerCompany: o.customer_company || '',
+    email: o.customer_email || '',
+    customerEmail: o.customer_email || '',
+    phone: o.customer_phone || '',
+    customerPhone: o.customer_phone || '',
+    contactMethod: 'email',
+    product: o.product || '',
+    garmentName: o.product || '',
+    garmentStyle: o.product || '',
+    shirtColor: o.shirt_color || '',
+    garmentColor: o.shirt_color || '',
+    qty: o.quantity || '',
+    quantity: o.quantity || '',
+    sizes: o.sizes || {},
+    printLocation: o.print_location || '',
+    printLocations: o.print_location || '',
+    inkColors: o.ink_colors || '',
+    ink_colors: o.ink_colors || '',
+    estimatedTotal,
+    total: estimatedTotal,
+    estimate: o.estimate || {},
+    deadline: o.deadline || '',
+    dateNeeded: o.deadline || '',
+    notes: o.notes || '',
+    fileName: o.artwork_filename || '',
+    artwork_filename: o.artwork_filename || '',
+    fileUrl: o.artwork_url || '',
+    artwork_url: o.artwork_url || '',
+    artworkUrl: o.artwork_url || '',
+    mockup_url: o.mockup_url || '',
+    mockupUrl: o.mockup_url || '',
+    artworkUrls: artworkAssets,
+    placement: o.placement || {},
+  };
+}
+
 async function forwardHomepageQuoteToN8n(q) {
   const n8nWebhookUrl = process.env.N8N_INSTANT_QUOTE_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
   if (!n8nWebhookUrl) return false;
@@ -596,6 +652,8 @@ exports.handler = async (event) => {
       }
     }
 
+    const nexusPayload = customOrderNexusPayload(o);
+
     // Fire-and-forget n8n webhook (if configured)
     const N8N_URL = process.env.N8N_WEBHOOK_URL;
     if (N8N_URL) {
@@ -606,6 +664,12 @@ exports.handler = async (event) => {
         headers: n8nHeaders,
         body: JSON.stringify({
           event: 'new_quote',
+          source: '11rprint.com/custom-order',
+          rawQuote: nexusPayload,
+          nexus: {
+            intakeUrl: process.env.NEXUS_INSTANT_QUOTE_URL || 'https://nexus.11rprint.com/api/public/instant-quote',
+            intakeSecret: process.env.NEXUS_INTAKE_SECRET || '',
+          },
           order_id: data.id,
           customer_name: o.customer_name,
           customer_email: o.customer_email || '',
@@ -620,15 +684,23 @@ exports.handler = async (event) => {
           deadline: o.deadline || '',
           notes: o.notes || '',
           artwork_url: o.artwork_url || null,
+          artworkUrls: nexusPayload.artworkUrls || [],
           mockup_url: o.mockup_url || null,
+          mockupUrl: o.mockup_url || '',
           estimate_total: estTotal,
+          estimatedTotal: nexusPayload.estimatedTotal,
+          total: nexusPayload.total,
           estimate: o.estimate || {},
           created_at: new Date().toISOString(),
         })
       }).catch(() => {});
     }
 
-    return res(200, { order: data });
+    const nexusSent = N8N_URL
+      ? false
+      : await forwardQuoteToNexus(nexusPayload, '11rprint.com custom order builder');
+
+    return res(200, { order: data, nexusSent, n8nQueued: Boolean(N8N_URL) });
   }
 
   // GET /orders/:id/pdf — generate PDF for an order (PUBLIC)
