@@ -554,8 +554,8 @@ ul, ol { list-style: none; }
   max-width: var(--max);
   margin: 0 auto 48px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 48px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px 32px;
   padding-bottom: 36px;
   border-bottom: 1px solid var(--line);
 }
@@ -807,6 +807,7 @@ ul, ol { list-style: none; }
   color: var(--ink-soft);
 }
 .form-field input,
+.form-field select,
 .form-field textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -822,6 +823,7 @@ ul, ol { list-style: none; }
   resize: vertical;
 }
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px var(--green-wash);
@@ -1274,7 +1276,7 @@ ul, ol { list-style: none; }
     align-items: flex-start;
   }
   .form-row { grid-template-columns: 1fr; }
-  .services-columns { grid-template-columns: 1fr; }
+  .services-columns { grid-template-columns: 1fr 1fr; }
   h1, h2, h3, p, a, span {
     overflow-wrap: anywhere;
   }
@@ -1823,6 +1825,7 @@ ul, ol { list-style: none; }
 }
 
 .home-page .form-field input,
+.home-page .form-field select,
 .home-page .form-field textarea {
   background: #efeed8;
 }
