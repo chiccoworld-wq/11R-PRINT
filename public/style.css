@@ -554,8 +554,8 @@ ul, ol { list-style: none; }
   max-width: var(--max);
   margin: 0 auto 48px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 48px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px 32px;
   padding-bottom: 36px;
   border-bottom: 1px solid var(--line);
 }
@@ -585,6 +585,96 @@ ul, ol { list-style: none; }
   margin-bottom: 8px;
 }
 .audience p { color: var(--muted); }
+
+/* ==================== THREE LINES ==================== */
+.line-room {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  min-height: calc(100svh - 82px);
+  padding: clamp(36px, 5vw, 72px) clamp(22px, 6vw, 96px);
+  overflow: hidden;
+}
+.line-banners {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+.line-apparel { background: #efeed8; }
+.line-banners {
+  background: #171912;
+  color: #f4f2df;
+}
+.line-signs {
+  background: #275f3b;
+  color: #f4f2df;
+}
+.line-index {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.line-index span {
+  color: var(--green);
+}
+.line-banners .line-index span,
+.line-signs .line-index span {
+  color: #efeed8;
+}
+.line-copy h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.15rem, 3.6vw, 3.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  margin-bottom: 16px;
+  max-width: 14ch;
+}
+.line-banners .line-copy h2 { max-width: 14ch; }
+.line-copy p {
+  max-width: 34ch;
+  font-size: 1.08rem;
+  color: var(--ink-soft);
+}
+.line-banners .line-copy p,
+.line-signs .line-copy p {
+  color: rgba(244, 242, 223, 0.82);
+}
+.line-banners .text-link,
+.line-signs .text-link {
+  color: #f4f2df;
+  border-bottom-color: transparent;
+}
+.line-banners .text-link:hover,
+.line-signs .text-link:hover {
+  border-bottom-color: #f4f2df;
+}
+.line-sheet {
+  margin: 0;
+  justify-self: end;
+  width: min(100%, 460px);
+  background: #f7f4e4;
+  padding: clamp(8px, 1.4vw, 18px);
+  box-shadow: 14px 18px 0 rgba(23, 25, 18, 0.14);
+}
+.line-banners .line-sheet { justify-self: start; }
+.line-sheet img {
+  width: 100%;
+  height: auto;
+}
+.line-apparel .line-sheet { transform: rotate(-3.5deg); }
+.line-banners .line-sheet {
+  transform: rotate(3deg);
+  box-shadow: 18px 22px 0 rgba(0, 0, 0, 0.35);
+}
+.line-signs .line-sheet {
+  transform: rotate(-2deg);
+  box-shadow: -16px 18px 0 rgba(0, 0, 0, 0.22);
+}
 
 /* ==================== WORK MOSAIC ==================== */
 .work-section {
@@ -807,6 +897,7 @@ ul, ol { list-style: none; }
   color: var(--ink-soft);
 }
 .form-field input,
+.form-field select,
 .form-field textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -822,6 +913,7 @@ ul, ol { list-style: none; }
   resize: vertical;
 }
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px var(--green-wash);
@@ -1274,7 +1366,7 @@ ul, ol { list-style: none; }
     align-items: flex-start;
   }
   .form-row { grid-template-columns: 1fr; }
-  .services-columns { grid-template-columns: 1fr; }
+  .services-columns { grid-template-columns: 1fr 1fr; }
   h1, h2, h3, p, a, span {
     overflow-wrap: anywhere;
   }
@@ -1823,6 +1915,7 @@ ul, ol { list-style: none; }
 }
 
 .home-page .form-field input,
+.home-page .form-field select,
 .home-page .form-field textarea {
   background: #efeed8;
 }
@@ -1986,6 +2079,27 @@ ul, ol { list-style: none; }
     width: 100%;
     max-width: 100%;
   }
+
+  .line-room,
+  .line-banners {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 28px;
+    padding: 52px 18px 60px;
+  }
+
+  .line-sheet,
+  .line-apparel .line-sheet,
+  .line-banners .line-sheet,
+  .line-signs .line-sheet {
+    transform: none;
+    order: 2;
+    justify-self: center;
+    width: min(100%, 460px);
+  }
+
+  .line-copy { order: 1; }
+  .line-copy h2 { max-width: 16ch; }
 }
 
 @media (max-width: 560px) {
