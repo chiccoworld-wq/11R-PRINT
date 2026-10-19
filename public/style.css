@@ -591,9 +591,9 @@ ul, ol { list-style: none; }
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
-  gap: clamp(28px, 5vw, 80px);
-  min-height: 86vh;
-  padding: clamp(56px, 8vw, 108px) clamp(22px, 6vw, 96px);
+  gap: clamp(28px, 5vw, 72px);
+  min-height: calc(100svh - 82px);
+  padding: clamp(36px, 5vw, 72px) clamp(22px, 6vw, 96px);
   overflow: hidden;
 }
 .line-banners {
@@ -627,12 +627,12 @@ ul, ol { list-style: none; }
 }
 .line-copy h2 {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 4.6vw, 4.4rem);
+  font-size: clamp(2.15rem, 3.6vw, 3.5rem);
   line-height: 0.96;
   letter-spacing: -0.045em;
   font-weight: 600;
   margin-bottom: 16px;
-  max-width: 12ch;
+  max-width: 14ch;
 }
 .line-banners .line-copy h2 { max-width: 14ch; }
 .line-copy p {
@@ -655,10 +655,13 @@ ul, ol { list-style: none; }
 }
 .line-sheet {
   margin: 0;
+  justify-self: end;
+  width: min(100%, 460px);
   background: #f7f4e4;
   padding: clamp(8px, 1.4vw, 18px);
   box-shadow: 14px 18px 0 rgba(23, 25, 18, 0.14);
 }
+.line-banners .line-sheet { justify-self: start; }
 .line-sheet img {
   width: 100%;
   height: auto;
@@ -2091,6 +2094,8 @@ ul, ol { list-style: none; }
   .line-signs .line-sheet {
     transform: none;
     order: 2;
+    justify-self: center;
+    width: min(100%, 460px);
   }
 
   .line-copy { order: 1; }
