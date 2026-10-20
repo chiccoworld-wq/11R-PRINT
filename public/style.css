@@ -4,18 +4,18 @@
    ============================================================ */
 
 :root {
-  --ink:          #141816;
-  --ink-soft:     #2c3530;
-  --muted:        #5c6b63;
-  --line:         rgba(20, 24, 22, 0.12);
-  --paper:        #e7ece9;
-  --paper-2:      #f3f6f4;
-  --paper-3:      #dfe6e2;
-  --green:        #0c6b3c;
-  --green-deep:   #084f2c;
-  --green-wash:   rgba(12, 107, 60, 0.1);
+  --ink:          #f0eeea;
+  --ink-soft:     #b8b8b0;
+  --muted:        #666660;
+  --line:         rgba(255, 255, 255, 0.08);
+  --paper:        #0a0a0a;
+  --paper-2:      #111111;
+  --paper-3:      #1a1a1a;
+  --green:        #1aad5f;
+  --green-deep:   #0e8045;
+  --green-wash:   rgba(26, 173, 95, 0.12);
   --white:        #ffffff;
-  --danger:       #b42318;
+  --danger:       #e05252;
   --radius:       6px;
   --header-h:     72px;
   --max:          1180px;
@@ -32,10 +32,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   color: var(--ink);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(12, 107, 60, 0.08), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(20, 24, 22, 0.06), transparent 50%),
-    var(--paper);
+  background: var(--paper);
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -81,6 +78,7 @@ ul, ol { list-style: none; }
   height: 42px;
   width: auto;
   transition: transform 0.25s var(--ease);
+  filter: brightness(0) invert(1);
 }
 .brand:hover img { transform: scale(1.03); }
 
@@ -906,6 +904,7 @@ ul, ol { list-style: none; }
   height: 40px;
   width: auto;
   margin-bottom: 10px;
+  filter: brightness(0) invert(1);
 }
 .footer-brand p { color: var(--muted); max-width: 28ch; }
 .footer-links {
@@ -1343,21 +1342,20 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================================
-   HOME / 2026 EDITORIAL REFRESH
-   Warm olive palette inspired by Pantone 5777 C
+   HOME / DARK SLEEK THEME
    ============================================================ */
 .home-page {
-  --ink: #171912;
-  --ink-soft: #303226;
-  --muted: #5b5d4c;
-  --line: rgba(23, 25, 18, 0.16);
-  --paper: #a8a77d;
-  --paper-2: #d8d8bd;
-  --paper-3: #b8b893;
-  --green: #275f3b;
-  --green-deep: #183f28;
-  --green-wash: rgba(39, 95, 59, 0.12);
-  --white: #f4f2df;
+  --ink: #f0eeea;
+  --ink-soft: #b8b8b0;
+  --muted: #666660;
+  --line: rgba(255, 255, 255, 0.08);
+  --paper: #0a0a0a;
+  --paper-2: #111111;
+  --paper-3: #1a1a1a;
+  --green: #1aad5f;
+  --green-deep: #0e8045;
+  --green-wash: rgba(26, 173, 95, 0.12);
+  --white: #ffffff;
   --radius: 0;
   --font-display: "Unbounded", "Arial Black", sans-serif;
   --font-editorial: "Instrument Serif", Georgia, serif;
@@ -1785,7 +1783,7 @@ ul, ol { list-style: none; }
 }
 
 .home-page .mockup-showcase {
-  background: #d8d8bd;
+  background: #111111;
 }
 
 .home-page .promise-strip,
@@ -1819,7 +1817,7 @@ ul, ol { list-style: none; }
 
 .home-page .quote-form,
 .home-page .quote-success {
-  background: #d8d8bd;
+  background: #111111;
 }
 
 .home-page .form-field input,
@@ -1828,7 +1826,7 @@ ul, ol { list-style: none; }
 }
 
 .home-page .mobile-overlay {
-  background: #d8d8bd;
+  background: #111111;
 }
 
 .home-page .mo-brand {
@@ -2055,25 +2053,24 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================================
-   INNER PAGES / EDITORIAL THEME
-   Keeps Work and Instant Pricing aligned with the 2026 homepage.
+   INNER PAGES / DARK SLEEK THEME
    ============================================================ */
 .theme-page {
-  --ink: #171912;
-  --ink-soft: #303226;
-  --muted: #5b5d4c;
-  --line: rgba(23, 25, 18, 0.16);
-  --paper: #a8a77d;
-  --paper-2: #d8d8bd;
-  --paper-3: #b8b893;
-  --green: #275f3b;
-  --green-deep: #183f28;
-  --green-wash: rgba(39, 95, 59, 0.12);
-  --green-bright: #275f3b;
-  --white: #f4f2df;
-  --black: #a8a77d;
-  --charcoal: #262b21;
-  --charcoal-2: #efeeda;
+  --ink: #f0eeea;
+  --ink-soft: #b8b8b0;
+  --muted: #666660;
+  --line: rgba(255, 255, 255, 0.08);
+  --paper: #0a0a0a;
+  --paper-2: #111111;
+  --paper-3: #1a1a1a;
+  --green: #1aad5f;
+  --green-deep: #0e8045;
+  --green-wash: rgba(26, 173, 95, 0.12);
+  --green-bright: #1aad5f;
+  --white: #ffffff;
+  --black: #0a0a0a;
+  --charcoal: #1a1a1a;
+  --charcoal-2: #222222;
   --radius: 0;
   --font-display: "Unbounded", "Arial Black", sans-serif;
   --font-editorial: "Instrument Serif", Georgia, serif;
@@ -2257,7 +2254,7 @@ ul, ol { list-style: none; }
   min-height: 640px;
 }
 .theme-page .process-shot-copy {
-  background: #d8d8bd;
+  background: #111111;
 }
 .theme-page .process-shot-copy h2 {
   font-weight: 600;
@@ -2275,7 +2272,7 @@ ul, ol { list-style: none; }
   letter-spacing: -0.055em;
   text-transform: uppercase;
 }
-.theme-page .work-cta { background: #d8d8bd; }
+.theme-page .work-cta { background: #111111; }
 
 /* Instant pricing */
 .pricing-page .price-calc {
@@ -2530,7 +2527,7 @@ ul, ol { list-style: none; }
   align-items: center;
   justify-content: space-between;
   border-radius: 0;
-  background: #d8d8bd;
+  background: #111111;
   color: var(--ink);
   font-family: var(--font-body);
   box-shadow: none;
@@ -2549,7 +2546,7 @@ ul, ol { list-style: none; }
 .pricing-page .qmodal-box {
   border-color: var(--line);
   border-radius: 0;
-  background: #d8d8bd;
+  background: #111111;
   color: var(--ink);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
 }
@@ -2741,4 +2738,37 @@ ul, ol { list-style: none; }
     max-height: calc(100dvh - 20px);
     padding: 26px 16px 18px;
   }
+}
+
+/* 3D logo fullscreen hero */
+.brand-intro-3d {
+  background: #000 !important;
+  position: relative;
+}
+.logo-3d-fullscreen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  --progress-bar-color: transparent;
+  --progress-mask: transparent;
+  z-index: 1;
+}
+.bi3d-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: clamp(40px, 6vh, 80px);
+  pointer-events: none;
+}
+.bi3d-overlay .brand-intro-scroll {
+  pointer-events: all;
+}
+.bi3d-overlay .brand-intro-tagline {
+  margin-bottom: 24px;
 }
